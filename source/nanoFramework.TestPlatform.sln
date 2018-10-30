@@ -1,0 +1,77 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFramework", "TestFramework", "{47313036-BAE8-41AA-ADDF-84E47B9449A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EB1B7CC1-87D9-4077-8FD9-DB428D4C8674}"
+	ProjectSection(SolutionItems) = preProject
+		packages.config = packages.config
+	EndProjectSection
+EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Nuget.nanoFramework.TestFramework", "Nuget.nanoFramework.TestFramework\Nuget.nanoFramework.TestFramework.nuproj", "{9D39A999-0427-4238-B882-4878E3EDB9AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C} = {554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestAdapter", "TestAdapter", "{651B806B-3116-4129-95FD-32DB92B2827F}"
+EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Nuget.nanoFramework.TestAdapter", "Nuget.nanoFramework.TestAdapter\Nuget.nanoFramework.TestAdapter.nuproj", "{9607C081-2415-465C-8424-1D8C28D4C0AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6} = {EB97BF7E-4D42-4110-9B10-155F11ECA3E6}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{65F27296-73EC-4DDB-B6E5-7FEAA1268524}"
+	ProjectSection(SolutionItems) = preProject
+		Build\nanoFramework.MSTest.TestAdapter.props = Build\nanoFramework.MSTest.TestAdapter.props
+	EndProjectSection
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "TestFramework", "TestFramework\TestFramework.nfproj", "{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.TestAdapter", "TestAdapter\MSTest.TestAdapter.csproj", "{EB97BF7E-4D42-4110-9B10-155F11ECA3E6}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestPlatform.Shared", "TestPlatform.Shared\TestPlatform.Shared.shproj", "{BEAF6AED-9605-4D23-9DBC-805436BD5BF0}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TestPlatform.Shared\TestPlatform.Shared.projitems*{beaf6aed-9605-4d23-9dbc-805436bd5bf0}*SharedItemsImports = 13
+		TestPlatform.Shared\TestPlatform.Shared.projitems*{eb97bf7e-4d42-4110-9b10-155f11eca3e6}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D39A999-0427-4238-B882-4878E3EDB9AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D39A999-0427-4238-B882-4878E3EDB9AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D39A999-0427-4238-B882-4878E3EDB9AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D39A999-0427-4238-B882-4878E3EDB9AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9607C081-2415-465C-8424-1D8C28D4C0AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9607C081-2415-465C-8424-1D8C28D4C0AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9607C081-2415-465C-8424-1D8C28D4C0AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9607C081-2415-465C-8424-1D8C28D4C0AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{65F27296-73EC-4DDB-B6E5-7FEAA1268524} = {651B806B-3116-4129-95FD-32DB92B2827F}
+		{554AD6A9-97C7-4610-BAC9-CD1FD16BD40C} = {47313036-BAE8-41AA-ADDF-84E47B9449A6}
+		{EB97BF7E-4D42-4110-9B10-155F11ECA3E6} = {651B806B-3116-4129-95FD-32DB92B2827F}
+		{BEAF6AED-9605-4D23-9DBC-805436BD5BF0} = {651B806B-3116-4129-95FD-32DB92B2827F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20485CE5-6917-4E55-979F-AE278E10EB30}
+	EndGlobalSection
+EndGlobal

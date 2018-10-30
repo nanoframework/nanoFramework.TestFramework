@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\TestFramework\bin\$(Configuration)\nanoFramework.TestPlatform.TestFramework.dll">
+      <Link>lib\nanoFramework.TestPlatform.TestFramework.dll</Link>
+    </Content>
+    <Content Include="..\TestFramework\bin\$(Configuration)\nanoFramework.TestPlatform.TestFramework.pdb">
+      <Link>lib\nanoFramework.TestPlatform.TestFramework.pdb</Link>
+    </Content>
+    <Content Include="..\TestFramework\bin\$(Configuration)\nanoFramework.TestPlatform.TestFramework.pdbx">
+      <Link>lib\nanoFramework.TestPlatform.TestFramework.pdbx</Link>
+    </Content>
+    <Content Include="..\TestFramework\bin\$(Configuration)\nanoFramework.TestPlatform.TestFramework.pe">
+      <Link>lib\nanoFramework.TestPlatform.TestFramework.pe</Link>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>9d39a999-0427-4238-b882-4878e3edb9ad</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NuProjPath>..\packages\NuProj.0.20.4-beta\tools\</NuProjPath>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <PropertyGroup Label="Configuration">
+    <Id>nanoFramework.TestFramework</Id>
+    <Version>1.0.0-preview010</Version>
+    <Title>nanoFramework.TestFramework</Title>
+    <Authors>jassimoes</Authors>
+    <Owners>jassimoes</Owners>
+    <Summary>nanoFramework.TestFramework</Summary>
+    <Description>nanoFramework.TestFramework</Description>
+    <ReleaseNotes>
+    </ReleaseNotes>
+    <ProjectUrl>
+    </ProjectUrl>
+    <LicenseUrl>
+    </LicenseUrl>
+    <Copyright>Copyright © jassimoes</Copyright>
+    <Tags>nanoFramework.TestFramework</Tags>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" />
+</Project>

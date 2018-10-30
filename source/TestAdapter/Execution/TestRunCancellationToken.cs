@@ -1,0 +1,77 @@
+﻿//
+// Copyright (c) 2018 The nanoFramework project contributors
+// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
+// See LICENSE file in the project root for full license information.
+//
+
+namespace nanoFramework.TestPlatform.MSTest.TestAdapter
+{
+    using System;
+    using System.Diagnostics;
+    using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
+    /// <summary>
+    /// Cancellation token supporting cancellation of a test run.
+    /// </summary>
+    public class TestRunCancellationToken
+    {
+        /// <summary>
+        /// Stores whether the test run is cancelled or not.
+        /// </summary>
+        private bool cancelled;
+
+        /// <summary>
+        /// Callback to be invoked when cancelled.
+        /// </summary>
+        private Action registeredCallback;
+
+        /// <summary>
+        /// Gets a value indicating whether the test run is cancelled.
+        /// </summary>
+        public bool Canceled
+        {
+            get
+            {
+                return this.cancelled;
+            }
+
+            private set
+            {
+                this.cancelled = value;
+                if (this.cancelled)
+                {
+                    this.registeredCallback?.Invoke();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cancels the execution of a test run.
+        /// </summary>
+        public void Cancel()
+        {
+            this.Canceled = true;
+        }
+
+        /// <summary>
+        /// Registers a callback method to be invoked when cancelled.
+        /// </summary>
+        /// <param name="callback">Callback delegate for handling cancellation.</param>
+        public void Register(Action callback)
+        {
+            ValidateArg.NotNull(callback, "callback");
+
+            Debug.Assert(this.registeredCallback == null, "Callback delegate is already registered, use a new cancellationToken");
+
+            this.registeredCallback = callback;
+        }
+
+        /// <summary>
+        /// Unregister the callback method.
+        /// </summary>
+        public void Unregister()
+        {
+            this.registeredCallback = null;
+        }
+    }
+}

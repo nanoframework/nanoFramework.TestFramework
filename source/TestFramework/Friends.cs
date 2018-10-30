@@ -1,0 +1,8 @@
+﻿//
+// Copyright (c) 2018 The nanoFramework project contributors
+// See LICENSE file in the project root for full license information.
+//
+
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("nanoFramework.TestPlatform.TestAdapter, PublicKey=00240000048000009400000006020000002400005253413100040000010001002197150f2f6408342ff40ed30d17b0405e1b1af122b1fc378594e830169a175f4a44a0f4a346920e82109e92f4f1e204d95f80c5f5eb805332f4eca866dc1d904eca1f9527d46affbc8271afe75c91a9f16a0252b44bbbbe2ad89b2390e5b0b34682b0e8b5e0f04ce6ef488be9dc2aafab01740726a1e3ee06080db1beed3aaf")]
