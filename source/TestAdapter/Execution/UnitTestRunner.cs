@@ -105,7 +105,7 @@ namespace nanoFramework.TestPlatform.MSTest.TestAdapter.Execution
             catch (TypeInspectionException ex)
             {
                 // Catch any exception thrown while inspecting the test method and return failure.
-                return new UnitTestResult[] { new UnitTestResult(UnitTestOutcome.Failed, "this is a message"/*ex.Message*/) };
+                return new UnitTestResult[] { new UnitTestResult(UnitTestOutcome.Failed, ex.Message) };
             }
         }
 

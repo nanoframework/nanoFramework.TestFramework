@@ -3,7 +3,6 @@
   <PropertyGroup Label="Globals">
     <NanoFrameworkProjectSystemPath>$(MSBuildToolsPath)..\..\..\nanoFramework\v1.0\</NanoFrameworkProjectSystemPath>
   </PropertyGroup>
-  <Import Project="..\packages\nanoFramework.TestAdapter.1.0.4\build\nanoFramework10\nanoFramework.MSTest.TestAdapter.props" />
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.Default.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.Default.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -33,15 +32,13 @@
     <Compile Include="NFUnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib, Version=1.0.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.0.1-preview127\lib\mscorlib.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.7.2.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.7.2-preview.5\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.TestPlatform.TestFramework, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f932dcc4cfccae11">
-      <HintPath>..\packages\nanoFramework.TestFramework.1.0.0-preview010\lib\nanoFramework.TestPlatform.TestFramework.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="nanoFramework.TestPlatform.TestFramework">
+      <HintPath>..\..\source\TestFramework\bin\Release\nanoFramework.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
