@@ -28,7 +28,6 @@ jobs:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Debug'
-    solution: 'nanoFramework.TestPlatform.sln'
 
   steps:
 
@@ -60,20 +59,35 @@ jobs:
     displayName: Install nanoFramework MSBuild components
     
   - task: NuGetCommand@2
-    displayName: NuGet restore
-    continueOnError: true
+    displayName: NuGet restore Test Adapter
     inputs:
-      restoreSolution: '$(solution)'
+      restoreSolution: 'nanoFramework.TestAdapter.sln'
+      feedsToUse: config
+      nugetConfigPath: 'NuGet.config'
+  
+  - task: NuGetCommand@2
+    displayName: NuGet restore Test Framework
+    inputs:
+      restoreSolution: 'nanoFramework.TestFramework.sln'
       feedsToUse: config
       nugetConfigPath: 'NuGet.config'
   
   - task: VSBuild@1
+    displayName: Build Test Adapter
     inputs:
-      solution: '$(solution)'
+      solution: 'nanoFramework.TestAdapter.sln'
       platform: '$(buildPlatform)'
       msbuildArgs: '/p:PublicRelease=true'
       configuration: '$(buildConfiguration)'
 
+  - task: VSBuild@1
+    displayName: Build Test Framework
+    inputs:
+      solution: 'nanoFramework.TestFramework.sln'
+      platform: '$(buildPlatform)'
+      msbuildArgs: '/p:PublicRelease=true'
+      configuration: '$(buildConfiguration)'
+  
   # - task: VisualStudioTestPlatformInstaller@1
   #   condition: succeeded()
   #   displayName: 'Visual Studio Test Platform Installer'
