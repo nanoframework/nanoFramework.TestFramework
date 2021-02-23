@@ -40,11 +40,11 @@ jobs:
       git config --global user.name "nfbot"
     displayName: Setup git identity
 
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
     condition: not(variables['StartReleaseCandidate'])
     displayName: 'Install specific version of NuGet'
     inputs:
-      versionSpec: '5.8.0'
+      versionSpec: '5.6.0'
 
   - task: DotNetCoreCLI@2  
     condition: ne(variables['system.pullrequest.isfork'], true)
