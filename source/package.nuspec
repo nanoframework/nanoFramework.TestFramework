@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>nanoFramework.CoreLibrary</id>
+    <version>$version$</version>
+    <title>nanoFramework.TestFramework</title>
+    <authors>nanoFramework project contributors</authors>
+    <owners>nanoFramework project contributors,dotnetfoundation</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">LICENSE.md</license>
+    <releaseNotes></releaseNotes>
+    <developmentDependency>true</developmentDependency>
+    <projectUrl>https://github.com/nanoFramework.TestPlatform</projectUrl>
+    <icon>images\nf-logo.png</icon>
+    <repository type="git" url="https://github.com/nanoFramework.TestPlatform" commit="$commit$" />
+    <copyright>Copyright (c) .NET Foundation and Contributors</copyright>    
+    <description>This package includes nanoFramework Test Framework to be used for Unit Tests in nanoFramework C# projects.</description>
+    <tags>nanoFramework C# csharp netmf netnf unittest </tags>
+    <packageTypes>
+      <packageType name="Dependency" />
+    </packageTypes>
+    <dependencies>
+      <dependency id="Microsoft.TestPlatform.ObjectModel" version="16.9.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="TestFramework\bin\Debug\nanoFramework.TestFramework*.*" target="lib" />
+    <file src="TestAdapter\bin\Debug\net4.6\nanoFramework.TestAdapter*.*" target="lib/net46" />
+    <file src="TestAdapter\bin\Debug\net4.6\nanoCLR\*.*" target="tools" />
+
+    <file src="UnitTestLauncher\bin\Debug\mscorlib.pe" target="tools" />
+    <file src="UnitTestLauncher\bin\Debug\mscorlib.dll" target="tools" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.pe" target="tools" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.dll" target="tools" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.pe" target="tools" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.exe" target="tools" />
+
+    <file src="..\assets\nf-logo.png" target="images" />
+    <file src="..\LICENSE.md" target="" />
+
+  </files>
+</package>
