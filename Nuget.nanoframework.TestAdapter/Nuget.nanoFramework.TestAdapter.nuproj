@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <Dependency Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
+      <Version>[14.0.0]</Version>
+      <TargetFramework>net461</TargetFramework>
+    </Dependency>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\TestAdapter\bin\$(Configuration)\nanoFramework.TestAdapter.dll">
+      <Link>build\_common\nanoFramework.TestAdapter.dll</Link>
+    </Content>
+    <Content Include="..\Build\nanoFramework.MSTest.TestAdapter.props">
+      <Link>build\nanoFramework10\nanoFramework.MSTest.TestAdapter.props</Link>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>9607C081-2415-465C-8424-1D8C28D4C0AC</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NuProjPath>..\packages\NuProj.0.20.4-beta\tools\</NuProjPath>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <PropertyGroup Label="Configuration">
+    <Id>nanoFramework.TestAdapter</Id>
+    <Version>1.0.4</Version>
+    <Title>nanoFramework.TestAdapter</Title>
+    <Authors>Jose Simoes - Ellerbach</Authors>
+    <Owners>Jose Simoes - Ellerbach</Owners>
+    <Summary>nanoFramework.TestAdapter</Summary>
+    <Description>nanoFramework.TestAdapter</Description>
+    <ReleaseNotes>
+    </ReleaseNotes>
+    <ProjectUrl>
+    </ProjectUrl>
+    <LicenseUrl>
+    </LicenseUrl>
+    <Copyright>Copyright © .NET nanoFramework</Copyright>
+    <Tags>nanoFramework.TestAdapter</Tags>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" />
+</Project>
