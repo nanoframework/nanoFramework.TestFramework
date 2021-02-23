@@ -61,6 +61,7 @@ jobs:
     
   - task: NuGetCommand@2
     displayName: NuGet restore
+    continueOnError: true
     inputs:
       restoreSolution: '$(solution)'
       feedsToUse: config
