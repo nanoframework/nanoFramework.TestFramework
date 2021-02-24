@@ -16,13 +16,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <Compile Include="../TestFramework/TestMethodAttribute.cs" />
-    <Compile Include="../TestFramework/TestClassAttribute.cs" />
-    <Compile Include="../TestFramework/SetupAttribute.cs" />
-    <Compile Include="../TestFramework/CleanupAttribute.cs" />
   </ItemGroup>
   <Target Name="SetNanoCLRLocation" AfterTargets="Build">
     <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)\nanoCLR" SkipUnchangedFiles="false">
     </Copy>
   </Target>
+  <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />
 </Project>

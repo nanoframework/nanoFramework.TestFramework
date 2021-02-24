@@ -7,7 +7,12 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.UnitTestLaunc
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.TestFramework", "source\TestFramework\nanoFramework.TestFramework.nfproj", "{D66A7774-AFAB-466B-9CFB-3485B02F4AF4}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestFrameworkShared", "source\TestFrameworkShared\TestFrameworkShared.shproj", "{55F048B5-6739-43C5-A93D-DB61DB8E912F}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		source\TestFrameworkShared\TestFrameworkShared.projitems*{55f048b5-6739-43c5-a93d-db61db8e912f}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
