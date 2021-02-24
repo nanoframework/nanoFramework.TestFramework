@@ -44,7 +44,7 @@ jobs:
     condition: not(variables['StartReleaseCandidate'])
     displayName: 'Install specific version of NuGet'
     inputs:
-      versionSpec: '5.6.0'
+      versionSpec: '5.8.0'
 
   - task: DotNetCoreCLI@2  
     condition: ne(variables['system.pullrequest.isfork'], true)
@@ -132,7 +132,7 @@ jobs:
     inputs:
       sourceFolder: $(Build.SourcesDirectory)
       Contents: |
-        **\nanoFramework*.nupkg
+        **\nanoFramework.TestFramework*.nupkg
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
       flattenFolders: true
 

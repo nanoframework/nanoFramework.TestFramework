@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
-    <id>nanoFramework.CoreLibrary</id>
+    <id>nanoFramework.TestFramework</id>
     <version>$version$</version>
     <title>nanoFramework.TestFramework</title>
     <authors>nanoFramework project contributors</authors>
