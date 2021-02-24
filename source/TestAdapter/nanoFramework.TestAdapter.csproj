@@ -6,6 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.9.0-preview-20210127-04" />
+    <PackageReference Include="nanoFramework.nanoCLR.Win32" Version="1.6.1-preview.223">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <Compile Include="../TestFramework/TestMethodAttribute.cs" />
     <Compile Include="../TestFramework/TestClassAttribute.cs" />
     <Compile Include="../TestFramework/SetupAttribute.cs" />

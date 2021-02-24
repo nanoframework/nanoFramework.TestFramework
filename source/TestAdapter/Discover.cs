@@ -1,4 +1,10 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+﻿//
+// Copyright (c) .NET Foundation and Contributors
+// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
+// See LICENSE file in the project root for full license information.
+//
+
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using nanoFramework.TestFramework;
@@ -10,6 +16,9 @@ using System.Reflection;
 
 namespace nanoFramework.TestPlatform.TestAdapter
 {
+    /// <summary>
+    /// A Test Discoverer class
+    /// </summary>
     [DefaultExecutorUri(TestsConstants.Executornano)]
     [FileExtension(".exe")]
     [FileExtension(".dll")]
@@ -18,6 +27,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private IMessageLogger _logger;
         private List<TestCase> _testCases;
 
+        /// <inheritdoc/>
         public void DiscoverTests(IEnumerable<string> sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -49,6 +59,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
             _logger.SendMessage(TestMessageLevel.Informational, "Finished adding files");
         }
 
+        /// <summary>
+        /// Find tests cases based on the source file
+        /// </summary>
+        /// <param name="source">the link on a file</param>
+        /// <returns>A list of test cases</returns>
         public static List<TestCase> FindTestCases(string source)
         {
             List<TestCase> testCases = new List<TestCase>();
@@ -91,7 +106,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                                         testCase.Source = source;
                                         testCase.ExecutorUri = new Uri(TestsConstants.Executornano);
                                         testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
-                                        testCase.Traits.Add(new Trait("nano", "test"));
+                                        testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute","")));
                                         testCases.Add(testCase);
                                     }
                                 }

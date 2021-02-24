@@ -20,7 +20,7 @@ namespace nanoFramework.TestFramework
         /// </summary>
         public static void Main()
         {
-            Debug.WriteLine("Hello from nanoFramework!");
+            Debug.WriteLine("Hello from nanoFrmaework UnitTestLauncher!");
 
             Assembly test = Assembly.Load("Test");
             Type[] allTypes = test.GetTypes();
@@ -46,6 +46,8 @@ namespace nanoFramework.TestFramework
 
         private static void RunTest(MethodInfo[] methods, Type attribToRun)
         {
+            long dt;
+            long totalTicks;
             foreach (var method in methods)
             {
                 var attribs = method.GetCustomAttributes(true);
@@ -55,8 +57,10 @@ namespace nanoFramework.TestFramework
                     {
                         try
                         {
+                            dt = DateTime.UtcNow.Ticks;
                             method.Invoke(null, null);
-                            Debug.WriteLine($"Test passed: {method.Name}");
+                            totalTicks = DateTime.UtcNow.Ticks - dt;
+                            Debug.WriteLine($"Test passed: {method.Name}, {totalTicks}");
                         }
                         catch (Exception ex)
                         {
