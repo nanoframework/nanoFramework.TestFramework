@@ -152,8 +152,8 @@ jobs:
       --filelist "$(Build.Repository.LocalPath)\config\filelist.txt" `
       --user "$(SignClientUser)" `
       --secret '$(SignClientSecret)' `
-      --name "$(nugetPackageName)" `
-      --description "$(nugetPackageName)" `
+      --name "Test Framework" `
+      --description "Test Framework" `
       --descriptionUrl "https://github.com/$env:Build_Repository_Name"
     displayName: Sign packages
     continueOnError: true
@@ -203,7 +203,7 @@ jobs:
       githubReleaseNotes: 'add description here'
       githubTargetCommitsh: $(Build.SourceVersion)
       githubReleaseDraft: false
-      githubReleasePrerelease: false
+      githubReleasePrerelease: true
       githubReuseDraftOnly: false
       githubReuseRelease: true
       githubEditRelease: true
