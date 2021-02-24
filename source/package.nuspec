@@ -11,6 +11,7 @@
     <releaseNotes></releaseNotes>
     <developmentDependency>true</developmentDependency>
     <projectUrl>https://github.com/nanoFramework.TestPlatform</projectUrl>
+    <iconUrl>https://secure.gravatar.com/avatar/97d0e092247f0716db6d4b47b7d1d1ad</iconUrl>
     <icon>images\nf-logo.png</icon>
     <repository type="git" url="https://github.com/nanoFramework.TestPlatform" commit="$commit$" />
     <copyright>Copyright (c) .NET Foundation and Contributors</copyright>    
@@ -19,13 +20,10 @@
     <packageTypes>
       <packageType name="Dependency" />
     </packageTypes>
-    <dependencies>
-      <dependency id="Microsoft.TestPlatform.ObjectModel" version="16.9.1" />
-    </dependencies>
   </metadata>
   <files>
     <file src="TestFramework\bin\Debug\nanoFramework.TestFramework*.*" target="lib" />
-    <file src="TestAdapter\bin\Debug\net4.6\nanoFramework.TestAdapter*.*" target="lib/net46" />
+    <file src="TestAdapter\bin\Debug\net4.6\*.dll" target="lib/net46" />
     <file src="TestAdapter\bin\Debug\net4.6\nanoCLR\*.*" target="tools" />
 
     <file src="UnitTestLauncher\bin\Debug\mscorlib.pe" target="tools" />
