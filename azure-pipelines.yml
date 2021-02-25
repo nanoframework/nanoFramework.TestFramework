@@ -253,10 +253,10 @@ jobs:
       githubReleaseTitle: '.NET nanoFramework Unit Test Framework v$(GitBuildVersionSimple)'
       githubReleaseNotes: 'add description here'
       githubTargetCommitsh: $(Build.SourceVersion)
-      githubReleaseDraft: false
-      githubReleasePrerelease: true
+      githubReleaseDraft: true
+      githubReleasePrerelease: false
       githubReuseDraftOnly: false
-      githubReuseRelease: true
+      githubReuseRelease: false
       githubEditRelease: true
       githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), not( startsWith(variables['Build.SourceBranch'], 'refs/tags/v') ) )
