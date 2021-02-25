@@ -1,26 +1,26 @@
 nanoFramework Unit Test platform
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nanoframework_nanoframework.TestPlatform&metric=alert_status)](https://sonarcloud.io/dashboard?id=nanoframework_nanoframework.TestPlatform) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=nanoframework_nanoframework.TestPlatform&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=nanoframework_nanoframework.TestPlatform) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![NuGet](https://img.shields.io/nuget/dt/nanoframework.TestPlatform.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestPlatform/) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/nanoframework/Home/blob/master/CONTRIBUTING.md) [![Discord](https://img.shields.io/discord/478725473862549535.svg?logo=discord&logoColor=white&label=Discord&color=7289DA)](https://discord.gg/gCyBu8T)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![NuGet](https://img.shields.io/nuget/dt/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/nanoframework/Home/blob/master/CONTRIBUTING.md) [![Discord](https://img.shields.io/discord/478725473862549535.svg?logo=discord&logoColor=white&label=Discord&color=7289DA)](https://discord.gg/gCyBu8T)
 
 ![nanoFramework logo](https://github.com/nanoframework/Home/blob/master/resources/logo/nanoFramework-repo-logo.png)
 
 -----
 
-# Welcome to the **nanoFramework** TestPlatform repository!
+# Welcome to the **nanoFramework** Unit Test Framework repository!
 
 ## Build status
 
 | Component | Build Status | NuGet Package |
 |:-|---|---|
-| nanoframework.TestPlatform | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestPlatform/_apis/build/status/nanoframework.lib-nanoframework.TestPlatform?branchName=master)](https://dev.azure.com/nanoframework/nanoframework.TestPlatform/_build/latest?definitionId=65&branchName=master) | [![NuGet](https://img.shields.io/nuget/v/nanoframework.TestPlatform.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestPlatform/) |
-| nanoframework.TestPlatform (preview) | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestPlatform/_apis/build/status/nanoframework.lib-nanoframework.TestPlatform?branchName=develop)](https://dev.azure.com/nanoframework/nanoframework.TestPlatform/_build/latest?definitionId=65&branchName=develop) | [![](https://badgen.net/badge/NuGet/preview/D7B023?icon=https://simpleicons.now.sh/azuredevops/fff)](https://dev.azure.com/nanoframework/feed/_packaging?_a=package&feed=sandbox&package=nanoframework.TestPlatform&protocolType=NuGet&view=overview) |
+| nanoframework.TestFramework | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoframework.nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=master)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=master) | [![NuGet](https://img.shields.io/nuget/v/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
+| nanoframework.TestFramework (preview) | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoframework.nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop) | [![](https://badgen.net/badge/NuGet/preview/D7B023?icon=https://simpleicons.now.sh/azuredevops/fff)](https://dev.azure.com/nanoframework/feed/_packaging?_a=package&feed=sandbox&package=nanoframework.TestFramework&protocolType=NuGet&view=overview) |
 
-## What is nanoFramework.TestPlatform
+## What is the .NET nanoFramework Test Framework
 
-nanoFramework.TestPlatform is a Unit Test platform dedicated to nanoFramework! It has all the benefits of what you're used to when using Microsoft Test platform for .NET or XUnit or any other!
+nanoFramework TestFramework it's a Unit Test framework dedicated to .NET nanoFramework! It has all the benefits of what you're used to when using Microsoft Test platform for .NET or XUnit or any other!
 
-The framework includes multiple elements that are including in a single nuget!
+The framework includes multiple elements that are distributed in a single NuGet package!
 
-- `nanoFramework.TestPlatform` which contains the attributes to decorate your code and the `Assert` classes to check that you're code is properly doing what's expected.
+- `nanoFramework.TestFramework` which contains the attributes to decorate your code and the `Assert` classes to check that you're code is properly doing what's expected.
 - `nanoFramework.UnitTestLauncher` which is the engine launching and managing the Unit Tests.
 - `nanoFramework.TestAdapter` which is the Visual Studio Test platform adapter, allowing to have the test integration in Visual Studio.
 
@@ -32,9 +32,9 @@ And the integration will point you up to your code for successful or failed test
 
 ![test integration failed](assets/test-integration-vs-failed.jpg)
 
-## Usage of nanoFramework.TestPlatform
+## Usage of .NET nanoFramework Test Framework
 
-Simply add the `nanoFramework.TestPlatform` nuget to your project and you're good to go!
+Simply add the `nanoFramework.TestFramework` nuget to your project and you're good to go!
 
 ![test nuget](assets/test-nuget-test-framework.jpg)
 
@@ -66,7 +66,7 @@ The list of contributors to this project can be found at [CONTRIBUTORS](https://
 
 ## License
 
-The **nanoFramework** WebServer library is licensed under the [MIT license](LICENSE.md).
+The .NET **nanoFramework** Test Framework is licensed under the [MIT license](LICENSE.md).
 
 ## Code of Conduct
 
