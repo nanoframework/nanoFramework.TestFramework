@@ -11,7 +11,7 @@ using System.Reflection;
 namespace nanoFramework.TestFramework
 {
     /// <summary>
-    /// This class os a unit test launcher for nanoFramework
+    /// This class is a unit test launcher for nanoFramework
     /// </summary>
     public class UnitTestLauncher
     {
@@ -20,23 +20,29 @@ namespace nanoFramework.TestFramework
         /// </summary>
         public static void Main()
         {
-            Debug.WriteLine("Hello from nanoFrmaework UnitTestLauncher!");
+            Assembly test = Assembly.Load("NFUnitTest");
 
-            Assembly test = Assembly.Load("Test");
             Type[] allTypes = test.GetTypes();
+
             foreach (var type in allTypes)
             {
                 if (type.IsClass)
                 {
                     var typeAttribs = type.GetCustomAttributes(true);
+
                     foreach (var typeAttrib in typeAttribs)
                     {
                         if (typeof(TestClassAttribute) == typeAttrib.GetType())
                         {
                             var methods = type.GetMethods();
+
                             // First we look at Setup
                             RunTest(methods, typeof(SetupAttribute));
+
+                            // then we run the tests
                             RunTest(methods, typeof(TestMethodAttribute));
+
+                            // last we handle Cleanup
                             RunTest(methods, typeof(CleanupAttribute));
                         }
                     }
@@ -44,13 +50,17 @@ namespace nanoFramework.TestFramework
             }
         }
 
-        private static void RunTest(MethodInfo[] methods, Type attribToRun)
+        private static void RunTest(
+            MethodInfo[] methods,
+            Type attribToRun)
         {
             long dt;
             long totalTicks;
+
             foreach (var method in methods)
             {
                 var attribs = method.GetCustomAttributes(true);
+
                 foreach (var attrib in attribs)
                 {
                     if (attribToRun == attrib.GetType())
@@ -60,6 +70,7 @@ namespace nanoFramework.TestFramework
                             dt = DateTime.UtcNow.Ticks;
                             method.Invoke(null, null);
                             totalTicks = DateTime.UtcNow.Ticks - dt;
+
                             Debug.WriteLine($"Test passed: {method.Name}, {totalTicks}");
                         }
                         catch (Exception ex)
