@@ -6,7 +6,6 @@
 
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using nanoFramework.TestAdapter;
 using System;
 using System.Collections.Generic;
@@ -29,16 +28,26 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private const string TestFailed = "Test failed: ";
         private const string Exiting = "Exiting.";
         private const string Done = "Done.";
-        private bool _cancel = false;
         private Settings _settings;
         private LogMessenger _logger;
+        private Process _nanoClr;
 
         private IFrameworkHandle _frameworkHandle = null;
 
         /// <inheritdoc/>
         public void Cancel()
         {
-            _cancel = true;
+            if (!_nanoClr.HasExited)
+            {
+                _logger.LogMessage(
+                    "Canceling to test process. Attempting to kill nanoCLR process...",
+                    Settings.LoggingLevel.Verbose);
+
+                _nanoClr.Kill();
+                // Wait 5 seconds maximum
+                _nanoClr.WaitForExit(5000);
+            }
+
             return;
         }
 
@@ -47,7 +56,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
 
-             _logger = new LogMessenger(frameworkHandle, settingsProvider);
+            _logger = new LogMessenger(frameworkHandle, settingsProvider);
 
             if (settingsProvider != null)
             {
@@ -126,10 +135,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 $"Timeout set to {runTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
-            bool isStillRunning = true;
-
             List<TestResult> results = new List<TestResult>();
-            
+
             foreach (var test in tests)
             {
                 TestResult result = new TestResult(test) { Outcome = TestOutcome.None };
@@ -141,14 +148,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 Settings.LoggingLevel.Verbose);
 
             var source = tests.First().Source;
-            var nfUnitTestLauncherLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe"); 
+            var nfUnitTestLauncherLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe");
             var workingDirectory = Path.GetDirectoryName(nfUnitTestLauncherLocation);
             var mscorlibLocation = source.Replace(Path.GetFileName(source), "mscorlib.pe");
             var nfTestFrameworkLocation = source.Replace(Path.GetFileName(source), "nanoFramework.TestFramework.pe");
             var nfAssemblyUnderTestLocation = source.Replace(".dll", ".pe");
 
             // prepare the process start of the WIN32 nanoCLR
-            Process nanoClr = new Process();
+            _nanoClr = new Process();
 
             AutoResetEvent outputWaitHandle = new AutoResetEvent(false);
             AutoResetEvent errorWaitHandle = new AutoResetEvent(false);
@@ -161,14 +168,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 // 1. unit test launcher
                 // 2. mscorlib
                 // 3. test framework
-                // 2. test application
+                // 4. test application
                 string parameter = $"-load {nfUnitTestLauncherLocation} -load {mscorlibLocation} -load {nfTestFrameworkLocation} -load {nfAssemblyUnderTestLocation}";
 
                 _logger.LogMessage(
                     "Launching process with nanoCLR...",
                     Settings.LoggingLevel.Verbose);
 
-                nanoClr.StartInfo = new ProcessStartInfo(TestObjectHelper.GetNanoClrLocation(), parameter)
+                _nanoClr.StartInfo = new ProcessStartInfo(TestObjectHelper.GetNanoClrLocation(), parameter)
                 {
                     WorkingDirectory = workingDirectory,
                     UseShellExecute = false,
@@ -177,7 +184,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 };
 
                 // launch nanoCLR
-                if (!nanoClr.Start())
+                if (!_nanoClr.Start())
                 {
                     results.First().Outcome = TestOutcome.Failed;
                     results.First().ErrorMessage = "Failed to start nanoCLR";
@@ -186,7 +193,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         "Failed to start nanoCLR!");
                 }
 
-                nanoClr.OutputDataReceived += (sender, e) =>
+                _nanoClr.OutputDataReceived += (sender, e) =>
                 {
                     if (e.Data == null)
                     {
@@ -198,7 +205,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                 };
 
-                nanoClr.ErrorDataReceived += (sender, e) =>
+                _nanoClr.ErrorDataReceived += (sender, e) =>
                 {
                     if (e.Data == null)
                     {
@@ -210,18 +217,18 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                 };
 
-                nanoClr.Start();
+                _nanoClr.Start();
 
-                nanoClr.BeginOutputReadLine();
-                nanoClr.BeginErrorReadLine();
+                _nanoClr.BeginOutputReadLine();
+                _nanoClr.BeginErrorReadLine();
 
                 _logger.LogMessage(
-                    $"nanoCLR started @ process ID: {nanoClr.Id}",
+                    $"nanoCLR started @ process ID: {_nanoClr.Id}",
                     Settings.LoggingLevel.Detailed);
 
 
                 // wait for exit, no worries about the outcome
-                nanoClr.WaitForExit(runTimeout);
+                _nanoClr.WaitForExit(runTimeout);
 
                 var outputStrings = Regex.Split(output.ToString(), @"((\r)+)?(\n)+((\r)+)?").Where(m => !string.IsNullOrEmpty(m));
 
@@ -238,7 +245,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0].Split(' ')[0];
                         string ticks = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length + method.Length + 2);
                         long ticksNum = 0;
-                        
+
                         try
                         {
                             ticksNum = Convert.ToInt64(ticks);
@@ -261,7 +268,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // Format is "Test passed: MethodName, Exception message";
                         string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0].Split(' ')[0];
                         string exception = line.Substring(line.IndexOf(TestFailed) + TestPassed.Length + method.Length + 2);
-                        
+
                         // Find the test
                         var res = results.Where(m => m.TestCase.DisplayName == method);
                         if (res.Any())
@@ -296,14 +303,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
             finally
             {
-                if (!nanoClr.HasExited)
+                if (!_nanoClr.HasExited)
                 {
                     _logger.LogMessage(
                         "Attempting to kill nanoCLR process...",
                         Settings.LoggingLevel.Verbose);
 
-                    nanoClr.Kill();
-                    nanoClr.WaitForExit(runTimeout);
+                    _nanoClr.Kill();
+                    _nanoClr.WaitForExit(runTimeout);
                 }
             }
 

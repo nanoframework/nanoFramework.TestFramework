@@ -80,6 +80,9 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return settings;
         }
 
+        /// <summary>
+        /// The log level
+        /// </summary>
         public enum LoggingLevel
         {
             None = 0,

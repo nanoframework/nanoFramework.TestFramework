@@ -1,11 +1,12 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
+﻿//
+// Copyright (c) .NET Foundation and Contributors
+// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
+// See LICENSE file in the project root for full license information.
+//
+
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using nanoFramework.TestPlatform.TestAdapter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nanoFramework.TestAdapter
 {
@@ -15,6 +16,11 @@ namespace nanoFramework.TestAdapter
         private IMessageLogger _logger = null;
         private Settings _settings = null;
 
+        /// <summary>
+        /// A log messenger to log during the discovery and executor process
+        /// </summary>
+        /// <param name="frameworkHandle">The framework handle</param>
+        /// <param name="provider">The settings provider</param>
         public LogMessenger(
             IFrameworkHandle frameworkHandle,
             SettingsProvider provider)
@@ -25,6 +31,11 @@ namespace nanoFramework.TestAdapter
                 _settings = provider.Settings;
             }
         }
+        /// <summary>
+        /// A log messenger to log during the discovery and executor process
+        /// </summary>
+        /// <param name="logger">A platform logger</param>
+        /// <param name="provider">The settings provider</param>
 
         public LogMessenger(
             IMessageLogger logger,
@@ -38,6 +49,10 @@ namespace nanoFramework.TestAdapter
             }
         }
 
+        /// <summary>
+        /// Log a panic message
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public void LogPanicMessage(
             string message)
         {
@@ -47,6 +62,12 @@ namespace nanoFramework.TestAdapter
                 true);
         }
 
+        /// <summary>
+        /// Log a message
+        /// </summary>
+        /// <param name="message">The message to log</param>
+        /// <param name="logLevel">The log level</param>
+        /// <param name="panicMessage">Is it a panic message</param>
         public void LogMessage(
             string message,
             Settings.LoggingLevel logLevel,
