@@ -7,6 +7,7 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+using nanoFramework.TestAdapter;
 using nanoFramework.TestFramework;
 using System;
 using System.Collections.Generic;
@@ -24,29 +25,63 @@ namespace nanoFramework.TestPlatform.TestAdapter
     [FileExtension(".dll")]
     public class TestDiscoverer : ITestDiscoverer
     {
-        private IMessageLogger _logger;
+        private LogMessenger _logger;
         private List<TestCase> _testCases;
 
         /// <inheritdoc/>
         public void DiscoverTests(IEnumerable<string> sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _testCases = new List<TestCase>();
 
-            _logger.SendMessage(TestMessageLevel.Informational, "Hello from nF DiscoverTests");
+            var settingsProvider = discoveryContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+
+            _logger = new LogMessenger(
+                logger,
+                settingsProvider);
+
+            if (settingsProvider != null)
+            {
+                _logger.LogMessage(
+                    "Getting ready to discover tests...",
+                    Settings.LoggingLevel.Detailed);
+
+                _logger.LogMessage(
+                    "Settings parsed",
+                    Settings.LoggingLevel.Verbose);
+            }
+            else
+            {
+                _logger.LogMessage(
+                    "Getting ready to discover tests...",
+                    Settings.LoggingLevel.Detailed);
+
+                _logger.LogMessage(
+                    "No settings for nanoFramework adapter",
+                    Settings.LoggingLevel.Verbose);
+            }
+
             foreach (var source in sources)
             {
-                _logger.SendMessage(TestMessageLevel.Informational, $"  New file processed: {source}");
+                _logger.LogMessage(
+                    $"  New file processed: {source}",
+                    Settings.LoggingLevel.Detailed);
+
                 if (!File.Exists(source))
                 {
-                    _logger.SendMessage(TestMessageLevel.Error, $"  File doesn't exist: {source}");
+                    _logger.LogMessage(
+                        $"  File doesn't exist: {source}",
+                        Settings.LoggingLevel.Detailed);
+
                     continue;
                 }
 
                 var cases = FindTestCases(source);
                 if (cases.Count > 0)
                 {
-                    _logger.SendMessage(TestMessageLevel.Informational, $"  Adding {cases.Count} new tests");
+                    _logger.LogMessage(
+                        $"  Adding {cases.Count} new tests",
+                        Settings.LoggingLevel.Detailed);
+
                     _testCases.AddRange(cases);
                 }
             }
@@ -54,9 +89,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
             foreach (var testCase in _testCases)
             {
                 discoverySink.SendTestCase(testCase);
-            }            
+            }
 
-            _logger.SendMessage(TestMessageLevel.Informational, "Finished adding files");
+            _logger.LogMessage(
+                "Finished adding files",
+                Settings.LoggingLevel.Detailed);
         }
 
         /// <summary>
@@ -104,7 +141,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                                     {
                                         var testCase = GetFileNameAndLineNumber(allCsFils, type, method);
                                         testCase.Source = source;
-                                        testCase.ExecutorUri = new Uri(TestsConstants.Executornano);
+                                        testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
                                         testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
                                         testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute","")));
                                         testCases.Add(testCase);
