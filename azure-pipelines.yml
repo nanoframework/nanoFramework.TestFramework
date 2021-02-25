@@ -180,33 +180,33 @@ jobs:
       publishFeedCredentials: 'AzureArtifacts-$(System.TeamProject)'
       allowPackageConflicts: true
 
-  # # push NuGet class lib package to NuGet (always happens except on PR builds)
-  # - task: NuGetCommand@2
-  #   condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), ne( variables['StartReleaseCandidate'], true ) )
-  #   continueOnError: true
-  #   displayName: Push NuGet packages to NuGet
-  #   inputs:
-  #     command: push
-  #     nuGetFeedType: external
-  #     allowPackageConflicts: true
-  #     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-  #     publishFeedCredentials: 'NuGet-$(System.TeamProject)'
+  # push NuGet class lib package to NuGet (always happens except on PR builds)
+  - task: NuGetCommand@2
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), ne( variables['StartReleaseCandidate'], true ) )
+    continueOnError: true
+    displayName: Push NuGet packages to NuGet
+    inputs:
+      command: push
+      nuGetFeedType: external
+      allowPackageConflicts: true
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      publishFeedCredentials: 'NuGet-$(System.TeamProject)'
 
-  # # create or update GitHub release
-  # - task: GitHubReleasePublish@1
-  #   inputs:
-  #     githubEndpoint: 'nanoFramework'
-  #     githubOwner: 'nanoframework'
-  #     githubRepositoryName: 'nanoFramework.TestPlatform'
-  #     githubTag: v$(GitBuildVersionSimple)
-  #     githubReleaseTitle: 'nanoFramework Test Framework v$(GitBuildVersionSimple)'
-  #     githubReleaseNotes: 'add description here'
-  #     githubTargetCommitsh: $(Build.SourceVersion)
-  #     githubReleaseDraft: false
-  #     githubReleasePrerelease: true
-  #     githubReuseDraftOnly: false
-  #     githubReuseRelease: true
-  #     githubEditRelease: true
-  #     githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-  #   condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), not( startsWith(variables['Build.SourceBranch'], 'refs/tags/v') ) )
-  #   displayName: Create/Update GitHub release
+  # create or update GitHub release
+  - task: GitHubReleasePublish@1
+    inputs:
+      githubEndpoint: 'nanoFramework'
+      githubOwner: 'nanoframework'
+      githubRepositoryName: 'nanoFramework.TestPlatform'
+      githubTag: v$(GitBuildVersionSimple)
+      githubReleaseTitle: '.NET nanoFramework Unit Test Framework v$(GitBuildVersionSimple)'
+      githubReleaseNotes: 'add description here'
+      githubTargetCommitsh: $(Build.SourceVersion)
+      githubReleaseDraft: false
+      githubReleasePrerelease: true
+      githubReuseDraftOnly: false
+      githubReuseRelease: true
+      githubEditRelease: true
+      githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), not( startsWith(variables['Build.SourceBranch'], 'refs/tags/v') ) )
+    displayName: Create/Update GitHub release
