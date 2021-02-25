@@ -18,8 +18,59 @@ resources:
 
 jobs:
 
+##############################
+- job: Get_Build_Flags
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  - checkout: self
+    fetchDepth: 1
+
+  # get commit message
+  - powershell: |
+
+      # default to false
+      $update = $false
+
+      if($env:Build_Reason -eq 'PullRequest')
+      {
+        # PR build, nothing interesting in commit message
+      }
+      else
+      {
+        # build is not from a PR
+
+        # get commit ID
+        $commitId = git rev-parse HEAD
+        
+        # get PR associate with commit
+        $prUrl = "https://api.github.com/repos/nanoframework/nanoFramework.TestFramework/commits/$commitId/pulls"
+        $commit = Invoke-RestMethod -Uri $prUrl -ContentType "application/json" -Headers @{"Accept"="application/vnd.github.groot-preview+json"} -Method GET
+
+        if($commit -ne $null)
+        {
+          # there is a PR, check labels
+          $updateDependents = $commit.labels | where {$_.Name -eq 'CI: Update Dependents'}
+          if($updateDependents -ne $null)
+          {
+            $update = $true
+          }
+        }
+      }
+
+      # set variable to foward to jobs
+      echo "##vso[task.setvariable variable=RUN_UPDATE_DEPENDENTS;isOutput=true]$update"
+    name: GetPRLabels
+    displayName:  Check build labels
+
+#########################################################
 # build 
 - job: Build_Test_Framework
+  condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
+  
+  dependsOn:
+    - Get_Build_Flags
 
   pool:
     vmImage: 'windows-2019'
@@ -210,3 +261,61 @@ jobs:
       githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], ''), not( startsWith(variables['Build.SourceBranch'], 'refs/tags/v') ) )
     displayName: Create/Update GitHub release
+
+##############################
+- job: Update_Dependents
+  condition: and( or( eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'), eq(variables['UPDATE_DEPENDENTS'], 'true') ), not( startsWith(variables['Build.SourceBranch'], 'refs/tags/v') ) )
+
+  dependsOn:
+    - Get_Build_Flags
+    - Build_MDP
+
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  # need this here in order to persist GitHub credentials 
+  - checkout: self
+    fetchDepth: 100
+  
+  - template: azure-pipelines-templates/install-nbgv-tool.yml@templates
+  
+  - task: NuGetToolInstaller@0
+    displayName: 'Install specific version of NuGet'
+    inputs:
+      versionSpec: '5.8.0'
+
+  - script: nbgv cloud -a -c
+    condition: succeeded()
+    displayName: Set build number
+
+  # update dependencies
+  - task: PowerShell@2
+    displayName: Update dependent class libs
+    inputs:
+      targetType: filePath
+      filePath: azure-pipelines/update-dependencies.ps1
+    env:
+      MY_GITHUB_TOKEN: $(GitHubToken)
+
+##################################
+# report build failure to Discord
+- job: Report_Build_Failure
+  dependsOn:
+  - Build_MDP
+  condition: failed('Build_MDP')
+
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+
+  - checkout: self
+    fetchDepth: 1
+
+  # step from template @ nf-tools repo
+  - template: azure-pipelines-templates/discord-webhook.yml@templates  
+    parameters:
+      status: 'failure'
+      webhookUrl: '$(DiscordWebhook)'
+      message: ''
