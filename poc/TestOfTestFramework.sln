@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{777D06D5-FABC-4469-AD0D-C8F1378DF635}"
-EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Test", "TestOfTestFramework\Test.nfproj", "{FBD29C49-D7DC-425E-BAD1-1AE63484A6CD}"
 EndProject
 Global
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{777D06D5-FABC-4469-AD0D-C8F1378DF635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{777D06D5-FABC-4469-AD0D-C8F1378DF635}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{777D06D5-FABC-4469-AD0D-C8F1378DF635}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{777D06D5-FABC-4469-AD0D-C8F1378DF635}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBD29C49-D7DC-425E-BAD1-1AE63484A6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FBD29C49-D7DC-425E-BAD1-1AE63484A6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBD29C49-D7DC-425E-BAD1-1AE63484A6CD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
