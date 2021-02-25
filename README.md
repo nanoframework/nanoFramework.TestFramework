@@ -52,7 +52,9 @@ To have more details on usage of the framework, please refer to the detailed [do
 
 This repository contains the source of the core elements. You'll find them in `sources` directory. The Visual Studio projects in the root directory will open those elements. 
 
-It does contains a simple example which are the Unit Tests for the test Framework itself in the `poc` directory.
+## Sample pack
+
+You can find on our samples repo a [sample pack](https://github.com/nanoframework/Samples/tree/master/samples/UnitTest) with projects demoing how to use the Unit Test Framework.
 
 ## Feedback and documentation
 
