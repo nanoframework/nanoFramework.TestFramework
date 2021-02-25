@@ -141,11 +141,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 Settings.LoggingLevel.Verbose);
 
             var source = tests.First().Source;
-            var nfTestAppLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe"); // TestObjectHelper.GetTestPath("UnitTestLauncher", "pe");
-            var workingDirectory = Path.GetDirectoryName(nfTestAppLocation);
-            var mscorlibLocation = source.Replace(Path.GetFileName(source), "mscorlib.pe");  //nfTestAppLocation.Replace("UnitTestLauncher.pe", "mscorlib.pe");
-            var nfTestClassLibLocation = source.Replace(Path.GetFileName(source), "nanoFramework.TestFramework.pe"); // TestObjectHelper.GetTestPath("nanoFramework.TestFramework", "pe");
-            var nfTestOfTestClassLibLocation = source.Replace(".dll", ".pe"); //TestObjectHelper.GetTestPath(Path.GetFileNameWithoutExtension(tests.First().Source), "pe");
+            var nfUnitTestLauncherLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe"); 
+            var workingDirectory = Path.GetDirectoryName(nfUnitTestLauncherLocation);
+            var mscorlibLocation = source.Replace(Path.GetFileName(source), "mscorlib.pe");
+            var nfTestFrameworkLocation = source.Replace(Path.GetFileName(source), "nanoFramework.TestFramework.pe");
+            var nfAssemblyUnderTestLocation = source.Replace(".dll", ".pe");
 
             // prepare the process start of the WIN32 nanoCLR
             Process nanoClr = new Process();
@@ -158,10 +158,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
             try
             {
                 // prepare parameters to load nanoCLR, include:
-                // 1. mscorlib
+                // 1. unit test launcher
+                // 2. mscorlib
+                // 3. test framework
                 // 2. test application
-                // 3. unit test launcher
-                string parameter = $"-load {nfTestAppLocation} -load {mscorlibLocation} -load {nfTestClassLibLocation} -load {nfTestOfTestClassLibLocation}";
+                string parameter = $"-load {nfUnitTestLauncherLocation} -load {mscorlibLocation} -load {nfTestFrameworkLocation} -load {nfAssemblyUnderTestLocation}";
 
                 _logger.LogMessage(
                     "Launching process with nanoCLR...",
