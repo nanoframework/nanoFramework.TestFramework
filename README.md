@@ -48,6 +48,11 @@ You can then run all the tests and you'll get the result:
 
 To have more details on usage of the framework, please refer to the detailed [documentation here](https://docs.nanoframework.net/).
 
+## Know limitations
+
+.NET nanoFramework Test Framework is supported by VS2019, only. We have no plans to address the shortcomings that prevent it from being used in VS2017.
+Despite of that you can still run Unit Tests on VS2017 but only from the VS Test console.
+
 ## What you'll find in this repository
 
 This repository contains the source of the core elements. You'll find them in `sources` directory. The Visual Studio projects in the root directory will open those elements. 
