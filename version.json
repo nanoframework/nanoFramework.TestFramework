@@ -4,7 +4,7 @@
   "assemblyVersion": {
     "precision": "build"
   },
-  "versionHeightOffset": 20,
+  "versionHeightOffset": 40,
   "semVer1NumericIdentifierPadding": 3,
   "nuGetPackageVersion": {
     "semVer": 2.0
