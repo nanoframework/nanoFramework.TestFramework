@@ -21,7 +21,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
     /// <summary>
     /// An Executor class
     /// </summary>
-    [ExtensionUri(TestsConstants.Executornano)]
+    [ExtensionUri(TestsConstants.NanoExecutor)]
     class Executor : ITestExecutor
     {
         private const string TestPassed = "Test passed: ";

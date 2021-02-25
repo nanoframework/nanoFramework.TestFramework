@@ -19,7 +19,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
     /// <summary>
     /// A Test Discoverer class
     /// </summary>
-    [DefaultExecutorUri(TestsConstants.Executornano)]
+    [DefaultExecutorUri(TestsConstants.NanoExecutor)]
     [FileExtension(".exe")]
     [FileExtension(".dll")]
     public class TestDiscoverer : ITestDiscoverer
