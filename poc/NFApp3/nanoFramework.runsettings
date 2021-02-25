@@ -1,9 +1,0 @@
-<RunSettings>
-  <RunConfiguration>
-    <TargetPlatform>X86</TargetPlatform>
-    <DesignMode>False</DesignMode>
-    <TargetFrameworkVersion>Framework40</TargetFrameworkVersion>
-    <CollectSourceInformation>True</CollectSourceInformation>
-    <TestSessionTimeout>10000</TestSessionTimeout>
-  </RunConfiguration>
-</RunSettings>

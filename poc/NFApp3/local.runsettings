@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RunSettings>
-  <RunConfiguration>
-    <TargetPlatform>X86</TargetPlatform>
-    <TargetFrameworkVersion>.NETFramework,Version=v4.6.1</TargetFrameworkVersion>
-  </RunConfiguration>
-</RunSettings>
