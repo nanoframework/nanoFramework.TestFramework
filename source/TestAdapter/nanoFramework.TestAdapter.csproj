@@ -18,7 +18,7 @@
     </PackageReference>
   </ItemGroup>
   <Target Name="SetNanoCLRLocation" AfterTargets="Build">
-    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)\nanoCLR" SkipUnchangedFiles="false">
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false">
     </Copy>
   </Target>
   <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />

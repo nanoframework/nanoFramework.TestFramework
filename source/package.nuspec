@@ -23,10 +23,10 @@
   </metadata>
   <files>
     <file src="TestAdapter\bin\Debug\net4.6\*.dll" target="lib/net46" />
-    <file src="TestAdapter\bin\Debug\net4.6\nanoCLR\*.*" target="lib/net46" />
+    <file src="TestAdapter\bin\Debug\net4.6\*.*" target="lib/net46" />
 
-    <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.pe" target="lib" />
-    <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.pe" target="lib" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.*" target="lib" />
+    <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.*" target="lib" />
 
     <file src="..\assets\nf-logo.png" target="images" />
     <file src="..\LICENSE.md" target="" />
