@@ -28,6 +28,8 @@
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.*" target="lib" />
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.*" target="lib" />
 
+    <file src="runsettings\nano.runsettings" target="content" />
+
     <file src="..\assets\nf-logo.png" target="images" />
     <file src="..\LICENSE.md" target="" />
 
