@@ -166,7 +166,7 @@ namespace nanoFramework.TestFramework.Test
     {
         public void NothingReally()
         {
-            Debug.WriteLine("Test failed: This would never get thru");
+            Debug.WriteLine("Test failed: This would never get through");
         }
     }
 }
