@@ -37,8 +37,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public static string GetNanoClrLocation()
         {
             var thisAssemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var nanoClrDir = Path.Combine(thisAssemblyDir, "nanoClr");
-            var nanoClrFullPath = Path.Combine(nanoClrDir, "nanoFramework.nanoCLR.exe");
+            var nanoClrFullPath = Path.Combine(thisAssemblyDir, "nanoFramework.nanoCLR.exe");
 
             return nanoClrFullPath;
         }
