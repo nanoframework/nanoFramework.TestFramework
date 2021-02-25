@@ -268,7 +268,7 @@ jobs:
 
   dependsOn:
     - Get_Build_Flags
-    - Build_MDP
+    - Build_Test_Framework
 
   pool:
     vmImage: 'windows-2019'
@@ -302,8 +302,8 @@ jobs:
 # report build failure to Discord
 - job: Report_Build_Failure
   dependsOn:
-  - Build_MDP
-  condition: failed('Build_MDP')
+  - Build_Test_Framework
+  condition: failed('Build_Test_Framework')
 
   pool:
     vmImage: 'windows-2019'
