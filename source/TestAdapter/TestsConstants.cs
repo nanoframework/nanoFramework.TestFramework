@@ -9,6 +9,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
     public class TestsConstants
     {
         public const string Executornano = "executor://nanoFrameworkTestExecutor";
-        public const string SettingsName = "nanoFrameworkTest";
+        public const string SettingsName = "nanoFrameworkAdapter";
     }
 }
