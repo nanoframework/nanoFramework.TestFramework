@@ -30,6 +30,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public string RealHarwarePort { get; set; } = string.Empty;
 
         /// <summary>
+        /// How long maximum the tests can run.
+        /// </summary>
+        /// <remarks>Make sure to adjust the default value in .runsettings first</remarks>
+        public LoggingLevel Logging { get; set; } = LoggingLevel.None;
+
+        /// <summary>
         /// Get settings from an XML node
         /// </summary>
         /// <param name="node"></param>
@@ -60,9 +66,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     settings.RealHarwarePort = realhardport.Value;
                 }
+
+                var loggingLevel = node.SelectSingleNode(nameof(Logging))?.FirstChild;
+                if (loggingLevel != null && loggingLevel.NodeType == XmlNodeType.Text)
+                {
+                    if (Enum.TryParse(realhardport.Value, out LoggingLevel logging))
+                    {
+                        settings.Logging = logging;
+                    }
+                }
             }
 
             return settings;
+        }
+
+        public enum LoggingLevel
+        {
+            None = 0,
+
+            Detailed,
+
+            Verbose,
+
+            Error
         }
     }
 }
