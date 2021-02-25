@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+﻿//
+// Copyright (c) .NET Foundation and Contributors
+// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
+// See LICENSE file in the project root for full license information.
+//
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace nanoFramework.TestPlatform.TestAdapter
@@ -30,9 +31,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public string RealHarwarePort { get; set; } = string.Empty;
 
         /// <summary>
-        /// How long maximum the tests can run.
+        /// Level of logging for test execution.
         /// </summary>
-        /// <remarks>Make sure to adjust the default value in .runsettings first</remarks>
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
 
         /// <summary>
@@ -56,13 +56,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
 
                 var isrealhard = node.SelectSingleNode(nameof(IsRealHarware))?.FirstChild;
-                if (isrealhard != null && timeout.NodeType == XmlNodeType.Text)
+                if (isrealhard != null && isrealhard.NodeType == XmlNodeType.Text)
                 {
                     settings.IsRealHarware = isrealhard.Value.ToLower() == "true" ? true : false;
                 }
 
                 var realhardport = node.SelectSingleNode(nameof(RealHarwarePort))?.FirstChild;
-                if (realhardport != null && timeout.NodeType == XmlNodeType.Text)
+                if (realhardport != null && realhardport.NodeType == XmlNodeType.Text)
                 {
                     settings.RealHarwarePort = realhardport.Value;
                 }
@@ -70,7 +70,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 var loggingLevel = node.SelectSingleNode(nameof(Logging))?.FirstChild;
                 if (loggingLevel != null && loggingLevel.NodeType == XmlNodeType.Text)
                 {
-                    if (Enum.TryParse(realhardport.Value, out LoggingLevel logging))
+                    if (Enum.TryParse(loggingLevel.Value, out LoggingLevel logging))
                     {
                         settings.Logging = logging;
                     }
@@ -84,11 +84,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             None = 0,
 
-            Detailed,
+            Detailed = 1,
 
-            Verbose,
+            Verbose = 2,
 
-            Error
+            Error = 3
         }
     }
 }

@@ -14,15 +14,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         #endregion // Properties
 
-        #region ISettingsProvider
-
         public void Load(XmlReader reader)
         {
             var xml = new XmlDocument();
             reader.Read();
             Settings = Settings.Extract(xml.ReadNode(reader));
         }
-
-        #endregion // ISettingsProvider
     }
 }
