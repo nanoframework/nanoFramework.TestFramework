@@ -148,11 +148,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 Settings.LoggingLevel.Verbose);
 
             var source = tests.First().Source;
-            var nfUnitTestLauncherLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe");
-            var workingDirectory = Path.GetDirectoryName(nfUnitTestLauncherLocation);
-            var mscorlibLocation = source.Replace(Path.GetFileName(source), "mscorlib.pe");
-            var nfTestFrameworkLocation = source.Replace(Path.GetFileName(source), "nanoFramework.TestFramework.pe");
-            var nfAssemblyUnderTestLocation = source.Replace(".dll", ".pe");
+            var allPeFiles = Directory.GetFiles(Path.GetFileName(source), "*.pe");            
+            var workingDirectory = Path.GetDirectoryName(source);
 
             // prepare the process start of the WIN32 nanoCLR
             _nanoClr = new Process();
@@ -169,7 +166,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 // 2. mscorlib
                 // 3. test framework
                 // 4. test application
-                string parameter = $"-load {nfUnitTestLauncherLocation} -load {mscorlibLocation} -load {nfTestFrameworkLocation} -load {nfAssemblyUnderTestLocation}";
+                StringBuilder str = new StringBuilder();
+                foreach(var pe in allPeFiles)
+                {
+                    str.Append($" -load {pe}");
+                }
+
+                string parameter = str.ToString();
 
                 _logger.LogMessage(
                     "Launching process with nanoCLR...",
