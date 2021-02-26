@@ -10,7 +10,7 @@ using System.Xml;
 namespace nanoFramework.TestPlatform.TestAdapter
 {
     /// <summary>
-    /// Settings for the nanoFramweork tests
+    /// Settings for the nanoFramework tests
     /// </summary>
     public class Settings
     {
@@ -23,12 +23,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <summary>
         /// True to run the tests on real hardware
         /// </summary>
-        public bool IsRealHarware { get; set; } = false;
+        public bool IsRealHardware { get; set; } = false;
 
         /// <summary>
         /// The serial port number to run the tests on a real hardware
         /// </summary>
-        public string RealHarwarePort { get; set; } = string.Empty;
+        public string RealHardwarePort { get; set; } = string.Empty;
 
         /// <summary>
         /// Level of logging for test execution.
