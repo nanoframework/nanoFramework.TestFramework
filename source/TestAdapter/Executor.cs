@@ -148,8 +148,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 Settings.LoggingLevel.Verbose);
 
             var source = tests.First().Source;
-            var allPeFiles = Directory.GetFiles(Path.GetFileName(source), "*.pe");            
             var workingDirectory = Path.GetDirectoryName(source);
+            var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");            
 
             // prepare the process start of the WIN32 nanoCLR
             _nanoClr = new Process();
