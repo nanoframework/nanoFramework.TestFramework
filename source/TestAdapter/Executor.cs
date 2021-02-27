@@ -4,6 +4,8 @@
 // See LICENSE file in the project root for full license information.
 //
 
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using nanoFramework.TestAdapter;
@@ -108,10 +110,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 // 
                 List<TestResult> results;
 
-                if(_settings.IsRealHardware)
+                if (_settings.IsRealHardware)
                 {
                     // we are connecting to a real device
-                    results = RunTestOnHardwareAsync(groups.ToList());
+                    results = RunTestOnHardwareAsync(groups.ToList()).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -126,9 +128,15 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
-        private async System.Threading.Tasks.Task<List<TestResult>> RunTestOnHardwareAsync(List<TestCase> lists)
+        private async Task<List<TestResult>> RunTestOnHardwareAsync(List<TestCase> tests)
         {
-            var serialDebugClient = PortBase.CreateInstanceForSerial("", new System.Collections.Generic.List<string>() { "COM16" });
+            List<TestResult> results = PrepareListResult(tests);
+            List<byte[]> assemblies = new List<byte[]>();
+            string port = _settings.RealHardwarePort == string.Empty ? "COM4" : _settings.RealHardwarePort;
+            var serialDebugClient = PortBase.CreateInstanceForSerial("", null, true, new List<string>() { port });
+
+            _logger.LogMessage($"Checking device on port {port}.", Settings.LoggingLevel.Verbose);
+            _logger.LogMessage($"{serialDebugClient.NanoFrameworkDevices.Count}", Settings.LoggingLevel.Verbose);
 
             var device = serialDebugClient.NanoFrameworkDevices[0];
 
@@ -136,20 +144,21 @@ namespace nanoFramework.TestPlatform.TestAdapter
             if (device.DebugEngine == null)
             {
                 device.CreateDebugEngine();
+                _logger.LogMessage($"Debug engine created.", Settings.LoggingLevel.Verbose);
             }
 
             bool deviceIsInInitializeState = false;
             int retryCount = 0;
 
             bool connectResult = await device.DebugEngine.ConnectAsync(5000, true);
+            _logger.LogMessage($"Device connect result is {connectResult}.", Settings.LoggingLevel.Verbose);
 
             if (connectResult)
             {
                 // erase the device
                 var eraseResult = await Task.Run(async delegate
                 {
-                    //MessageCentre.InternalErrorMessage("Erase deployment block storage.");
-
+                    _logger.LogMessage($"Erase deployment block storage.", Settings.LoggingLevel.Error);
                     return await device.EraseAsync(
                         EraseOptions.Deployment,
                         CancellationToken.None,
@@ -157,14 +166,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         null);
                 });
 
+                _logger.LogMessage($"Erase result is {eraseResult}.", Settings.LoggingLevel.Verbose);
                 if (eraseResult)
                 {
 
                     // initial check 
                     if (device.DebugEngine.IsDeviceInInitializeState())
                     {
-                        //MessageCentre.InternalErrorMessage("Device status verified as being in initialized state. Requesting to resume execution.");
-
+                        _logger.LogMessage($"Device status verified as being in initialized state. Requesting to resume execution.", Settings.LoggingLevel.Error);
                         // set flag
                         deviceIsInInitializeState = true;
 
@@ -179,36 +188,32 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         if (!device.DebugEngine.IsDeviceInInitializeState())
                         {
-                            //MessageCentre.InternalErrorMessage("Device has completed initialization.");
-
+                            _logger.LogMessage($"Device has completed initialization.", Settings.LoggingLevel.Verbose);
                             // done here
                             deviceIsInInitializeState = false;
                             break;
                         }
 
-                        //MessageCentre.InternalErrorMessage($"Waiting for device to report initialization completed ({retryCount}/{_numberOfRetries}).");
-
+                        _logger.LogMessage($"Waiting for device to report initialization completed ({retryCount}/{_numberOfRetries}).", Settings.LoggingLevel.Verbose);
                         // provide feedback to user on the 1st pass
                         if (retryCount == 0)
                         {
-                            //await outputPaneWriter.WriteLineAsync(ResourceStrings.WaitingDeviceInitialization);
+                            _logger.LogMessage($"Waiting for device to initialize.", Settings.LoggingLevel.Verbose);
                         }
 
                         if (device.DebugEngine.IsConnectedTonanoBooter)
                         {
-                            // MessageCentre.InternalErrorMessage("Device reported running nanoBooter. Requesting to load nanoCLR.");
-
+                            _logger.LogMessage($"Device reported running nanoBooter. Requesting to load nanoCLR.", Settings.LoggingLevel.Verbose);
                             // request nanoBooter to load CLR
                             device.DebugEngine.ExecuteMemory(0);
                         }
                         else if (device.DebugEngine.IsConnectedTonanoCLR)
                         {
-                            //MessageCentre.InternalErrorMessage("Device reported running nanoCLR. Requesting to reboot nanoCLR.");
-
+                            _logger.LogMessage($"Device reported running nanoCLR. Requesting to reboot nanoCLR.", Settings.LoggingLevel.Error);
                             await Task.Run(delegate
                             {
-                            // already running nanoCLR try rebooting the CLR
-                            device.DebugEngine.RebootDevice(RebootOptions.ClrOnly);
+                                // already running nanoCLR try rebooting the CLR
+                                device.DebugEngine.RebootDevice(RebootOptions.ClrOnly);
                             });
                         }
 
@@ -223,87 +228,74 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     if (!deviceIsInInitializeState)
                     {
                         // device has left initialization state
-                        //await outputPaneWriter.WriteLineAsync(ResourceStrings.DeviceInitialized);
-
+                        _logger.LogMessage($"Device is initialized and ready!", Settings.LoggingLevel.Verbose);
                         await Task.Yield();
 
-                   
 
                         //////////////////////////////////////////////////////////
                         // sanity check for devices without native assemblies ?!?!
                         if (device.DeviceInfo.NativeAssemblies.Count == 0)
                         {
-                           // MessageCentre.InternalErrorMessage("Device reporting no assemblies loaded. This can not happen. Sanity check failed.");
-
+                            _logger.LogMessage($"Device reporting no assemblies loaded. This can not happen. Sanity check failed.", Settings.LoggingLevel.Error);
                             // there are no assemblies deployed?!
-                            //throw new DeploymentException($"Couldn't find any native assemblies deployed in {_viewModelLocator.DeviceExplorer.SelectedDevice.Description}! If the situation persists reboot the device.");
+                            results.First().Outcome = TestOutcome.Failed;
+                            results.First().ErrorMessage = $"Couldn't find any native assemblies deployed in {device.Description}, {device.TargetName} on {device.SerialNumber}! If the situation persists reboot the device.";
+                            return results;
                         }
 
-                        //MessageCentre.InternalErrorMessage("Computing deployment blob.");
-
-       
-
+                        _logger.LogMessage($"Computing deployment blob.", Settings.LoggingLevel.Verbose);
                         // build a list with the full path for each DLL, referenced DLL and EXE
                         List<DeploymentAssembly> assemblyList = new List<DeploymentAssembly>();
 
+                        var source = tests.First().Source;
+                        var workingDirectory = Path.GetDirectoryName(source);
+                        var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
 
-                        //var source = tests.First().Source;
-                        //var nfUnitTestLauncherLocation = source.Replace(Path.GetFileName(source), "nanoFramework.UnitTestLauncher.pe");
-                        //var workingDirectory = Path.GetDirectoryName(nfUnitTestLauncherLocation);
-
-                        // load tests
-                        assemblyList.Add(
-                            new DeploymentAssembly(source, "", ""));
-
-                        // TODO
-
-
-                        //var mscorlibLocation = source.Replace(Path.GetFileName(source), "mscorlib.pe");
-                        //var nfTestFrameworkLocation = source.Replace(Path.GetFileName(source), "nanoFramework.TestFramework.pe");
-                        //var nfAssemblyUnderTestLocation = source.Replace(".dll", ".pe");
-
-                        // TODO do we need to check vbersions?
-
-                        //foreach (string assemblyPath in assemblyPathsToDeploy)
+                        // load tests in case we don't need to check the version:
+                        //foreach (var pe in allPeFiles)
                         //{
-                        //    // load assembly in order to get the versions
-                        //    var decompiler = new CSharpDecompiler(assemblyPath, decompilerSettings);
-                        //    var assemblyProperties = decompiler.DecompileModuleAndAssemblyAttributesToString();
-
-                        //    // read attributes using a Regex
-
-                        //    // AssemblyVersion
-                        //    string pattern = @"(?<=AssemblyVersion\("")(.*)(?=\""\)])";
-                        //    var match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
-                        //    string assemblyVersion = match[0].Value;
-
-                        //    // AssemblyNativeVersion
-                        //    pattern = @"(?<=AssemblyNativeVersion\("")(.*)(?=\""\)])";
-                        //    match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
-
-                        //    // only class libs have this attribute, therefore sanity check is required
-                        //    string nativeVersion = "";
-                        //    if (match.Count == 1)
-                        //    {
-                        //        nativeVersion = match[0].Value;
-                        //    }
-
-                        //    assemblyList.Add(new DeploymentAssembly(assemblyPath, assemblyVersion, nativeVersion));
+                        //    assemblyList.Add(
+                        //        new DeploymentAssembly(Path.Combine(workingDirectory, pe), "", ""));
                         //}
 
-                        //// if there are referenced project, the assembly list contains repeated assemblies so need to use Linq Distinct()
-                        //// an IEqualityComparer is required implementing the proper comparison
-                        //List<DeploymentAssembly> distinctAssemblyList = assemblyList.Distinct(new DeploymentAssemblyDistinctEquality()).ToList();
+                        // TODO do we need to check versions?
+                        var decompilerSettings = new DecompilerSettings
+                        {
+                            LoadInMemory = false,
+                            ThrowOnAssemblyResolveErrors = false
+                        };
 
-                        //// build a list with the PE files corresponding to each DLL and EXE
-                        //List<DeploymentAssembly> peCollection = distinctAssemblyList.Select(a => new DeploymentAssembly(a.Path.Replace(".dll", ".pe").Replace(".exe", ".pe"), a.Version, a.NativeVersion)).ToList();
+                        foreach (string assemblyPath in allPeFiles)
+                        {
+                            // load assembly in order to get the versions
+                            var decompiler = new CSharpDecompiler(Path.Combine(workingDirectory, assemblyPath), decompilerSettings);
+                            var assemblyProperties = decompiler.DecompileModuleAndAssemblyAttributesToString();
 
-                        //// build a list with the PE files corresponding to a DLL for native support checking
-                        //// only need to check libraries because EXEs don't have native counterpart
-                        //List<DeploymentAssembly> peCollectionToCheck = distinctAssemblyList.Where(i => i.Path.EndsWith(".dll")).Select(a => new DeploymentAssembly(a.Path.Replace(".dll", ".pe"), a.Version, a.NativeVersion)).ToList();
+                            // read attributes using a Regex
 
-                        //await Task.Yield();
+                            // AssemblyVersion
+                            string pattern = @"(?<=AssemblyVersion\("")(.*)(?=\""\)])";
+                            var match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
+                            string assemblyVersion = match[0].Value;
 
+                            // AssemblyNativeVersion
+                            pattern = @"(?<=AssemblyNativeVersion\("")(.*)(?=\""\)])";
+                            match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
+
+                            // only class libs have this attribute, therefore sanity check is required
+                            string nativeVersion = "";
+                            if (match.Count == 1)
+                            {
+                                nativeVersion = match[0].Value;
+                            }
+
+                            assemblyList.Add(new DeploymentAssembly(Path.Combine(workingDirectory, assemblyPath), assemblyVersion, nativeVersion));
+                        }
+
+                        _logger.LogMessage($"Added {assemblyList.Count} assemblies to deploy.", Settings.LoggingLevel.Verbose);
+                        await Task.Yield();
+
+                        //TODO: shall we chack the assembly availability?
                         //var checkAssembliesResult = await CheckNativeAssembliesAvailabilityAsync(device.DeviceInfo.NativeAssemblies, peCollectionToCheck);
                         //if (checkAssembliesResult != "")
                         //{
@@ -320,31 +312,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                         // TODO use this code to load the PE files
 
-                        //// now we will re-deploy all system assemblies
-                        //foreach (DeploymentAssembly peItem in peCollection)
-                        //{
-                        //    // append to the deploy blob the assembly
-                        //    using (FileStream fs = File.Open(peItem.Path, FileMode.Open, FileAccess.Read))
-                        //    {
-                        //        long length = (fs.Length + 3) / 4 * 4;
-                        //        await outputPaneWriter.WriteLineAsync($"Adding {Path.GetFileNameWithoutExtension(peItem.Path)} v{peItem.Version} ({length.ToString()} bytes) to deployment bundle");
-                        //        byte[] buffer = new byte[length];
+                        // now we will re-deploy all system assemblies
+                        foreach (DeploymentAssembly peItem in assemblyList)
+                        {
+                            // append to the deploy blob the assembly
+                            using (FileStream fs = File.Open(peItem.Path, FileMode.Open, FileAccess.Read))
+                            {
+                                long length = (fs.Length + 3) / 4 * 4;
+                                _logger.LogMessage($"Adding {Path.GetFileNameWithoutExtension(peItem.Path)} v{peItem.Version} ({length} bytes) to deployment bundle", Settings.LoggingLevel.Verbose);
+                                byte[] buffer = new byte[length];
 
-                        //        await Task.Yield();
+                                await Task.Yield();
 
-                        //        await fs.ReadAsync(buffer, 0, (int)fs.Length);
-                        //        assemblies.Add(buffer);
+                                await fs.ReadAsync(buffer, 0, (int)fs.Length);
+                                assemblies.Add(buffer);
 
-                        //        // Increment totalizer
-                        //        totalSizeOfAssemblies += length;
-                        //    }
-                        //}
+                                // Increment totalizer
+                                totalSizeOfAssemblies += length;
+                            }
+                        }
 
-                        //await outputPaneWriter.WriteLineAsync($"Deploying {peCollection.Count:N0} assemblies to device... Total size in bytes is {totalSizeOfAssemblies.ToString()}.");
-                        //MessageCentre.InternalErrorMessage("Deploying assemblies.");
-
-                        //// need to keep a copy of the deployment blob for the second attempt (if needed)
-                        //var assemblyCopy = new List<byte[]>(assemblies);
+                        _logger.LogMessage($"Deploying {assemblyList.Count:N0} assemblies to device... Total size in bytes is {totalSizeOfAssemblies}.", Settings.LoggingLevel.Verbose);
+                        // need to keep a copy of the deployment blob for the second attempt (if needed)
+                        var assemblyCopy = new List<byte[]>(assemblies);
 
                         await Task.Yield();
 
@@ -366,29 +356,35 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                                 await Task.Yield();
 
-                                //MessageCentre.InternalErrorMessage("Deploying assemblies. Second attempt.");
+                                _logger.LogMessage("Deploying assemblies. Second attempt.", Settings.LoggingLevel.Verbose);
 
-                                //// !! need to use the deployment blob copy
-                                //assemblyCopy = new List<byte[]>(assemblies);
+                                // !! need to use the deployment blob copy
+                                assemblyCopy = new List<byte[]>(assemblies);
 
-                                //// can't skip erase as we just did that
-                                //// no need to reboot device
-                                //if (!device.DebugEngine.DeploymentExecute(
-                                //    assemblyCopy,
-                                //    false,
-                                //    false,
-                                //    progressIndicator,
-                                //    logProgressIndicator))
-                                //{
-                                //    MessageCentre.InternalErrorMessage("Deployment failed.");
+                                // can't skip erase as we just did that
+                                // no need to reboot device
+                                if (!device.DebugEngine.DeploymentExecute(
+                                    assemblyCopy,
+                                    false,
+                                    false,
+                                    null,
+                                    null))
+                                {
+                                    _logger.LogMessage("Deployment failed.", Settings.LoggingLevel.Error);
 
-                                //    // throw exception to signal deployment failure
-                                //    throw new DeploymentException("Deploy failed.");
-                                //}
+                                    // throw exception to signal deployment failure
+                                    results.First().Outcome = TestOutcome.Failed;
+                                    results.First().ErrorMessage = $"Deployment failed in {device.Description}, {device.TargetName} on {device.SerialNumber}! If the situation persists reboot the device.";
+                                }
                             }
                         });
 
                         await Task.Yield();
+                        // If there has been an issue before, the first test is marked as failed
+                        if (results.First().Outcome == TestOutcome.Failed)
+                        {
+                            return results;
+                        }
 
                         // attach listner for messages
                         device.DebugEngine.OnMessage -= new MessageEventHandler(OnMessage);
@@ -402,11 +398,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         // after retry policy applied seems that we couldn't resume execution on the device...
 
-//                        MessageCentre.InternalErrorMessage("Failed to initialize device.");
+                        //                        MessageCentre.InternalErrorMessage("Failed to initialize device.");
 
                     }
                 }
             }
+
+            return results;
         }
 
         private void OnMessage(IncomingMessage message, string text)
@@ -429,6 +427,19 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
+        private List<TestResult> PrepareListResult(List<TestCase> tests)
+        {
+            List<TestResult> results = new List<TestResult>();
+
+            foreach (var test in tests)
+            {
+                TestResult result = new TestResult(test) { Outcome = TestOutcome.None };
+                results.Add(result);
+            }
+
+            return results;
+        }
+
         private List<TestResult> RunTest(List<TestCase> tests)
         {
             _logger.LogMessage(
@@ -445,13 +456,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 $"Timeout set to {runTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
-            List<TestResult> results = new List<TestResult>();
-
-            foreach (var test in tests)
-            {
-                TestResult result = new TestResult(test) { Outcome = TestOutcome.None };
-                results.Add(result);
-            }
+            List<TestResult> results = PrepareListResult(tests);
 
             _logger.LogMessage(
                 "Processing assemblies to load into test runner...",
@@ -459,7 +464,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             var source = tests.First().Source;
             var workingDirectory = Path.GetDirectoryName(source);
-            var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");            
+            var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
 
             // prepare the process start of the WIN32 nanoCLR
             _nanoClr = new Process();
@@ -477,7 +482,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 // 3. test framework
                 // 4. test application
                 StringBuilder str = new StringBuilder();
-                foreach(var pe in allPeFiles)
+                foreach (var pe in allPeFiles)
                 {
                     str.Append($" -load {Path.Combine(workingDirectory, pe)}");
                 }

@@ -55,16 +55,16 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                 }
 
-                var isrealhard = node.SelectSingleNode(nameof(IsRealHarware))?.FirstChild;
+                var isrealhard = node.SelectSingleNode(nameof(IsRealHardware))?.FirstChild;
                 if (isrealhard != null && isrealhard.NodeType == XmlNodeType.Text)
                 {
-                    settings.IsRealHarware = isrealhard.Value.ToLower() == "true" ? true : false;
+                    settings.IsRealHardware = isrealhard.Value.ToLower() == "true" ? true : false;
                 }
 
-                var realhardport = node.SelectSingleNode(nameof(RealHarwarePort))?.FirstChild;
+                var realhardport = node.SelectSingleNode(nameof(RealHardwarePort))?.FirstChild;
                 if (realhardport != null && realhardport.NodeType == XmlNodeType.Text)
                 {
-                    settings.RealHarwarePort = realhardport.Value;
+                    settings.RealHardwarePort = realhardport.Value;
                 }
 
                 var loggingLevel = node.SelectSingleNode(nameof(Logging))?.FirstChild;
