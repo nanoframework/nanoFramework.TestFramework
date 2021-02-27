@@ -22,8 +22,8 @@
     </packageTypes>
   </metadata>
   <files>
-    <file src="TestAdapter\bin\Debug\net4.6\*.dll" target="lib/net46" />
-    <file src="TestAdapter\bin\Debug\net4.6\*.*" target="lib/net46" />
+    <file src="TestAdapter\bin\Debug\net4.8\*.dll" target="lib/net48" />
+    <file src="TestAdapter\bin\Debug\net4.8\*.*" target="lib/net48" />
 
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.*" target="lib" />
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.*" target="lib" />
