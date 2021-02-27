@@ -144,6 +144,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             _logger.LogMessage($"Found: {serialDebugClient.NanoFrameworkDevices.Count} devices", Settings.LoggingLevel.Verbose);
 
+            if(serialDebugClient.NanoFrameworkDevices.Count == 0)
+            {
+                results.First().Outcome = TestOutcome.Failed;
+                results.First().ErrorMessage = $"Couldn't find any device, please try to disable the device scanning in the Visual Studio Extension! If the situation persists reboot the device as well.";
+                return results;
+            }
+
             var device = serialDebugClient.NanoFrameworkDevices[0];
 
             // check if debugger engine exists
@@ -412,10 +419,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        // after retry policy applied seems that we couldn't resume execution on the device...
-
-                        //                        MessageCentre.InternalErrorMessage("Failed to initialize device.");
-
+                        _logger.LogMessage("Failed to initialize device.", Settings.LoggingLevel.Error);
                     }
                 }
             }
