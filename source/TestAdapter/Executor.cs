@@ -119,7 +119,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 else
                 {
                     // we are connecting to WIN32 nanoCLR
-                    results = RunTest(groups.ToList());
+                    results = RunTestOnEmulator(groups.ToList());
                 }
 
                 foreach (var result in results)
@@ -131,6 +131,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         private async Task<List<TestResult>> RunTestOnHardwareAsync(List<TestCase> tests)
         {
+            _logger.LogMessage(
+                "Setting up test runner in *** CONNECTED DEVICE ***",
+                Settings.LoggingLevel.Detailed);
+
             List<TestResult> results = PrepareListResult(tests);
             List<byte[]> assemblies = new List<byte[]>();
             int retryCount = 0;
@@ -173,6 +177,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 device = serialDebugClient.NanoFrameworkDevices[0];
             }
+
+            _logger.LogMessage(
+                $"Getting things with {device.Description}",
+                Settings.LoggingLevel.Detailed);
 
             // check if debugger engine exists
             if (device.DebugEngine == null)
@@ -507,10 +515,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        private List<TestResult> RunTest(List<TestCase> tests)
+        private List<TestResult> RunTestOnEmulator(List<TestCase> tests)
         {
             _logger.LogMessage(
-                "Setting up test runner...",
+                "Setting up test runner in *** nanoCLR WIN32***",
                 Settings.LoggingLevel.Detailed);
 
             int runTimeout = 10000;
@@ -557,7 +565,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 string parameter = str.ToString();
 
                 _logger.LogMessage(
-                    "Launching process with nanoCLR...",
+                    $"Parameters to pass to nanoCLR: <{parameter}>",
                     Settings.LoggingLevel.Verbose);
 
                 var nanoClrLocation = TestObjectHelper.GetNanoClrLocation();
@@ -577,6 +585,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     RedirectStandardError = true,
                     RedirectStandardOutput = true
                 };
+
+                _logger.LogMessage(
+                    $"Launching process with nanoCLR (from {Path.GetFullPath(TestObjectHelper.GetNanoClrLocation())})",
+                    Settings.LoggingLevel.Verbose);
 
                 // launch nanoCLR
                 if (!_nanoClr.Start())
