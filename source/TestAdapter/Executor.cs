@@ -118,7 +118,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 else
                 {
                     // we are connecting to WIN32 nanoCLR
-                    results = RunTest(groups.ToList());
+                    results = RunTestOnEmulator(groups.ToList());
                 }
 
                 foreach (var result in results)
@@ -506,7 +506,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        private List<TestResult> RunTest(List<TestCase> tests)
+        private List<TestResult> RunTestOnEmulator(List<TestCase> tests)
         {
             _logger.LogMessage(
                 "Setting up test runner...",
