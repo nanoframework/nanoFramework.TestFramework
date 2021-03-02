@@ -78,7 +78,8 @@ jobs:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     buildPlatform: 'Any CPU'
-    buildConfiguration: 'Debug'
+    buildConfiguration: 'Release'
+    buildConfigurationUnitLauncher: 'Debug'
 
   steps:
 
@@ -137,7 +138,7 @@ jobs:
       solution: 'nanoFramework.TestFramework.sln'
       platform: '$(buildPlatform)'
       msbuildArgs: '/p:PublicRelease=true'
-      configuration: '$(buildConfiguration)'
+      configuration: '$(buildConfigurationUnitLauncher)'
   
   # - task: VisualStudioTestPlatformInstaller@1
   #   condition: succeeded()
