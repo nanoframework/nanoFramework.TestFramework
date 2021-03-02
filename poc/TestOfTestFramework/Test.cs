@@ -6,6 +6,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace nanoFramework.TestFramework.Test
 {
@@ -17,6 +18,20 @@ namespace nanoFramework.TestFramework.Test
         {
             Debug.WriteLine("Test will raise exception");
             Assert.Trows(typeof(Exception), ThrowMe);
+            Assert.Trows(typeof(ArgumentOutOfRangeException), () =>
+            {
+                Debug.WriteLine("To see another way of doing this");
+                // This should throw an ArgumentException
+                Thread.Sleep(-2);
+            });
+            try
+            {
+                Assert.Trows(typeof(Exception), () => { Debug.WriteLine("Nothing will be thrown"); });
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Exception raised, perfect");
+            }
         }
 
         private void ThrowMe()
