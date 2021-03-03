@@ -10,7 +10,7 @@
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.2.1.6137" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.9.1" />
     <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
-      <Version>1.6.1-preview.208</Version>
+      <Version>1.6.1-preview.210</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -22,8 +22,8 @@
     </PackageReference>
   </ItemGroup>
   <Target Name="SetNanoCLRLocation" AfterTargets="Build">
-    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false"/>
-    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false"/>
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
   </Target>
   <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />
 </Project>
