@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -567,7 +568,17 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     $"Parameters to pass to nanoCLR: <{parameter}>",
                     Settings.LoggingLevel.Verbose);
 
-                _nanoClr.StartInfo = new ProcessStartInfo(TestObjectHelper.GetNanoClrLocation(), parameter)
+                var nanoClrLocation = TestObjectHelper.GetNanoClrLocation();
+                if(string.IsNullOrEmpty(nanoClrLocation))
+                {
+                    _logger.LogPanicMessage("Can't find nanoCLR Win32 in any of the directories!");
+                    results.First().Outcome = TestOutcome.Failed;
+                    results.First().ErrorMessage = "Can't find nanoCLR Win32 in any of the directories!";
+                    return results;
+                }
+
+                _logger.LogMessage($"Found nanoCLR Win32: {nanoClrLocation}", Settings.LoggingLevel.Verbose);
+                _nanoClr.StartInfo = new ProcessStartInfo(nanoClrLocation, parameter)
                 {
                     WorkingDirectory = workingDirectory,
                     UseShellExecute = false,
