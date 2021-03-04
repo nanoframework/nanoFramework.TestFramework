@@ -52,16 +52,16 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             try
             {
-            if (!_nanoClr.HasExited)
-            {
-                _logger.LogMessage(
-                    "Canceling to test process. Attempting to kill nanoCLR process...",
-                    Settings.LoggingLevel.Verbose);
+                if (!_nanoClr.HasExited)
+                {
+                    _logger.LogMessage(
+                        "Canceling to test process. Attempting to kill nanoCLR process...",
+                        Settings.LoggingLevel.Verbose);
 
-                _nanoClr.Kill();
-                // Wait 5 seconds maximum
-                _nanoClr.WaitForExit(5000);
-            }
+                    _nanoClr.Kill();
+                    // Wait 5 seconds maximum
+                    _nanoClr.WaitForExit(5000);
+                }
             }
             catch (Exception ex)
             {
@@ -72,67 +72,73 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <inheritdoc/>
         public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            InitializeLogger(runContext, frameworkHandle);
-
-            foreach (var source in sources)
+            try
             {
-                _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
-                var testsCases = TestDiscoverer.FindTestCases(source);
+                InitializeLogger(runContext, frameworkHandle);
+                foreach (var source in sources)
+                {
+                    _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
+                    var testsCases = TestDiscoverer.FindTestCases(source);
 
-                RunTests(testsCases, runContext, frameworkHandle);
+                    RunTests(testsCases, runContext, frameworkHandle);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
             }
         }
 
         /// <inheritdoc/>
         public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            InitializeLogger(runContext, frameworkHandle);
-
             try
             {
-            var uniqueSources = tests.Select(m => m.Source).Distinct();
-
-            _logger.LogMessage(
-                "Test sources enumerated",
-                Settings.LoggingLevel.Verbose);
-
-            foreach (var source in uniqueSources)
-            {
-                var groups = tests.Where(m => m.Source == source);
+                InitializeLogger(runContext, frameworkHandle);
+                var uniqueSources = tests.Select(m => m.Source).Distinct();
 
                 _logger.LogMessage(
-                    $"Test group is '{source}'",
-                    Settings.LoggingLevel.Detailed);
+                    "Test sources enumerated",
+                    Settings.LoggingLevel.Verbose);
 
-                // 
-                List<TestResult> results;
+                foreach (var source in uniqueSources)
+                {
+                    var groups = tests.Where(m => m.Source == source);
 
-                if (_settings.IsRealHardware)
-                {
-                    // we are connecting to a real device
-                    results = RunTestOnHardwareAsync(groups.ToList()).GetAwaiter().GetResult();
-                }
-                else
-                {
-                    // we are connecting to WIN32 nanoCLR
-                    results = RunTestOnEmulator(groups.ToList());
-                }
+                    _logger.LogMessage(
+                        $"Test group is '{source}'",
+                        Settings.LoggingLevel.Detailed);
 
-                foreach (var result in results)
-                {
-                    frameworkHandle.RecordResult(result);
+                    // 
+                    List<TestResult> results;
+
+                    if (_settings.IsRealHardware)
+                    {
+                        // we are connecting to a real device
+                        results = RunTestOnHardwareAsync(groups.ToList()).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        // we are connecting to WIN32 nanoCLR
+                        results = RunTestOnEmulator(groups.ToList());
+                    }
+
+                    foreach (var result in results)
+                    {
+                        frameworkHandle.RecordResult(result);
+                    }
                 }
-            }
 
             }
             catch (Exception ex)
             {
-                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");                
+                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
             }
         }
 
         private void InitializeLogger(IRunContext runContext, IFrameworkHandle frameworkHandle)
-        {           
+        {
             if (_logger == null)
             {
                 var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
