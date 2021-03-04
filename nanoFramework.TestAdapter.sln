@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
@@ -6,6 +5,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nanoFramework.TestAdapter", "source\TestAdapter\nanoFramework.TestAdapter.csproj", "{7B3026CA-1CBB-4F28-AC42-29CD22710877}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestFrameworkShared", "source\TestFrameworkShared\TestFrameworkShared.shproj", "{55F048B5-6739-43C5-A93D-DB61DB8E912F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B29F456A-D02D-409D-B648-60E2C256EAFD}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+		source\package.nuspec = source\package.nuspec
+		source\TestAdapter\README.md = source\TestAdapter\README.md
+		version.json = version.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
