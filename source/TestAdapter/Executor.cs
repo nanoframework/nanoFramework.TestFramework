@@ -12,6 +12,7 @@ using nanoFramework.TestAdapter;
 using nanoFramework.Tools.Debugger;
 using nanoFramework.Tools.Debugger.Extensions;
 using nanoFramework.Tools.Debugger.WireProtocol;
+using nanoFramework.Tools.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,6 +32,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
     [ExtensionUri(TestsConstants.NanoExecutor)]
     class Executor : ITestExecutor
     {
+        private const string ExecutorDebugVar = "NF_UNIT_TEST_EXECUTOR_DEBUG";
+
         private const string TestPassed = "Test passed: ";
         private const string TestFailed = "Test failed: ";
         private const string Exiting = "Exiting.";
@@ -72,17 +75,30 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <inheritdoc/>
         public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // developer note: to debug this task set an environment variable like this:
+            // set NF_UNIT_TEST_EXECUTOR_DEBUG=1
+            // this will cause the execution to pause below so a debugger can be attached
+            DebuggerHelper.WaitForDebuggerIfEnabled(ExecutorDebugVar);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             try
             {
-                InitializeLogger(runContext, frameworkHandle);
-                foreach (var source in sources)
-                {
-                    _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
-                    var testsCases = TestDiscoverer.FindTestCases(source);
+              var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+
+              _logger = new LogMessenger(frameworkHandle, settingsProvider);
+
+              if (settingsProvider != null)
+              {
+                  InitializeLogger(runContext, frameworkHandle);
+                  foreach (var source in sources)
+                  {
+                      _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
+                      var testsCases = TestDiscoverer.FindTestCases(source);
 
                     RunTests(testsCases, runContext, frameworkHandle);
                 }
-
+              }
             }
             catch (Exception ex)
             {

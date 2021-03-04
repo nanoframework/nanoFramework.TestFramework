@@ -21,6 +21,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Diagnostics.Tracing" />
+  </ItemGroup>
   <Target Name="SetNanoCLRLocation" AfterTargets="Build">
     <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
     <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
