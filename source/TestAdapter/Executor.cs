@@ -50,6 +50,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <inheritdoc/>
         public void Cancel()
         {
+            try
+            {
             if (!_nanoClr.HasExited)
             {
                 _logger.LogMessage(
@@ -60,40 +62,34 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 // Wait 5 seconds maximum
                 _nanoClr.WaitForExit(5000);
             }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogPanicMessage($"Exception thrown while killing the process: {ex}");
+            }
+        }
 
-            return;
+        /// <inheritdoc/>
+        public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        {
+            InitializeLogger(runContext, frameworkHandle);
+
+            foreach (var source in sources)
+            {
+                _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
+                var testsCases = TestDiscoverer.FindTestCases(source);
+
+                RunTests(testsCases, runContext, frameworkHandle);
+            }
         }
 
         /// <inheritdoc/>
         public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+            InitializeLogger(runContext, frameworkHandle);
 
-            _logger = new LogMessenger(frameworkHandle, settingsProvider);
-
-            if (settingsProvider != null)
+            try
             {
-                _settings = settingsProvider.Settings;
-
-                _logger.LogMessage(
-                    "Getting ready to run tests...",
-                    Settings.LoggingLevel.Detailed);
-
-                _logger.LogMessage(
-                    "Settings parsed",
-                    Settings.LoggingLevel.Verbose);
-            }
-            else
-            {
-                _logger.LogMessage(
-                    "Getting ready to run tests...",
-                    Settings.LoggingLevel.Detailed);
-
-                _logger.LogMessage(
-                    "No settings for nanoFramework adapter",
-                    Settings.LoggingLevel.Verbose);
-            }
-
             var uniqueSources = tests.Select(m => m.Source).Distinct();
 
             _logger.LogMessage(
@@ -125,6 +121,44 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 foreach (var result in results)
                 {
                     frameworkHandle.RecordResult(result);
+                }
+            }
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");                
+            }
+        }
+
+        private void InitializeLogger(IRunContext runContext, IFrameworkHandle frameworkHandle)
+        {           
+            if (_logger == null)
+            {
+                var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+                _logger = new LogMessenger(frameworkHandle, settingsProvider);
+
+                if (settingsProvider != null)
+                {
+                    _settings = settingsProvider.Settings;
+
+                    _logger.LogMessage(
+                        "Getting ready to run tests...",
+                        Settings.LoggingLevel.Detailed);
+
+                    _logger.LogMessage(
+                        "Settings parsed",
+                        Settings.LoggingLevel.Verbose);
+                }
+                else
+                {
+                    _logger.LogMessage(
+                        "Getting ready to run tests...",
+                        Settings.LoggingLevel.Detailed);
+
+                    _logger.LogMessage(
+                        "No settings for nanoFramework adapter",
+                        Settings.LoggingLevel.Verbose);
                 }
             }
         }
@@ -189,7 +223,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 _logger.LogMessage($"Debug engine created.", Settings.LoggingLevel.Verbose);
             }
 
-            bool deviceIsInInitializeState = false;            
+            bool deviceIsInInitializeState = false;
 
         retryDebug:
             bool connectResult = await device.DebugEngine.ConnectAsync(5000, true);
@@ -247,12 +281,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
             // initial check 
             if (device.DebugEngine.IsDeviceInInitializeState())
             {
-                    _logger.LogMessage($"Device status verified as being in initialized state. Requesting to resume execution. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Error);
-                    // set flag
-                    deviceIsInInitializeState = true;
+                _logger.LogMessage($"Device status verified as being in initialized state. Requesting to resume execution. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Error);
+                // set flag
+                deviceIsInInitializeState = true;
 
-                    // device is still in initialization state, try resume execution
-                    device.DebugEngine.ResumeExecution();
+                // device is still in initialization state, try resume execution
+                device.DebugEngine.ResumeExecution();
             }
 
             // handle the workflow required to try resuming the execution on the device
@@ -487,17 +521,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        /// <inheritdoc/>
-        public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
-        {
-            foreach (var source in sources)
-            {
-                var testsCases = TestDiscoverer.FindTestCases(source);
-
-                RunTests(testsCases, runContext, frameworkHandle);
-            }
-        }
-
         private List<TestResult> PrepareListResult(List<TestCase> tests)
         {
             List<TestResult> results = new List<TestResult>();
@@ -565,7 +588,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     Settings.LoggingLevel.Verbose);
 
                 var nanoClrLocation = TestObjectHelper.GetNanoClrLocation();
-                if(string.IsNullOrEmpty(nanoClrLocation))
+                if (string.IsNullOrEmpty(nanoClrLocation))
                 {
                     _logger.LogPanicMessage("Can't find nanoCLR Win32 in any of the directories!");
                     results.First().Outcome = TestOutcome.Failed;
