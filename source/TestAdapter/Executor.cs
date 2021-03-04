@@ -53,22 +53,27 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <inheritdoc/>
         public void Cancel()
         {
-            if (!_nanoClr.HasExited)
+            try
             {
-                _logger.LogMessage(
-                    "Canceling to test process. Attempting to kill nanoCLR process...",
-                    Settings.LoggingLevel.Verbose);
+                if (!_nanoClr.HasExited)
+                {
+                    _logger.LogMessage(
+                        "Canceling to test process. Attempting to kill nanoCLR process...",
+                        Settings.LoggingLevel.Verbose);
 
-                _nanoClr.Kill();
-                // Wait 5 seconds maximum
-                _nanoClr.WaitForExit(5000);
+                    _nanoClr.Kill();
+                    // Wait 5 seconds maximum
+                    _nanoClr.WaitForExit(5000);
+                }
             }
-
-            return;
+            catch (Exception ex)
+            {
+                _logger?.LogPanicMessage($"Exception thrown while killing the process: {ex}");
+            }
         }
 
         /// <inheritdoc/>
-        public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // developer note: to debug this task set an environment variable like this:
@@ -77,64 +82,105 @@ namespace nanoFramework.TestPlatform.TestAdapter
             DebuggerHelper.WaitForDebuggerIfEnabled(ExecutorDebugVar);
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
-
-            _logger = new LogMessenger(frameworkHandle, settingsProvider);
-
-            if (settingsProvider != null)
+            try
             {
-                _settings = settingsProvider.Settings;
+              var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
 
-                _logger.LogMessage(
-                    "Getting ready to run tests...",
-                    Settings.LoggingLevel.Detailed);
+              _logger = new LogMessenger(frameworkHandle, settingsProvider);
 
-                _logger.LogMessage(
-                    "Settings parsed",
-                    Settings.LoggingLevel.Verbose);
+              if (settingsProvider != null)
+              {
+                  InitializeLogger(runContext, frameworkHandle);
+                  foreach (var source in sources)
+                  {
+                      _logger.LogMessage($"Finding test cases for '{source}'", Settings.LoggingLevel.Detailed);
+                      var testsCases = TestDiscoverer.FindTestCases(source);
+
+                    RunTests(testsCases, runContext, frameworkHandle);
+                }
+              }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogMessage(
-                    "Getting ready to run tests...",
-                    Settings.LoggingLevel.Detailed);
-
-                _logger.LogMessage(
-                    "No settings for nanoFramework adapter",
-                    Settings.LoggingLevel.Verbose);
+                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
             }
+        }
 
-            var uniqueSources = tests.Select(m => m.Source).Distinct();
-
-            _logger.LogMessage(
-                "Test sources enumerated",
-                Settings.LoggingLevel.Verbose);
-
-            foreach (var source in uniqueSources)
+        /// <inheritdoc/>
+        public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        {
+            try
             {
-                var groups = tests.Where(m => m.Source == source);
+                InitializeLogger(runContext, frameworkHandle);
+                var uniqueSources = tests.Select(m => m.Source).Distinct();
 
                 _logger.LogMessage(
-                    $"Test group is '{source}'",
-                    Settings.LoggingLevel.Detailed);
+                    "Test sources enumerated",
+                    Settings.LoggingLevel.Verbose);
 
-                // 
-                List<TestResult> results;
-
-                if (_settings.IsRealHardware)
+                foreach (var source in uniqueSources)
                 {
-                    // we are connecting to a real device
-                    results = RunTestOnHardwareAsync(groups.ToList()).GetAwaiter().GetResult();
+                    var groups = tests.Where(m => m.Source == source);
+
+                    _logger.LogMessage(
+                        $"Test group is '{source}'",
+                        Settings.LoggingLevel.Detailed);
+
+                    // 
+                    List<TestResult> results;
+
+                    if (_settings.IsRealHardware)
+                    {
+                        // we are connecting to a real device
+                        results = RunTestOnHardwareAsync(groups.ToList()).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        // we are connecting to WIN32 nanoCLR
+                        results = RunTestOnEmulator(groups.ToList());
+                    }
+
+                    foreach (var result in results)
+                    {
+                        frameworkHandle.RecordResult(result);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
+            }
+        }
+
+        private void InitializeLogger(IRunContext runContext, IFrameworkHandle frameworkHandle)
+        {
+            if (_logger == null)
+            {
+                var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+                _logger = new LogMessenger(frameworkHandle, settingsProvider);
+
+                if (settingsProvider != null)
+                {
+                    _settings = settingsProvider.Settings;
+
+                    _logger.LogMessage(
+                        "Getting ready to run tests...",
+                        Settings.LoggingLevel.Detailed);
+
+                    _logger.LogMessage(
+                        "Settings parsed",
+                        Settings.LoggingLevel.Verbose);
                 }
                 else
                 {
-                    // we are connecting to WIN32 nanoCLR
-                    results = RunTestOnEmulator(groups.ToList());
-                }
+                    _logger.LogMessage(
+                        "Getting ready to run tests...",
+                        Settings.LoggingLevel.Detailed);
 
-                foreach (var result in results)
-                {
-                    frameworkHandle.RecordResult(result);
+                    _logger.LogMessage(
+                        "No settings for nanoFramework adapter",
+                        Settings.LoggingLevel.Verbose);
                 }
             }
         }
@@ -199,7 +245,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 _logger.LogMessage($"Debug engine created.", Settings.LoggingLevel.Verbose);
             }
 
-            bool deviceIsInInitializeState = false;            
+            bool deviceIsInInitializeState = false;
 
         retryDebug:
             bool connectResult = await device.DebugEngine.ConnectAsync(5000, true);
@@ -257,12 +303,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
             // initial check 
             if (device.DebugEngine.IsDeviceInInitializeState())
             {
-                    _logger.LogMessage($"Device status verified as being in initialized state. Requesting to resume execution. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Error);
-                    // set flag
-                    deviceIsInInitializeState = true;
+                _logger.LogMessage($"Device status verified as being in initialized state. Requesting to resume execution. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Error);
+                // set flag
+                deviceIsInInitializeState = true;
 
-                    // device is still in initialization state, try resume execution
-                    device.DebugEngine.ResumeExecution();
+                // device is still in initialization state, try resume execution
+                device.DebugEngine.ResumeExecution();
             }
 
             // handle the workflow required to try resuming the execution on the device
@@ -497,17 +543,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        /// <inheritdoc/>
-        public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
-        {
-            foreach (var source in sources)
-            {
-                var testsCases = TestDiscoverer.FindTestCases(source);
-
-                RunTests(testsCases, runContext, frameworkHandle);
-            }
-        }
-
         private List<TestResult> PrepareListResult(List<TestCase> tests)
         {
             List<TestResult> results = new List<TestResult>();
@@ -575,7 +610,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     Settings.LoggingLevel.Verbose);
 
                 var nanoClrLocation = TestObjectHelper.GetNanoClrLocation();
-                if(string.IsNullOrEmpty(nanoClrLocation))
+                if (string.IsNullOrEmpty(nanoClrLocation))
                 {
                     _logger.LogPanicMessage("Can't find nanoCLR Win32 in any of the directories!");
                     results.First().Outcome = TestOutcome.Failed;
