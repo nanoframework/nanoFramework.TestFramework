@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using nanoFramework.TestAdapter;
 using nanoFramework.TestFramework;
+using nanoFramework.Tools.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,12 +26,21 @@ namespace nanoFramework.TestPlatform.TestAdapter
     [FileExtension(".dll")]
     public class TestDiscoverer : ITestDiscoverer
     {
+        private const string DiscovererDebugVar = "NF_UNIT_TEST_EXECUTOR_DEBUG";
+
         private LogMessenger _logger;
         private List<TestCase> _testCases;
 
         /// <inheritdoc/>
         public void DiscoverTests(IEnumerable<string> sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
         {
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // developer note: to debug this task set an environment variable like this:
+            // set NF_UNIT_TEST_EXECUTOR_DEBUG=1
+            // this will cause the execution to pause below so a debugger can be attached
+            DebuggerHelper.WaitForDebuggerIfEnabled(DiscovererDebugVar);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             _testCases = new List<TestCase>();
 
             var settingsProvider = discoveryContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
