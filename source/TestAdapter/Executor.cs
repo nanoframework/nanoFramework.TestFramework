@@ -106,7 +106,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     $"Test group is '{source}'",
                     Settings.LoggingLevel.Detailed);
 
-                // 
                 List<TestResult> results;
 
                 if (_settings.IsRealHardware)
@@ -316,6 +315,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
 
                 _logger.LogMessage($"Computing deployment blob.", Settings.LoggingLevel.Verbose);
+               
                 // build a list with the full path for each DLL, referenced DLL and EXE
                 List<DeploymentAssembly> assemblyList = new List<DeploymentAssembly>();
 
@@ -323,14 +323,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 var workingDirectory = Path.GetDirectoryName(source);
                 var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
 
-                // load tests in case we don't need to check the version:
-                //foreach (var pe in allPeFiles)
-                //{
-                //    assemblyList.Add(
-                //        new DeploymentAssembly(Path.Combine(workingDirectory, pe), "", ""));
-                //}
-
-                // TODO do we need to check versions?
                 var decompilerSettings = new DecompilerSettings
                 {
                     LoadInMemory = false,
@@ -349,8 +341,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     var decompiler = new CSharpDecompiler(file, decompilerSettings); ;
                     var assemblyProperties = decompiler.DecompileModuleAndAssemblyAttributesToString();
-
-                    // read attributes using a Regex
 
                     // AssemblyVersion
                     string pattern = @"(?<=AssemblyVersion\("")(.*)(?=\""\)])";
@@ -376,8 +366,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 // Keep track of total assembly size
                 long totalSizeOfAssemblies = 0;
-
-                // TODO use this code to load the PE files
 
                 // now we will re-deploy all system assemblies
                 foreach (DeploymentAssembly peItem in assemblyList)
@@ -455,7 +443,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 StringBuilder output = new StringBuilder();
                 bool isFinished = false;
-                // attach listner for messages
+                // attach listener for messages
                 device.DebugEngine.OnMessage += (message, text) =>
                 {
                     _logger.LogMessage(text, Settings.LoggingLevel.Verbose);
@@ -671,9 +659,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        private void CheckAllTests(string toCheck, List<TestResult> results)
+        private void CheckAllTests(string rawOutput, List<TestResult> results)
         {
-            var outputStrings = Regex.Split(toCheck, @"((\r)+)?(\n)+((\r)+)?").Where(m => !string.IsNullOrEmpty(m));
+            var outputStrings = Regex.Replace(
+                rawOutput,
+                @"^\s+$[\r\n]*",
+                "",
+                RegexOptions.Multiline).Split(new char[]{ '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             _logger.LogMessage(
                 "Parsing test results...",
@@ -685,39 +677,35 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     // Format is "Test passed: MethodName, ticks";
                     // We do get split with space if the coma is missing, happens time to time
+                    
                     string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0].Split(' ')[0];
                     string ticks = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length + method.Length + 2);
+ 
                     long ticksNum = 0;
-
-                    try
-                    {
-                        ticksNum = Convert.ToInt64(ticks);
-                    }
-                    catch (Exception)
-                    {
-                        // We won't do anything
-                    }
+                    long.TryParse(ticks, out ticksNum);
 
                     // Find the test
-                    var res = results.Where(m => m.TestCase.DisplayName == method);
-                    if (res.Any())
+                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
+                    if (res != null)
                     {
-                        res.First().Duration = TimeSpan.FromTicks(ticksNum);
-                        res.First().Outcome = TestOutcome.Passed;
+                        res.Duration = TimeSpan.FromTicks(ticksNum);
+                        res.Outcome = TestOutcome.Passed;
                     }
                 }
                 else if (line.Contains(TestFailed))
                 {
                     // Format is "Test passed: MethodName, Exception message";
+                    
                     string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0].Split(' ')[0];
+                    
                     string exception = line.Substring(line.IndexOf(TestFailed) + TestPassed.Length + method.Length + 2);
 
                     // Find the test
-                    var res = results.Where(m => m.TestCase.DisplayName == method);
-                    if (res.Any())
+                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
+                    if (res != null)
                     {
-                        res.First().ErrorMessage = exception;
-                        res.First().Outcome = TestOutcome.Failed;
+                        res.ErrorMessage = exception;
+                        res.Outcome = TestOutcome.Failed;
                     }
                 }
             }
