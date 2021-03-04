@@ -492,10 +492,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             foreach (var source in sources)
             {
-                _logger.LogMessage(
-                    $"Finding test cases for '{source}'...",
-                    Settings.LoggingLevel.Detailed);
-
                 var testsCases = TestDiscoverer.FindTestCases(source);
 
                 RunTests(testsCases, runContext, frameworkHandle);
