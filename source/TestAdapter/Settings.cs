@@ -15,12 +15,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
     public class Settings
     {
         /// <summary>
-        /// How long maximum the tests can run.
-        /// </summary>
-        /// <remarks>Make sure to adjust the default value in .runsettings first</remarks>
-        public int TestTimeOutSeconds { get; set; } = 60;
-
-        /// <summary>
         /// True to run the tests on real hardware
         /// </summary>
         public bool IsRealHardware { get; set; } = false;
@@ -46,15 +40,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             if (node.Name == TestsConstants.SettingsName)
             {
-                var timeout = node.SelectSingleNode(nameof(TestTimeOutSeconds))?.FirstChild;
-                if (timeout != null && timeout.NodeType == XmlNodeType.Text)
-                {
-                    if (int.TryParse(timeout.Value, out int timeoutNum))
-                    {
-                        settings.TestTimeOutSeconds = timeoutNum;
-                    }
-                }
-
                 var isrealhard = node.SelectSingleNode(nameof(IsRealHardware))?.FirstChild;
                 if (isrealhard != null && isrealhard.NodeType == XmlNodeType.Text)
                 {
