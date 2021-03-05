@@ -705,6 +705,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 "Parsing test results...",
                 Settings.LoggingLevel.Verbose);
 
+            StringBuilder testOutput = new StringBuilder();
+
+            bool readyFound = false;
+
             foreach (var line in outputStrings)
             {
                 if (line.Contains(TestPassed))
@@ -724,7 +728,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         res.Duration = TimeSpan.FromTicks(ticksNum);
                         res.Outcome = TestOutcome.Passed;
+                        res.Messages.Add(new TestResultMessage(
+                            TestResultMessage.StandardOutCategory,
+                            testOutput.ToString()));
                     }
+
+                    // reset test output
+                    testOutput = new StringBuilder();
                 }
                 else if (line.Contains(TestFailed))
                 {
@@ -740,6 +750,26 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         res.ErrorMessage = exception;
                         res.Outcome = TestOutcome.Failed;
+                        res.Messages.Add(new TestResultMessage(
+                            TestResultMessage.StandardErrorCategory,
+                            testOutput.ToString()));
+                    }
+
+                    // reset test output
+                    testOutput = new StringBuilder();
+                }
+                else
+                {
+                    if(readyFound)
+                    {
+                        testOutput.AppendLine(line);
+
+                        continue;
+                    }
+                    
+                    if (line.StartsWith("Ready."))
+                    {
+                        readyFound = true;
                     }
                 }
             }
