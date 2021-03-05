@@ -597,7 +597,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        output.Append(e.Data);
+                        output.AppendLine(e.Data);
                     }
                 };
 
@@ -609,7 +609,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        error.Append(e.Data);
+                        error.AppendLine(e.Data);
                     }
                 };
 
