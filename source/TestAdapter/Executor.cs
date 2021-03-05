@@ -20,6 +20,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace nanoFramework.TestPlatform.TestAdapter
 {
@@ -42,6 +43,9 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         // timeout when performing a deploy operation
         private const int _timeoutMiliseconds = 1000;
+
+        /// test session timeout (from the runsettings file)
+        private int _testSessionTimeout = 300000;
 
         private IFrameworkHandle _frameworkHandle = null;
 
@@ -71,6 +75,15 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             if (settingsProvider != null)
             {
+                // get TestSessionTimeout from runsettings
+                var xml = new XmlDocument();
+                xml.LoadXml(runContext.RunSettings.SettingsXml);
+                var timeout = xml.SelectSingleNode("RunSettings//RunConfiguration//TestSessionTimeout");
+                if (timeout != null && timeout.NodeType == XmlNodeType.Element)
+                {
+                    int.TryParse(timeout.InnerText, out _testSessionTimeout);
+                }
+
                 _settings = settingsProvider.Settings;
 
                 _logger.LogMessage(
@@ -503,14 +516,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 "Setting up test runner in *** nanoCLR WIN32***",
                 Settings.LoggingLevel.Detailed);
 
-            int runTimeout = 10000;
-            if (_settings != null)
-            {
-                runTimeout = _settings.TestTimeOutSeconds * 1000;
-            }
-
             _logger.LogMessage(
-                $"Timeout set to {runTimeout}ms",
+                $"Timeout set to {_testSessionTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
             List<TestResult> results = PrepareListResult(tests);
@@ -590,7 +597,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        output.AppendLine(e.Data);
+                        output.Append(e.Data);
                     }
                 };
 
@@ -602,7 +609,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        error.AppendLine(e.Data);
+                        error.Append(e.Data);
                     }
                 };
 
@@ -617,7 +624,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
 
                 // wait for exit, no worries about the outcome
-                _nanoClr.WaitForExit(runTimeout);
+                _nanoClr.WaitForExit(_testSessionTimeout);
 
                 CheckAllTests(output.ToString(), results);
                 _logger.LogMessage(output.ToString(), Settings.LoggingLevel.Verbose);
@@ -652,7 +659,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         Settings.LoggingLevel.Verbose);
 
                     _nanoClr.Kill();
-                    _nanoClr.WaitForExit(runTimeout);
+                    _nanoClr.WaitForExit(2000);
                 }
             }
 
