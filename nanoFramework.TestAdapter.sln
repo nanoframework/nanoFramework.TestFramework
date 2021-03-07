@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		version.json = version.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nanoFramework.Collector", "source\Collector\nanoFramework.Collector.csproj", "{D3B1AD8C-7246-4AA0-A5C9-B020199EE01D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		source\TestFrameworkShared\TestFrameworkShared.projitems*{55f048b5-6739-43c5-a93d-db61db8e912f}*SharedItemsImports = 13
@@ -28,6 +30,10 @@ Global
 		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B1AD8C-7246-4AA0-A5C9-B020199EE01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B1AD8C-7246-4AA0-A5C9-B020199EE01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B1AD8C-7246-4AA0-A5C9-B020199EE01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B1AD8C-7246-4AA0-A5C9-B020199EE01D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
