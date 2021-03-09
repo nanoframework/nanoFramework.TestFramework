@@ -77,6 +77,7 @@ jobs:
 
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    NUGET_CERT_REVOCATION_MODE: 'offline'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
     buildConfigurationUnitLauncher: 'Debug'
