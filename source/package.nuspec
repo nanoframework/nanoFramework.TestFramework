@@ -30,6 +30,8 @@
 
     <file src="runsettings\nano.runsettings" target="content" />
 
+    <file src="nanoFramework.TestFramework.targets" target="build" />
+
     <file src="..\assets\nf-logo.png" target="images" />
     <file src="..\LICENSE.md" target="" />
 

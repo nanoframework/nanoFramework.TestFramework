@@ -1,0 +1,15 @@
+<Project ToolsVersion="15.0" DefaultTargets="Build"  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>  
+      <Win32_nanoClr_Exe>https://bintray.com/nfbot/nanoframework-images-dev/download_file?file_path=nanoFramework.nanoCLR.exe</Win32_nanoClr_Exe>
+    </PropertyGroup>  
+
+    <Target Name="DownloadWin32NanoClrExe" BeforeTargets="Build">
+        <DownloadFile 
+            ContinueOnError="WarnAndContinue"
+            SourceUrl="$(Win32_nanoClr_Exe)"
+            DestinationFileName="nanoFramework.nanoCLR.exe"
+            DestinationFolder="$(MSBuildThisFileDirectory)..\lib\net48">
+        <Output TaskParameter="DownloadedFile" ItemName="Content" />
+      </DownloadFile>
+    </Target>
+</Project>
