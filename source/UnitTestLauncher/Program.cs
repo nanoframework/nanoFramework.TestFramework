@@ -37,25 +37,29 @@ namespace nanoFramework.TestFramework
                             var methods = type.GetMethods();
 
                             // First we look at Setup
-                            RunTest(methods, typeof(SetupAttribute));
+                            var continueTests = RunTest(methods, typeof(SetupAttribute));
 
-                            // then we run the tests
-                            RunTest(methods, typeof(TestMethodAttribute));
+                            if (continueTests)
+                            {
+                                // then we run the tests
+                                RunTest(methods, typeof(TestMethodAttribute));
 
-                            // last we handle Cleanup
-                            RunTest(methods, typeof(CleanupAttribute));
+                                // last we handle Cleanup
+                                RunTest(methods, typeof(CleanupAttribute));
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static void RunTest(
+        private static bool RunTest(
             MethodInfo[] methods,
             Type attribToRun)
         {
             long dt;
             long totalTicks;
+            bool isSetupMethod = attribToRun == typeof(SetupAttribute);
 
             foreach (var method in methods)
             {
@@ -75,12 +79,27 @@ namespace nanoFramework.TestFramework
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine($"Test failed: {method.Name}, {ex.Message}");
+                            if (ex.GetType() == typeof(SkipTestException))
+                            {
+                                Debug.WriteLine($"Test skipped: {method.Name}, {ex.Message}");
+                                if (isSetupMethod)
+                                {
+                                    // In case the Setup attribute test is skipped, we will skip
+                                    // All the other tests
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"Test failed: {method.Name}, {ex.Message}");
+                            }
                         }
 
                     }
                 }
             }
+
+            return true;
         }
     }
 }

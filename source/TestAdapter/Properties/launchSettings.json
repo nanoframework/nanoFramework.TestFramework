@@ -4,6 +4,11 @@
       "commandName": "Executable",
       "executablePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe",
       "commandLineArgs": "E:\\Github\\nflib-CoreLibrary\\Tests\\NFUnitTestThread\\bin\\Debug\\NFUnitTest.dll  /Settings:E:\\Github\\nflib-CoreLibrary\\Tests\\NFUnitTestThread\\nano.runsettings /TestAdapterPath:."
+    },
+    "nanoFramework.TestAdapter Enterprise": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe",
+      "commandLineArgs": "C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\bin\\Debug\\NFUnitTest.dll  /Settings:C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\nano.runsettings /TestAdapterPath:."
     }
   }
 }
