@@ -32,6 +32,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
     {
         private const string TestPassed = "Test passed: ";
         private const string TestFailed = "Test failed: ";
+        private const string TestSkipped = "Test skipped: ";
         private const string Exiting = "Exiting.";
         private const string Done = "Done.";
         private Settings _settings;
@@ -661,7 +662,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     results.First().ErrorMessage = output.ToString();
                 }
 
-                var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed && m.Outcome != TestOutcome.Passed);
+                var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed && m.Outcome != TestOutcome.Passed && m.Outcome != TestOutcome.Skipped);
                 if (notPassedOrFailed.Any())
                 {
                     notPassedOrFailed.First().ErrorMessage = output.ToString();
@@ -738,7 +739,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
                 else if (line.Contains(TestFailed))
                 {
-                    // Format is "Test passed: MethodName, Exception message";
+                    // Format is "Test failed: MethodName, Exception message";
 
                     string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0].Split(' ')[0];
 
@@ -758,15 +759,61 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     // reset test output
                     testOutput = new StringBuilder();
                 }
+                else if (line.Contains(TestSkipped))
+                {
+                    // Format is "Test failed: MethodName, Exception message";
+
+                    string method = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length).Split(',')[0].Split(' ')[0];
+
+                    string exception = line.Substring(line.IndexOf(TestSkipped) + TestPassed.Length + method.Length + 2);
+
+                    // Find the test
+                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
+                    if (res != null)
+                    {
+                        res.ErrorMessage = exception;
+                        res.Outcome = TestOutcome.Skipped;
+                        res.Messages.Add(new TestResultMessage(
+                            TestResultMessage.StandardErrorCategory,
+                            testOutput.ToString()));
+
+                        // If this is a Steup Test, set all the other tests from the class to skipped as well
+                        var trait = res.TestCase.Traits.FirstOrDefault();
+                        if (trait != null)
+                        {
+                            if (trait.Value == "Setup" && trait.Name == "Type")
+                            {
+                                // A test name is the full qualify name of the metho.methodname, finding the list . index will give all the familly name
+                                var testCasesToSkipName = res.TestCase.FullyQualifiedName.Substring(0, res.TestCase.FullyQualifiedName.LastIndexOf('.'));
+                                var allTestToSkip = results.Where(m => m.TestCase.FullyQualifiedName.Contains(testCasesToSkipName));
+                                foreach (var testToSkip in allTestToSkip)
+                                {
+                                    if(testToSkip.TestCase.DisplayName == method)
+                                    {
+                                        continue;
+                                    }
+
+                                    testToSkip.Outcome = TestOutcome.Skipped;
+                                    res.Messages.Add(new TestResultMessage(
+                                        TestResultMessage.StandardErrorCategory,
+                                        $"Setup method '{method}' has been skipped."));
+                                }
+                            }
+                        }
+                    }
+
+                    // reset test output
+                    testOutput = new StringBuilder();
+                }
                 else
                 {
-                    if(readyFound)
+                    if (readyFound)
                     {
                         testOutput.AppendLine(line);
 
                         continue;
                     }
-                    
+
                     if (line.StartsWith("Ready."))
                     {
                         readyFound = true;

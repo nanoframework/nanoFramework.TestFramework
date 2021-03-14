@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CleanupAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SetupAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkipTestException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestClassAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestMethodAttribute.cs" />
   </ItemGroup>

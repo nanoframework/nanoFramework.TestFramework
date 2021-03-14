@@ -14,6 +14,21 @@ namespace nanoFramework.TestFramework
     /// </summary>
     public class Assert
     {
+        #region SkipTest
+
+        public static void SkipTest(string message = "")
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new SkipTestException();
+            }
+            else
+            {
+                throw new SkipTestException(message);
+            }
+        }
+
+        #endregion
 
         #region true/false
 
@@ -714,7 +729,7 @@ namespace nanoFramework.TestFramework
         /// </summary>
         /// <param name="exceptionType">The exception to be raised</param>
         /// <param name="action">The method to execute</param>
-        public static void Trows(Type exceptionType, Action action, string message = "")
+        public static void Throws(Type exceptionType, Action action, string message = "")
         {
             try
             {
