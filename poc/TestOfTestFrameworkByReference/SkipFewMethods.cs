@@ -59,5 +59,26 @@ namespace NFUnitTest
             Assert.Equal(42.1, on42);
             Assert.Equal(double.MaxValue, maxDouble);
         }
+
+        [TestMethod]
+        public void MethodWillSkippIfRunningInWin32()
+        {
+            var sysInfoPlatform = SystemInfo.Platform;
+            if (sysInfoPlatform == "WIN32")
+            {
+                Assert.SkipTest("Skip method because this is running on WIN32 nanoCLR.");
+            }
+        }
+
+
+        [TestMethod]
+        public void MethodWillSkippIfRunningOnTargetOtherThanWin32()
+        {
+            var sysInfoPlatform = SystemInfo.Platform;
+            if (sysInfoPlatform != "WIN32")
+            {
+                Assert.SkipTest("Skip method because this is running on a platform other than WIN32.");
+            }
+        }
     }
 }
