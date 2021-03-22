@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>nanoFramework.TestFramework</id>
@@ -8,13 +8,14 @@
     <owners>nanoFramework project contributors,dotnetfoundation</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="file">LICENSE.md</license>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>
+    </releaseNotes>
     <developmentDependency>true</developmentDependency>
     <projectUrl>https://github.com/nanoFramework.TestFramework</projectUrl>
     <iconUrl>https://secure.gravatar.com/avatar/97d0e092247f0716db6d4b47b7d1d1ad</iconUrl>
     <icon>images\nf-logo.png</icon>
     <repository type="git" url="https://github.com/nanoFramework.TestFramework" commit="$commit$" />
-    <copyright>Copyright (c) .NET Foundation and Contributors</copyright>    
+    <copyright>Copyright (c) .NET Foundation and Contributors</copyright>
     <description>This package includes the Test Framework to be used for Unit Tests in .NET nanoFramework C# projects.</description>
     <tags>nanoFramework C# csharp netmf netnf unittest </tags>
     <packageTypes>
@@ -24,16 +25,11 @@
   <files>
     <file src="TestAdapter\bin\Release\net4.8\*.dll" target="lib/net48" />
     <file src="TestAdapter\bin\Release\net4.8\*.*" target="lib/net48" />
-
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.TestFramework.*" target="lib" />
     <file src="UnitTestLauncher\bin\Debug\nanoFramework.UnitTestLauncher.*" target="lib" />
-
     <file src="runsettings\nano.runsettings" target="content" />
-
     <file src="nanoFramework.TestFramework.targets" target="build" />
-
     <file src="..\assets\nf-logo.png" target="images" />
     <file src="..\LICENSE.md" target="" />
-
   </files>
 </package>
