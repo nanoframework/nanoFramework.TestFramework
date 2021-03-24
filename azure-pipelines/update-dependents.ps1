@@ -32,6 +32,8 @@ git config --global core.autocrlf true
 Write-Host "Checkout develop branch..."
 git checkout --quiet develop | Out-Null
 
+dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging/sandbox/nuget/v3/index.json -n nano.azure.feed
+
 ####################
 # VS 2017
 
@@ -39,7 +41,7 @@ Write-Host "Updating nanoFramework.TestFramework package in VS2017 solution..."
 
 dotnet remove VisualStudio.Extension\VisualStudio.Extension.csproj package nanoFramework.TestFramework
 
-dotnet add VisualStudio.Extension\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease -s https://pkgs.dev.azure.com/nanoframework/feed/_packaging/sandbox/nuget/v3/index.json
+dotnet add VisualStudio.Extension\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease
 
 ####################
 # VS 2019
@@ -48,7 +50,7 @@ Write-Host "Updating nanoFramework.TestFramework package in VS2019 solution..."
 
 dotnet remove VisualStudio.Extension-2019\VisualStudio.Extension.csproj package nanoFramework.TestFramework
 
-dotnet add VisualStudio.Extension-2019\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease -s https://pkgs.dev.azure.com/nanoframework/feed/_packaging/sandbox/nuget/v3/index.json
+dotnet add VisualStudio.Extension-2019\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease
 
 #####################
 
