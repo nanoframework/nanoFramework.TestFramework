@@ -291,12 +291,12 @@ jobs:
     condition: succeeded()
     displayName: Set build number
 
-  # update dependencies
+  # update dependents
   - task: PowerShell@2
-    displayName: Update dependent class libs
+    displayName: Update dependents
     inputs:
       targetType: filePath
-      filePath: azure-pipelines/update-dependencies.ps1
+      filePath: azure-pipelines/update-dependents.ps1
     env:
       MY_GITHUB_TOKEN: $(GitHubToken)
 
