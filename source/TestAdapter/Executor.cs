@@ -189,7 +189,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             int retryCount = 0;
             string port = _settings.RealHardwarePort == string.Empty ? "COM4" : _settings.RealHardwarePort;
             //var serialDebugClient = PortBase.CreateInstanceForSerial("", null, true, new List<string>() { port });
-            var serialDebugClient = PortBase.CreateInstanceForSerial("", null, true, null);
+            var serialDebugClient = PortBase.CreateInstanceForSerial(true, null);
 
         retryConnection:
             _logger.LogMessage($"Checking device on port {port}.", Settings.LoggingLevel.Verbose);
@@ -241,7 +241,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             bool deviceIsInInitializeState = false;
 
         retryDebug:
-            bool connectResult = await device.DebugEngine.ConnectAsync(5000, true);
+            bool connectResult = device.DebugEngine.Connect(5000, true, true);
             _logger.LogMessage($"Device connect result is {connectResult}. Attempt {retryCount}/{_numberOfRetries}", Settings.LoggingLevel.Verbose);
 
             if (!connectResult)
@@ -264,15 +264,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
             retryCount = 0;
         retryErase:
             // erase the device
-            var eraseResult = await Task.Run(async delegate
-            {
-                _logger.LogMessage($"Erase deployment block storage. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Verbose);
-                return await device.EraseAsync(
+            _logger.LogMessage($"Erase deployment block storage. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Verbose);
+
+            var eraseResult = device.Erase(
                     EraseOptions.Deployment,
-                    CancellationToken.None,
                     null,
                     null);
-            });
 
             _logger.LogMessage($"Erase result is {eraseResult}.", Settings.LoggingLevel.Verbose);
             if (!eraseResult)
