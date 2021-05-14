@@ -11,11 +11,11 @@
     <PackageReference Include="ICSharpCode.Decompiler" Version="7.0.0.6488" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.9.4" />
     <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
-      <Version>1.6.2-preview.6</Version>
+      <Version>1.6.5-preview.16</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="1.30.0-preview.1" />
+    <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.0.0-preview.15" />
     <PackageReference Include="Nerdbank.GitVersioning">
       <Version>3.4.194</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,11 +37,7 @@
   </PropertyGroup>  
 
   <Target Name="DownloadWin32NanoClrExe" BeforeTargets="Build">
-      <DownloadFile 
-          ContinueOnError="WarnAndContinue"
-          SourceUrl="$(Win32_nanoClr_Exe)"
-          DestinationFileName="nanoFramework.nanoCLR.exe"
-          DestinationFolder="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48">
+      <DownloadFile ContinueOnError="WarnAndContinue" SourceUrl="$(Win32_nanoClr_Exe)" DestinationFileName="nanoFramework.nanoCLR.exe" DestinationFolder="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48">
       <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
   </Target>
