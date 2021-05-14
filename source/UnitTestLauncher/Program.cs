@@ -75,13 +75,13 @@ namespace nanoFramework.TestFramework
                             method.Invoke(null, null);
                             totalTicks = DateTime.UtcNow.Ticks - dt;
 
-                            Debug.WriteLine($"Test passed: {method.Name}, {totalTicks}");
+                            Console.WriteLine($"Test passed: {method.Name}, {totalTicks}");
                         }
                         catch (Exception ex)
                         {
                             if (ex.GetType() == typeof(SkipTestException))
                             {
-                                Debug.WriteLine($"Test skipped: {method.Name}, {ex.Message}");
+                                Console.WriteLine($"Test skipped: {method.Name}, {ex.Message}");
                                 if (isSetupMethod)
                                 {
                                     // In case the Setup attribute test is skipped, we will skip
@@ -91,7 +91,7 @@ namespace nanoFramework.TestFramework
                             }
                             else
                             {
-                                Debug.WriteLine($"Test failed: {method.Name}, {ex.Message}");
+                                Console.WriteLine($"Test failed: {method.Name}, {ex.Message}");
                             }
                         }
 
