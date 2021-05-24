@@ -307,7 +307,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -467,7 +467,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -499,7 +499,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{a} is not equal to {b}. {message}");
+            throw new Exception($"{a} is equal to {b}. {message}");
         }
 
         #endregion
