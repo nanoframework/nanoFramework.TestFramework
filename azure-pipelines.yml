@@ -76,7 +76,7 @@ jobs:
     vmImage: 'windows-2019'
 
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_NOLOGO: true
     NUGET_CERT_REVOCATION_MODE: 'offline'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
@@ -93,11 +93,7 @@ jobs:
       git config --global user.name "nfbot"
     displayName: Setup git identity
 
-  - task: NuGetToolInstaller@1
-    condition: not(variables['StartReleaseCandidate'])
-    displayName: 'Install specific version of NuGet'
-    inputs:
-      versionSpec: '5.8.0'
+  - template: azure-pipelines-templates/install-nuget.yml@templates
 
   - task: DotNetCoreCLI@2  
     condition: ne(variables['system.pullrequest.isfork'], true)
@@ -282,10 +278,7 @@ jobs:
   
   - template: azure-pipelines-templates/install-nbgv-tool.yml@templates
   
-  - task: NuGetToolInstaller@0
-    displayName: 'Install specific version of NuGet'
-    inputs:
-      versionSpec: '5.8.0'
+  - template: azure-pipelines-templates/install-nuget.yml@templates
 
   - script: nbgv cloud -a -c
     condition: succeeded()
