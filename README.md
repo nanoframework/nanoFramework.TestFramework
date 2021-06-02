@@ -1,6 +1,6 @@
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/nanoframework/Home/blob/master/CONTRIBUTING.md) [![Discord](https://img.shields.io/discord/478725473862549535.svg?logo=discord&logoColor=white&label=Discord&color=7289DA)](https://discord.gg/gCyBu8T)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/nanoframework/Home/blob/main/CONTRIBUTING.md) [![Discord](https://img.shields.io/discord/478725473862549535.svg?logo=discord&logoColor=white&label=Discord&color=7289DA)](https://discord.gg/gCyBu8T)
 
-![nanoFramework logo](https://github.com/nanoframework/Home/blob/master/resources/logo/nanoFramework-repo-logo.png)
+![nanoFramework logo](https://github.com/nanoframework/Home/blob/main/resources/logo/nanoFramework-repo-logo.png)
 
 -----
 
@@ -10,12 +10,12 @@
 
 | Component | Build Status | NuGet Package |
 |:-|---|---|
-| nanoframework.TestFramework | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=master)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=master) | [![NuGet](https://img.shields.io/nuget/v/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
-| nanoframework.TestFramework (preview) | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop) | [![](https://badgen.net/badge/NuGet/preview/D7B023?icon=https://simpleicons.now.sh/azuredevops/fff)](https://dev.azure.com/nanoframework/feed/_packaging?_a=package&feed=sandbox&package=nanoframework.TestFramework&protocolType=NuGet&view=overview) |
+| nanoframework.TestFramework | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=main)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=main) | [![NuGet](https://img.shields.io/nuget/v/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
+| nanoframework.TestFramework (preview) | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop) | [![NuGet](https://img.shields.io/nuget/vpre/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
 
-## What is the .NET nanoFramework Test Framework
+## What is the .NET **nanoFramework** Test Framework
 
-nanoFramework TestFramework it's a Unit Test framework dedicated to .NET nanoFramework! It has all the benefits of what you're used to when using Microsoft Test platform for .NET or XUnit or any other!
+nanoFramework TestFramework it's a Unit Test framework dedicated to .NET **nanoFramework**! It has all the benefits of what you're used to when using Microsoft Test platform for .NET or XUnit or any other!
 
 The framework includes multiple elements that are distributed in a single NuGet package!
 
@@ -58,7 +58,7 @@ This repository contains the source of the core elements. You'll find them in `s
 
 ## Sample pack
 
-You can find on our samples repo a [sample pack](https://github.com/nanoframework/Samples/tree/master/samples/UnitTest) with projects demoing how to use the Unit Test Framework.
+You can find on our samples repo a [sample pack](https://github.com/nanoframework/Samples/tree/main/samples/UnitTest) with projects demoing how to use the Unit Test Framework.
 
 ## Feedback and documentation
 
@@ -68,7 +68,7 @@ Join our Discord community [here](https://discord.gg/gCyBu8T).
 
 ## Credits
 
-The list of contributors to this project can be found at [CONTRIBUTORS](https://github.com/nanoframework/Home/blob/master/CONTRIBUTORS.md).
+The list of contributors to this project can be found at [CONTRIBUTORS](https://github.com/nanoframework/Home/blob/main/CONTRIBUTORS.md).
 
 ## License
 
