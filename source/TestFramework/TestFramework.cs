@@ -706,7 +706,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{obj} is null. {message}");
+            throw new Exception($"The object is not null. {message}");
         }
 
         /// <summary>
@@ -721,7 +721,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            throw new Exception($"{obj} is not null. {message}");
+            throw new Exception($"The object should not be null. {message}");
         }
 
         /// <summary>
