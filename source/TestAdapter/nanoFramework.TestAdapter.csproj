@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ICSharpCode.Decompiler" Version="7.0.0.6488" />
-    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.9.4" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.1.0.6543" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.10.0" />
     <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
       <Version>1.6.5-preview.43</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,7 +17,7 @@
     </PackageReference>
     <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.0.0-preview.25" />
     <PackageReference Include="Nerdbank.GitVersioning">
-      <Version>3.4.203</Version>
+      <Version>3.4.205</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -6,8 +6,6 @@
        <ResultsDirectory>.\TestResults</ResultsDirectory><!-- Path relative to solution directory -->
        <TestSessionTimeout>120000</TestSessionTimeout><!-- Milliseconds -->
        <TargetFrameworkVersion>Framework40</TargetFrameworkVersion>
-       <!-- Comment the following line or adjust it if you want to test the TestAdapter. Path has to be absolute or relative to the build folder of the test dll -->
-       <TestAdaptersPaths>E:\Github\nf-nanoFramework.TestPlatform\source\TestAdapter\bin\Debug\net4.8</TestAdaptersPaths>
    </RunConfiguration>
    <nanoFrameworkAdapter>
        <Logging>None</Logging>
