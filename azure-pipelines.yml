@@ -80,7 +80,6 @@ jobs:
     NUGET_CERT_REVOCATION_MODE: 'offline'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
-    buildConfigurationUnitLauncher: 'Debug'
 
   steps:
 
@@ -135,7 +134,7 @@ jobs:
       solution: 'nanoFramework.TestFramework.sln'
       platform: '$(buildPlatform)'
       msbuildArgs: '/p:PublicRelease=true'
-      configuration: '$(buildConfigurationUnitLauncher)'
+      configuration: '$(buildConfiguration)'
   
   # - task: VisualStudioTestPlatformInstaller@1
   #   condition: succeeded()
