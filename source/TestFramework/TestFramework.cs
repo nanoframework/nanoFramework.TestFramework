@@ -290,6 +290,22 @@ namespace nanoFramework.TestFramework
             throw new Exception($"{a} is not equal to {b}. {message}");
         }
 
+        /// <summary>
+        /// Check if both elements are equal
+        /// </summary>
+        /// <param name="a">First element</param>
+        /// <param name="b">Second element</param>
+        /// <exception cref="Exception">Raises an exception if both elements are not equal</exception>
+        public static void Equal(DateTime a, DateTime b, string message = "")
+        {
+            if (a == b)
+            {
+                return;
+            }
+
+            throw new Exception($"{a} is not equal to {b}. {message}");
+        }
+
         #endregion
 
         #region NotEqual
@@ -509,6 +525,22 @@ namespace nanoFramework.TestFramework
         /// <param name="b">Second element</param>
         /// <exception cref="Exception">Raises an exception if both elements are equal</exception>
         public static void NotEqual(string a, string b, string message = "")
+        {
+            if (a != b)
+            {
+                return;
+            }
+
+            throw new Exception($"{a} should not be equal to {b}. {message}");
+        }
+
+        /// <summary>
+        /// Check if both elements are not equal
+        /// </summary>
+        /// <param name="a">First element</param>
+        /// <param name="b">Second element</param>
+        /// <exception cref="Exception">Raises an exception if both elements are equal</exception>
+        public static void NotEqual(DateTime a, DateTime b, string message = "")
         {
             if (a != b)
             {
