@@ -11,7 +11,7 @@
     <PackageReference Include="ICSharpCode.Decompiler" Version="7.1.0.6543" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.10.0" />
     <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
-      <Version>1.6.5-preview.43</Version>
+      <Version>1.6.5-preview.49</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
