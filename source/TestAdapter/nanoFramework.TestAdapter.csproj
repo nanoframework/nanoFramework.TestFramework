@@ -41,4 +41,12 @@
       <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
   </Target>
+
+  <!-- need this here to make sure the latest version of WIN32 nanoCLR is used in Azure Pipeline builds -->
+  <Target Name="DownloadWin32NanoClrExe" AfterTargets="Build" Condition="'$(TF_BUILD)' == 'True'">
+      <DownloadFile ContinueOnError="WarnAndContinue" SkipUnchangedFiles="False" SourceUrl="$(Win32_nanoClr_Exe)" DestinationFileName="nanoFramework.nanoCLR.exe" DestinationFolder="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
+    </DownloadFile>
+  </Target>
+  
 </Project>
