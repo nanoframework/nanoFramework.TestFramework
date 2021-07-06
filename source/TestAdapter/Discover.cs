@@ -189,23 +189,36 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         private static FileInfo[] FindNfprojSources(string source)
         {
-            if (Path.GetDirectoryName(source) == null)
+            if (string.IsNullOrEmpty(source))
             {
                 return new FileInfo[0];
             }
 
-            // Find all the potential *.cs files present at same level or above a nfproj file,
-            // if no nfproj file, then we will skip this source
-            var mainDirectory = new DirectoryInfo(Path.GetDirectoryName(source));
-            var nfproj = mainDirectory.GetFiles("*.nfproj");
-
-            if (nfproj.Length == 0
-                && mainDirectory.Parent != null)
+            try
             {
-                return FindNfprojSources(mainDirectory.Parent.FullName);
-            }
+                if (Path.GetDirectoryName(source) == null)
+                {
+                    return new FileInfo[0];
+                }
 
-            return nfproj;
+                // Find all the potential *.cs files present at same level or above a nfproj file,
+                // if no nfproj file, then we will skip this source
+                var mainDirectory = new DirectoryInfo(Path.GetDirectoryName(source));
+
+                FileInfo[] nfproj = mainDirectory?.GetFiles("*.nfproj");
+
+                if (nfproj.Length == 0
+                    && mainDirectory?.Parent != null)
+                {
+                    return FindNfprojSources(mainDirectory?.Parent.FullName);
+                }
+
+                return nfproj;
+            }
+            catch(Exception ex)
+            {
+                throw new FileNotFoundException($"Exception raised when finding NF project sources: '{ex}' searching for {source}");
+            }
         }
 
         private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method)
