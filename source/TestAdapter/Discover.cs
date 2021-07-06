@@ -198,10 +198,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
             // if no nfproj file, then we will skip this source
             var mainDirectory = new DirectoryInfo(Path.GetDirectoryName(source));
             var nfproj = mainDirectory.GetFiles("*.nfproj");
-            if (nfproj.Length == 0)
+
+            if (nfproj.Length == 0
+                && mainDirectory.Parent != null)
             {
-                var ret = FindNfprojSources(mainDirectory.Parent.FullName);
-                return ret;
+                return FindNfprojSources(mainDirectory.Parent.FullName);
             }
 
             return nfproj;
