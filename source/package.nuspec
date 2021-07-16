@@ -24,7 +24,7 @@
   </metadata>
   <files>
     <file src="TestAdapter\bin\Release\net4.8\*.dll" target="lib/net48" />
-    <file src="TestAdapter\bin\Release\net4.8\*.*" target="lib/net48" />
+    <file src="TestAdapter\bin\Release\net4.8\nanoFramework.nanoCLR.exe" target="lib/net48" />
     <file src="UnitTestLauncher\bin\Release\nanoFramework.TestFramework.*" target="lib" />
     <file src="UnitTestLauncher\bin\Release\nanoFramework.UnitTestLauncher.*" target="lib" />
     <file src="runsettings\nano.runsettings" target="content" />
