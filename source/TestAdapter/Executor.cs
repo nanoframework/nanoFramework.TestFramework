@@ -449,7 +449,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     if (!device.DebugEngine.DeploymentExecute(
                     assemblyCopy,
                     false,
-                    true,
+                    false,
                     null,
                     null))
                     {
