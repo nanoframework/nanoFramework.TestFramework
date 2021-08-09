@@ -442,16 +442,18 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 await Task.Yield();
 
+                var deploymentLogger = new Progress<string>((m) => _logger.LogMessage(m, Settings.LoggingLevel.Detailed));
+
                 await Task.Run(async delegate
                 {
                     // OK to skip erase as we just did that
                     // no need to reboot device
                     if (!device.DebugEngine.DeploymentExecute(
-                    assemblyCopy,
-                    false,
-                    false,
-                    null,
-                    null))
+                        assemblyCopy,
+                        false,
+                        false,
+                        null,
+                        deploymentLogger))
                     {
                         // if the first attempt fails, give it another try
 
@@ -468,11 +470,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // can't skip erase as we just did that
                         // no need to reboot device
                         if (!device.DebugEngine.DeploymentExecute(
-                        assemblyCopy,
-                        false,
-                        false,
-                        null,
-                        null))
+                            assemblyCopy,
+                            false,
+                            false,
+                            null,
+                            deploymentLogger))
                         {
                             _logger.LogMessage("Deployment failed.", Settings.LoggingLevel.Error);
 
