@@ -35,22 +35,14 @@ git checkout --quiet develop | Out-Null
 dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging/sandbox/nuget/v3/index.json -n nano.azure.feed
 
 ####################
-# VS 2017
+# VS 2019 & 2022
 
-Write-Host "Updating nanoFramework.TestFramework package in VS2017 solution..."
+Write-Host "Updating nanoFramework.Tools.Debugger.Net package in VS2019 & VS2022 solution..."
 
-dotnet remove VisualStudio.Extension\VisualStudio.Extension.csproj package nanoFramework.TestFramework
-
-dotnet add VisualStudio.Extension\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease
-
-####################
-# VS 2019
-
-Write-Host "Updating nanoFramework.TestFramework package in VS2019 solution..."
-
-dotnet remove VisualStudio.Extension-2019\VisualStudio.Extension.csproj package nanoFramework.TestFramework
-
-dotnet add VisualStudio.Extension-2019\VisualStudio.Extension.csproj package nanoFramework.TestFramework --prerelease
+dotnet remove VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.Tools.Debugger.Net
+dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.Tools.Debugger.Net --prerelease
+dotnet remove VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.Tools.Debugger.Net
+dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.Tools.Debugger.Net --prerelease
 
 #####################
 
