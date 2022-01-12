@@ -187,12 +187,20 @@ namespace nanoFramework.TestPlatform.TestAdapter
             List<TestResult> results = PrepareListResult(tests);
             List<byte[]> assemblies = new List<byte[]>();
             int retryCount = 0;
-            string port = _settings.RealHardwarePort == string.Empty ? "COM4" : _settings.RealHardwarePort;
-            //var serialDebugClient = PortBase.CreateInstanceForSerial("", null, true, new List<string>() { port });
-            var serialDebugClient = PortBase.CreateInstanceForSerial(true, null);
+
+            var serialDebugClient = PortBase.CreateInstanceForSerial(true, 2000);
 
         retryConnection:
-            _logger.LogMessage($"Checking device on port {port}.", Settings.LoggingLevel.Verbose);
+            
+            if(string.IsNullOrEmpty(_settings.RealHardwarePort))
+            {
+                _logger.LogMessage($"Waiting for device enumeration to complete.", Settings.LoggingLevel.Verbose);
+            }
+            else
+            {
+                _logger.LogMessage($"Checking device on port {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
+            }
+
             while (!serialDebugClient.IsDevicesEnumerationComplete)
             {
                 Thread.Sleep(1);
@@ -218,17 +226,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             retryCount = 0;
             NanoDeviceBase device;
-            if (serialDebugClient.NanoFrameworkDevices.Count > 1)
+
+            if (serialDebugClient.NanoFrameworkDevices.Count > 1
+                && !string.IsNullOrEmpty(_settings.RealHardwarePort))
             {
-                device = serialDebugClient.NanoFrameworkDevices.Where(m => m.SerialNumber == port).First();
+                // get the device at the requested COM port (if there is one)
+                device = serialDebugClient.NanoFrameworkDevices.FirstOrDefault(m => m.SerialNumber == _settings.RealHardwarePort);
+
+                // sanity check
+                if(device is null)
+                {
+                    // no device, done here
+                    _logger.LogMessage($"No device available at {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
+                    return results;
+                }
             }
             else
             {
+                // no COM port requested, just grab the 1st one
                 device = serialDebugClient.NanoFrameworkDevices[0];
             }
 
             _logger.LogMessage(
-                $"Getting things with {device.Description}",
+                $"Getting things ready with {device.Description}",
                 Settings.LoggingLevel.Detailed);
 
             // check if debugger engine exists
@@ -251,6 +271,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     // Give it a bit of time
                     await Task.Delay(100);
                     retryCount++;
+
                     goto retryDebug;
                 }
                 else
