@@ -1,3 +1,18 @@
+function UpdateTestFrameworkVersion {
+    Param(
+        [string] $NewVersion,
+        [string] $FilePath
+    )
+
+    $versionRegex1 = "nanoFramework\.TestFramework\.\s*\d+\.\s*\d+\.\s*\d+"
+    $versionRegex2 = "id=\""nanoFramework\.TestFramework\"" version=\""\s*\d+\.\s*\d+\.\s*\d+"
+
+    $filecontent = Get-Content($FilePath)
+    attrib $FilePath -r
+    $filecontent -replace  $versionRegex1, "nanoFramework.TestFramework.$NewVersion" | Out-File $FilePath -Encoding utf8
+    $filecontent -replace  $versionRegex2, "id=""nanoFramework.TestFramework"" version=""$NewVersion" | Out-File $FilePath -Encoding utf8
+}
+
 "Updating dependency at nf-Visual-Studio-extension" | Write-Host
 
 # compute authorization header in format "AUTHORIZATION: basic 'encoded token'"
@@ -66,6 +81,19 @@ $repoStatus = "$(git status --short --porcelain)"
 
 if ($repoStatus -ne "")
 {
+    # update the extension manifests
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2019/source.extension.vsixmanifest'
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2022/source.extension.vsixmanifest'
+
+    # update the project templates
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/CS.TestApplication-vs2019.vstemplate'
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/CS.TestApplication-vs2022.vstemplate'
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/NFUnitTest.nfproj'
+
+    # update remaining project refs 
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj'
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj'
+
     # create branch to perform updates
     git branch $newBranchName
 
