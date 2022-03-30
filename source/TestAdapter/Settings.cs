@@ -1,0 +1,82 @@
+﻿//
+// Copyright (c) .NET Foundation and Contributors
+// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
+// See LICENSE file in the project root for full license information.
+//
+
+using System;
+using System.Xml;
+
+namespace nanoFramework.TestPlatform.TestAdapter
+{
+    /// <summary>
+    /// Settings for the nanoFramework tests
+    /// </summary>
+    public class Settings
+    {
+        /// <summary>
+        /// True to run the tests on real hardware
+        /// </summary>
+        public bool IsRealHardware { get; set; } = false;
+
+        /// <summary>
+        /// The serial port number to run the tests on a real hardware
+        /// </summary>
+        public string RealHardwarePort { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Level of logging for test execution.
+        /// </summary>
+        public LoggingLevel Logging { get; set; } = LoggingLevel.None;
+
+        /// <summary>
+        /// Get settings from an XML node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static Settings Extract(XmlNode node)
+        {
+            Settings settings = new Settings();
+
+            if (node.Name == TestsConstants.SettingsName)
+            {
+                var isrealhard = node.SelectSingleNode(nameof(IsRealHardware))?.FirstChild;
+                if (isrealhard != null && isrealhard.NodeType == XmlNodeType.Text)
+                {
+                    settings.IsRealHardware = isrealhard.Value.ToLower() == "true" ? true : false;
+                }
+
+                var realhardport = node.SelectSingleNode(nameof(RealHardwarePort))?.FirstChild;
+                if (realhardport != null && realhardport.NodeType == XmlNodeType.Text)
+                {
+                    settings.RealHardwarePort = realhardport.Value;
+                }
+
+                var loggingLevel = node.SelectSingleNode(nameof(Logging))?.FirstChild;
+                if (loggingLevel != null && loggingLevel.NodeType == XmlNodeType.Text)
+                {
+                    if (Enum.TryParse(loggingLevel.Value, out LoggingLevel logging))
+                    {
+                        settings.Logging = logging;
+                    }
+                }
+            }
+
+            return settings;
+        }
+
+        /// <summary>
+        /// The log level
+        /// </summary>
+        public enum LoggingLevel
+        {
+            None = 0,
+
+            Detailed = 1,
+
+            Verbose = 2,
+
+            Error = 3
+        }
+    }
+}

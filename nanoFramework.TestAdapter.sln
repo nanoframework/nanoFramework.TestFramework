@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nanoFramework.TestAdapter", "source\TestAdapter\nanoFramework.TestAdapter.csproj", "{7B3026CA-1CBB-4F28-AC42-29CD22710877}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestFrameworkShared", "source\TestFrameworkShared\TestFrameworkShared.shproj", "{55F048B5-6739-43C5-A93D-DB61DB8E912F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B29F456A-D02D-409D-B648-60E2C256EAFD}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+		source\package.nuspec = source\package.nuspec
+		source\TestAdapter\README.md = source\TestAdapter\README.md
+		version.json = version.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		source\TestFrameworkShared\TestFrameworkShared.projitems*{55f048b5-6739-43c5-a93d-db61db8e912f}*SharedItemsImports = 13
+		source\TestFrameworkShared\TestFrameworkShared.projitems*{7b3026ca-1cbb-4f28-ac42-29cd22710877}*SharedItemsImports = 5
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8DC0B70D-F42F-4257-A336-60E93BE828D2}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net4.8</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.0.6844" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.11.0" />
+    <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
+      <Version>1.7.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.2.1-preview.10" />
+    <PackageReference Include="Nerdbank.GitVersioning">
+      <Version>3.4.255</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Diagnostics.Tracing" />
+  </ItemGroup>
+  <Target Name="SetNanoCLRLocation" AfterTargets="Build" Condition="'$(TF_BUILD)' == ''">
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+  </Target>
+  <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />
+  <!-- forced update of nanoCLR WIN32 -->
+  <PropertyGroup>  
+    <Win32_nanoClr_Exe>https://dl.cloudsmith.io/public/net-nanoframework/nanoframework-images-dev/raw/names/WIN32_nanoCLR/versions/latest/nanoFramework.nanoCLR.exe</Win32_nanoClr_Exe>
+  </PropertyGroup>  
+
+  <Target Name="DownloadWin32NanoClrExe" BeforeTargets="Build">
+      <DownloadFile ContinueOnError="WarnAndContinue" SourceUrl="$(Win32_nanoClr_Exe)" DestinationFileName="nanoFramework.nanoCLR.exe" DestinationFolder="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
+    </DownloadFile>
+  </Target>
+
+  <!-- need this here to make sure the latest version of WIN32 nanoCLR is used in Azure Pipeline builds -->
+  <Target Name="SetNanoCLRLocation_AzurePipeline" AfterTargets="Build" Condition="'$(TF_BUILD)' == 'True'">
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+  </Target>
+  
+</Project>

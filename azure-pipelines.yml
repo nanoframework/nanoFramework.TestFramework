@@ -1,0 +1,340 @@
+# Copyright (c) .NET Foundation and Contributors
+# See LICENSE file in the project root for full license information.
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - release-*
+  paths:
+    exclude:
+      - .github_changelog_generator
+      - .gitignore
+      - CHANGELOG.md
+      - CODE_OF_CONDUCT.md
+      - LICENSE.md
+      - README.md
+      - NuGet.Config
+      - assets/*
+      - config/*
+      - .github/*
+
+  tags:
+    include: 
+      - v*
+
+# PR always trigger build
+pr:
+  autoCancel: true
+
+# add nf-tools repo to resources (for Azure Pipelines templates)
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: nanoframework/nf-tools
+      endpoint: nanoframework
+
+jobs:
+
+##############################
+- job: Get_Build_Flags
+  pool:
+    vmImage: 'windows-latest'
+
+  steps:
+  - checkout: self
+    fetchDepth: 1
+
+  # get commit message
+  - powershell: |
+
+      # default to false
+      $update = $false
+
+      if($env:Build_Reason -eq 'PullRequest')
+      {
+        # PR build, nothing interesting in commit message
+      }
+      else
+      {
+        # build is not from a PR
+
+        # get commit ID
+        $commitId = git rev-parse HEAD
+        
+        # get PR associate with commit
+        $prUrl = "https://api.github.com/repos/nanoframework/nanoFramework.TestFramework/commits/$commitId/pulls"
+        $commit = Invoke-RestMethod -Uri $prUrl -ContentType "application/json" -Headers @{"Accept"="application/vnd.github.groot-preview+json"} -Method GET
+
+        if($commit -ne $null)
+        {
+          # there is a PR, check labels
+          $updateDependents = $commit.labels | where {$_.Name -eq 'CI: Update Dependents'}
+          if($updateDependents -ne $null)
+          {
+            $update = $true
+          }
+        }
+      }
+
+      # set variable to foward to jobs
+      echo "##vso[task.setvariable variable=RUN_UPDATE_DEPENDENTS;isOutput=true]$update"
+    name: GetPRLabels
+    displayName:  Check build labels
+
+#########################################################
+# build 
+- job: Build_Test_Framework
+  condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
+  
+  dependsOn:
+    - Get_Build_Flags
+
+  pool:
+    vmImage: 'windows-latest'
+
+  variables:
+    DOTNET_NOLOGO: true
+    NUGET_CERT_REVOCATION_MODE: 'offline'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+
+  steps:
+
+  # need this here in order to persist GitHub credentials, do a shallow fetch AND init submodules
+  - checkout: self
+    persistCredentials: true
+
+  - script: |
+      git config --global user.email "nanoframework@outlook.com"
+      git config --global user.name "nfbot"
+    displayName: Setup git identity
+
+  - template: azure-pipelines-templates/install-nuget.yml@templates
+
+  - task: InstallnFBuildComponents@1
+    condition: ne( variables['StartReleaseCandidate'], true )
+    displayName: Install nanoFramework MSBuild components
+    env:
+      GITHUB_TOKEN: $(GitHubToken)
+
+  - task: NuGetCommand@2
+    displayName: NuGet restore Test Adapter
+    inputs:
+      restoreSolution: 'nanoFramework.TestAdapter.sln'
+      feedsToUse: config
+      nugetConfigPath: 'NuGet.config'
+  
+  - task: NuGetCommand@2
+    displayName: NuGet restore Test Framework
+    inputs:
+      restoreSolution: 'nanoFramework.TestFramework.sln'
+      feedsToUse: config
+      nugetConfigPath: 'NuGet.config'
+  
+  - task: VSBuild@1
+    displayName: Build Test Adapter
+    inputs:
+      solution: 'nanoFramework.TestAdapter.sln'
+      platform: '$(buildPlatform)'
+      msbuildArgs: '/p:PublicRelease=true'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSBuild@1
+    displayName: Build Test Framework
+    inputs:
+      solution: 'nanoFramework.TestFramework.sln'
+      platform: '$(buildPlatform)'
+      msbuildArgs: '/p:PublicRelease=true'
+      configuration: '$(buildConfiguration)'
+  
+  # - task: VisualStudioTestPlatformInstaller@1
+  #   condition: succeeded()
+  #   displayName: 'Visual Studio Test Platform Installer'
+  #   inputs:
+  #     versionSelector: latestStable
+
+  # - task: VSTest@2
+  #   condition: succeeded()
+  #   displayName: 'Running tests'
+  #   inputs:
+  #     testSelector: 'testAssemblies'
+  #     testAssemblyVer2: |
+  #       **\*Tests*.dll
+  #       !**\*TestAdapter*.dll
+  #       !**\*TestFramework*.dll
+  #       !**\obj\**
+  #     searchFolder: '$(System.DefaultWorkingDirectory)'
+  #     platform: '$(BuildPlatform)'
+  #     configuration: '$(BuildConfiguration)'
+  #     diagnosticsEnabled: true
+  #     vsTestVersion: toolsInstaller
+  #     codeCoverageEnabled: true
+
+  # update could build number (only possible if this is not a PR from a fork)
+  - task: PowerShell@2
+    condition: and( succeeded(), ne(variables['system.pullrequest.isfork'], true) )
+    displayName: Update cloud build number
+    inputs:
+        targetType: 'inline'
+        script: Write-Host "$("##vso[build.updatebuildnumber]")$env:NBGV_NuGetPackageVersion"
+
+  - task: NuGetCommand@2
+    condition: succeeded()
+    displayName: Pack NuGet with Test Framework
+    inputs:
+      command: 'custom' 
+      arguments: 'pack source\package.nuspec -Version $(NBGV_NuGetPackageVersion) -properties commit="$(Build.SourceVersion)"'
+
+  - task: CopyFiles@1
+    condition: succeeded()
+    displayName: Collecting NuGet package artifact
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)
+      Contents: |
+        **\nanoFramework.TestFramework*.nupkg
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      flattenFolders: true
+
+  - task: DotNetCoreCLI@2
+    displayName: Install SignTool tool
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . SignClient
+    
+  - pwsh: |
+      .\SignClient "Sign" `
+      --baseDirectory "$(Build.ArtifactStagingDirectory)" `
+      --input "**/*.nupkg" `
+      --config "$(Build.Repository.LocalPath)\config\SignClient.json" `
+      --filelist "$(Build.Repository.LocalPath)\config\filelist.txt" `
+      --user "$(SignClientUser)" `
+      --secret '$(SignClientSecret)' `
+      --name "Test Framework" `
+      --description "Test Framework" `
+      --descriptionUrl "https://github.com/$env:Build_Repository_Name"
+    displayName: Sign packages
+    continueOnError: true
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+
+  # publish artifacts (only possible if this is not a PR originated on a fork)
+  - task: PublishBuildArtifacts@1
+    condition: and( succeeded(), ne(variables['system.pullrequest.isfork'], true) )
+    displayName: Publish deployables artifacts
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: deployables
+      ArtifactType: Container
+
+  # push NuGet packages to Azure Artifacts feed (always happens except on PR builds)
+  - task: NuGetCommand@2
+    displayName: Push NuGet packages to Azure Artifacts
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    continueOnError: true
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      publishFeedCredentials: 'AzureArtifacts-$(System.TeamProject)'
+      allowPackageConflicts: true
+
+  # push NuGet class lib package to NuGet (always happens except on PR builds)
+  - task: NuGetCommand@2
+    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    continueOnError: true
+    displayName: Push NuGet packages to NuGet
+    inputs:
+      command: push
+      nuGetFeedType: external
+      allowPackageConflicts: true
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      publishFeedCredentials: 'NuGet-$(System.TeamProject)'
+
+  # create or update GitHub release ON tags from release or main branches
+  - task: GithubRelease@1
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['System.PullRequest.PullRequestId'], ''),
+        not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+        eq(variables['StartReleaseCandidate'], false)
+      )
+    displayName: Create/Update GitHub stable release
+    inputs:
+      action: edit
+      gitHubConnection: 'github.com_nano-$(System.TeamProject)'
+      tagSource: userSpecifiedTag
+      tag: v$(GitBuildVersionSimple)
+      title: '.NET nanoFramework Unit Test Framework v$(GitBuildVersionSimple)'
+      releaseNotesSource: inline
+      releaseNotesInline: ''
+      assets: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      assetUploadMode: replace
+      isPreRelease: false
+      addChangeLog: true
+
+##############################
+- job: Update_Dependents
+  condition: >-
+    and(
+      or(
+        eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'),
+        eq(variables['UPDATE_DEPENDENTS'], 'true')
+      ),
+      not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    )
+
+  dependsOn:
+    - Get_Build_Flags
+    - Build_Test_Framework
+
+  pool:
+    vmImage: 'windows-latest'
+
+  steps:
+  # need this here in order to persist GitHub credentials 
+  - checkout: self
+    fetchDepth: 100
+  
+  - template: azure-pipelines-templates/install-nbgv-tool.yml@templates
+  
+  - template: azure-pipelines-templates/install-nuget.yml@templates
+
+  - script: nbgv cloud -a -c
+    condition: succeeded()
+    displayName: Set build number
+
+  # update dependents
+  - task: PowerShell@2
+    displayName: Update dependents
+    inputs:
+      targetType: filePath
+      filePath: azure-pipelines/update-dependents.ps1
+    env:
+      MY_GITHUB_TOKEN: $(GitHubToken)
+
+##################################
+# report build failure to Discord
+- job: Report_Build_Failure
+  dependsOn:
+  - Build_Test_Framework
+  condition: failed('Build_Test_Framework')
+
+  pool:
+    vmImage: 'windows-latest'
+
+  steps:
+
+  - checkout: self
+    fetchDepth: 1
+
+  # step from template @ nf-tools repo
+  - template: azure-pipelines-templates/discord-webhook.yml@templates  
+    parameters:
+      status: 'failure'
+      webhookUrl: '$(DiscordWebhook)'
+      message: ''

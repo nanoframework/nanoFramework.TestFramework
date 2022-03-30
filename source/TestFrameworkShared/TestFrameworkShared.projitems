@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>55f048b5-6739-43c5-a93d-db61db8e912f</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>TestFrameworkShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CleanupAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SetupAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkipTestException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestClassAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestMethodAttribute.cs" />
+  </ItemGroup>
+</Project>
