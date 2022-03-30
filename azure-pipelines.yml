@@ -149,6 +149,7 @@ jobs:
       platform: '$(buildPlatform)'
       msbuildArgs: '/p:PublicRelease=true'
       configuration: '$(buildConfiguration)'
+      msbuildArchitecture: 'x64'
   
   # - task: VisualStudioTestPlatformInstaller@1
   #   condition: succeeded()
@@ -299,8 +300,6 @@ jobs:
   # need this here in order to persist GitHub credentials 
   - checkout: self
     fetchDepth: 100
-  
-  - template: azure-pipelines-templates/install-nbgv-tool.yml@templates
   
   - template: azure-pipelines-templates/install-nuget.yml@templates
 
