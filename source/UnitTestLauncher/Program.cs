@@ -44,6 +44,9 @@ namespace nanoFramework.TestFramework
                                 // then we run the tests
                                 RunTest(methods, typeof(TestMethodAttribute));
 
+                                // Data row
+                                RunTest(methods, typeof(DataTestMethodAttribute));
+
                                 // last we handle Cleanup
                                 RunTest(methods, typeof(CleanupAttribute));
                             }
@@ -60,9 +63,10 @@ namespace nanoFramework.TestFramework
             long dt;
             long totalTicks;
             bool isSetupMethod = attribToRun == typeof(SetupAttribute);
+            bool isDataRow = attribToRun == typeof(DataTestMethodAttribute);
 
             foreach (var method in methods)
-            {
+            {                
                 var attribs = method.GetCustomAttributes(true);
 
                 foreach (var attrib in attribs)
@@ -72,7 +76,22 @@ namespace nanoFramework.TestFramework
                         try
                         {
                             dt = DateTime.UtcNow.Ticks;
-                            method.Invoke(null, null);
+                            if (!isDataRow)
+                            {
+                                method.Invoke(null, null);
+                            }
+                            else
+                            {
+                                var allDataRows = method.GetCustomAttributes(true);
+                                foreach (var row in allDataRows)
+                                {
+                                    if (row.GetType() == typeof(DataRowAttribute))
+                                    {
+                                        method.Invoke(null, ((DataRowAttribute)row).Arguments);
+                                    }
+                                }
+                            }
+
                             totalTicks = DateTime.UtcNow.Ticks - dt;
 
                             Console.WriteLine($"Test passed: {method.Name}, {totalTicks}");
