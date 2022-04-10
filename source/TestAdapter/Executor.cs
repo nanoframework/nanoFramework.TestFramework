@@ -596,7 +596,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 StringBuilder str = new StringBuilder();
                 foreach (var pe in allPeFiles)
                 {
-                    str.Append($" -load {Path.Combine(workingDirectory, pe)}");
+                    str.Append($" -load \"{Path.Combine(workingDirectory, pe)}\"");
                 }
 
                 string parameter = str.ToString();
