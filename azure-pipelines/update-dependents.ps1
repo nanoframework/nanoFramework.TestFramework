@@ -19,11 +19,6 @@ function UpdateTestFrameworkVersion {
 # 'encoded token' is the Base64 of the string "nfbot:personal-token"
 $auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:MY_GITHUB_TOKEN"))))"
 
-# because it can take sometime for the package to become available on the NuGet providers
-# need to hang here for 1 minute (1 * 60)
-"Waiting 1 minute to let package process flow in Azure Artifacts feed..." | Write-Host
-Start-Sleep -Seconds 60 
-
 # init/reset these
 $commitMessage = ""
 $prTitle = ""
@@ -41,7 +36,7 @@ git clone --depth 1 https://github.com/nanoframework/nf-Visual-Studio-extension 
 Set-Location repo | Out-Null
 git config --global gc.auto 0
 git config --global user.name nfbot
-git config --global user.email dependencybot@nanoframework.net
+git config --global user.email nanoframework@outlook.com
 git config --global core.autocrlf true
 
 Write-Host "Checkout develop branch..."
@@ -52,12 +47,13 @@ dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging
 ####################
 # VS 2019 & 2022
 
-Write-Host "Updating nanoFramework.TestFramework package in VS2019 & VS2022 solution..."
+"*****************************************************************************************************" | Write-Host
+"Updating nanoFramework.Tools.MetadataProcessor.MsBuildTask.Net package in VS2019 & VS2022 solution..." | Write-Host
 
 dotnet remove VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
-dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework --prerelease
+dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
 dotnet remove VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
-dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework --prerelease
+dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
 
 #####################
 

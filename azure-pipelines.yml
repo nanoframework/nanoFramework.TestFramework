@@ -20,10 +20,6 @@ trigger:
       - config/*
       - .github/*
 
-  tags:
-    include: 
-      - v*
-
 # PR always trigger build
 pr:
   autoCancel: true
@@ -176,7 +172,7 @@ jobs:
 
   # update could build number (only possible if this is not a PR from a fork)
   - task: PowerShell@2
-    condition: and( succeeded(), ne(variables['system.pullrequest.isfork'], true) )
+  condition: succeeded()
     displayName: Update cloud build number
     inputs:
         targetType: 'inline'
@@ -255,16 +251,16 @@ jobs:
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       publishFeedCredentials: 'NuGet-$(System.TeamProject)'
 
-  # create or update GitHub release ON tags from release or main branches
+  # create or update GitHub release
   - task: GithubRelease@1
     condition: >-
       and(
         succeeded(),
         eq(variables['System.PullRequest.PullRequestId'], ''),
-        not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
-        eq(variables['StartReleaseCandidate'], false)
+        startsWith(variables['Build.SourceBranch'], 'refs/heads/develop'),
+        eq(variables['UPDATE_DEPENDENTS'], 'false')
       )
-    displayName: Create/Update GitHub stable release
+    displayName: Create/Update GitHub release
     inputs:
       action: edit
       gitHubConnection: 'github.com_nano-$(System.TeamProject)'
@@ -286,7 +282,7 @@ jobs:
         eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'),
         eq(variables['UPDATE_DEPENDENTS'], 'true')
       ),
-      not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+      eq(variables['System.PullRequest.PullRequestId'], ''),
     )
 
   dependsOn:
