@@ -172,7 +172,7 @@ jobs:
 
   # update could build number (only possible if this is not a PR from a fork)
   - task: PowerShell@2
-  condition: succeeded()
+    condition: succeeded()
     displayName: Update cloud build number
     inputs:
         targetType: 'inline'
@@ -282,9 +282,8 @@ jobs:
         eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'),
         eq(variables['UPDATE_DEPENDENTS'], 'true')
       ),
-      eq(variables['System.PullRequest.PullRequestId'], ''),
+      eq(variables['System.PullRequest.PullRequestId'], '')
     )
-
   dependsOn:
     - Get_Build_Flags
     - Build_Test_Framework
