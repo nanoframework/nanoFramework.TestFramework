@@ -8,7 +8,9 @@ namespace nanoFramework.TestFramework
         {
             var returnString = string.Empty;
             foreach (var item in data)
+            {
                 returnString += $"{item} | ";
+            }
 
             return returnString.Substring(0, returnString.Length - 4);
         }

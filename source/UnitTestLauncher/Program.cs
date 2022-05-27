@@ -108,7 +108,9 @@ namespace nanoFramework.TestFramework
         private static object[] GetParameters(object attribute)
         {
             if (attribute.GetType() != typeof(DataRowAttribute))
+            {
                 return null;
+            }
 
             var testCaseAttribute = (DataRowAttribute)attribute;
             return testCaseAttribute.MethodParameters;
