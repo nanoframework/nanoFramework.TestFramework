@@ -98,8 +98,6 @@ jobs:
     buildConfiguration: 'Release'
 
   steps:
-
-  # need this here in order to persist GitHub credentials, do a shallow fetch AND init submodules
   - checkout: self
 
   - script: |
@@ -113,7 +111,7 @@ jobs:
     condition: ne( variables['StartReleaseCandidate'], true )
     displayName: Install nanoFramework MSBuild components
     env:
-      GITHUB_TOKEN: $(GitHubToken)
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: NuGetCommand@2
     displayName: NuGet restore Test Adapter
