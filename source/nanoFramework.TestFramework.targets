@@ -1,6 +1,6 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build"  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>  
-      <Win32_nanoClr_Exe>https://dl.cloudsmith.io/public/net-nanoframework/nanoframework-images-dev/raw/names/WIN32_nanoCLR/versions/latest/nanoFramework.nanoCLR.exe</Win32_nanoClr_Exe>
+      <Win32_nanoClr_Exe>https://dl.cloudsmith.io/public/net-nanoframework/nanoframework-images/raw/names/WIN32_nanoCLR/versions/latest/nanoFramework.nanoCLR.exe</Win32_nanoClr_Exe>
     </PropertyGroup>  
 
     <Target Name="DownloadWin32NanoClrExe" BeforeTargets="Build">
