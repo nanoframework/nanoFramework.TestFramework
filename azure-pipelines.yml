@@ -98,10 +98,7 @@ jobs:
     buildConfiguration: 'Release'
 
   steps:
-
-  # need this here in order to persist GitHub credentials, do a shallow fetch AND init submodules
   - checkout: self
-    persistCredentials: true
 
   - script: |
       git config --global user.email "nanoframework@outlook.com"
@@ -114,7 +111,7 @@ jobs:
     condition: ne( variables['StartReleaseCandidate'], true )
     displayName: Install nanoFramework MSBuild components
     env:
-      GITHUB_TOKEN: $(GitHubToken)
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: NuGetCommand@2
     displayName: NuGet restore Test Adapter
@@ -257,7 +254,7 @@ jobs:
       and(
         succeeded(),
         eq(variables['System.PullRequest.PullRequestId'], ''),
-        startsWith(variables['Build.SourceBranch'], 'refs/heads/develop'),
+        startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
         eq(variables['UPDATE_DEPENDENTS'], 'false')
       )
     displayName: Create/Update GitHub release
@@ -265,8 +262,8 @@ jobs:
       action: edit
       gitHubConnection: 'github.com_nano-$(System.TeamProject)'
       tagSource: userSpecifiedTag
-      tag: v$(GitBuildVersionSimple)
-      title: '.NET nanoFramework Unit Test Framework v$(GitBuildVersionSimple)'
+      tag: v$(NBGV_NuGetPackageVersion)
+      title: '.NET nanoFramework Unit Test Framework v$(NBGV_NuGetPackageVersion)'
       releaseNotesSource: inline
       releaseNotesInline: ''
       assets: '$(Build.ArtifactStagingDirectory)/*.nupkg'
