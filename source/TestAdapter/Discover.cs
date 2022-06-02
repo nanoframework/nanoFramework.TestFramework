@@ -243,7 +243,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             {
                                 flret.CodeFilePath = csFile;
                                 flret.LineNumber = lineNum;
-                                flret.DisplayName = Helper.GetDisplayName(method, attribute);
+                                flret.DisplayName = Helper.GetTestDisplayName(method, attribute);
                                 return flret;
                             }
 

@@ -68,7 +68,7 @@ namespace nanoFramework.TestFramework
 
                 foreach (var attrib in attribs)
                 {
-                    var methodName = Helper.GetDisplayName(method, attrib);
+                    var methodName = Helper.GetTestDisplayName(method, attrib);
                     if (attribToRun == attrib.GetType())
                     {
                         try

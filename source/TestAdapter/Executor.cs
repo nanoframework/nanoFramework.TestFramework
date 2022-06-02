@@ -735,7 +735,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (line.Contains(TestPassed))
                 {
                     // Format is "Test passed: MethodName, ticks";
-                    // We do get split with space if the coma is missing, happens time to time
 
                     string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0];
                     string ticks = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length + method.Length + 2);
