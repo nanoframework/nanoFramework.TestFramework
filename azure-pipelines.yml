@@ -289,9 +289,7 @@ jobs:
     vmImage: 'windows-latest'
 
   steps:
-  # need this here in order to persist GitHub credentials 
   - checkout: self
-    fetchDepth: 100
   
   - template: azure-pipelines-templates/install-nuget.yml@templates
 

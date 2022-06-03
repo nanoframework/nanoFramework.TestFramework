@@ -50,9 +50,7 @@ dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging
 "*****************************************************************************************************" | Write-Host
 "Updating nanoFramework.Tools.MetadataProcessor.MsBuildTask.Net package in VS2019 & VS2022 solution..." | Write-Host
 
-dotnet remove VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
 dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
-dotnet remove VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
 dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
 
 #####################
