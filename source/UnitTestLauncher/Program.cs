@@ -43,6 +43,7 @@ namespace nanoFramework.TestFramework
                             {
                                 // then we run the tests
                                 RunTest(methods, typeof(TestMethodAttribute));
+                                RunTest(methods, typeof(DataRowAttribute));
 
                                 // last we handle Cleanup
                                 RunTest(methods, typeof(CleanupAttribute));
@@ -67,21 +68,23 @@ namespace nanoFramework.TestFramework
 
                 foreach (var attrib in attribs)
                 {
+                    var methodName = Helper.GetTestDisplayName(method, attrib);
                     if (attribToRun == attrib.GetType())
                     {
                         try
                         {
                             dt = DateTime.UtcNow.Ticks;
-                            method.Invoke(null, null);
+                            object[] parameters = GetParameters(attrib);
+                            method.Invoke(null, parameters);
                             totalTicks = DateTime.UtcNow.Ticks - dt;
 
-                            Console.WriteLine($"Test passed: {method.Name}, {totalTicks}");
+                            Console.WriteLine($"Test passed: {methodName}, {totalTicks}");
                         }
                         catch (Exception ex)
                         {
                             if (ex.GetType() == typeof(SkipTestException))
                             {
-                                Console.WriteLine($"Test skipped: {method.Name}, {ex.Message}");
+                                Console.WriteLine($"Test skipped: {methodName}, {ex.Message}");
                                 if (isSetupMethod)
                                 {
                                     // In case the Setup attribute test is skipped, we will skip
@@ -91,7 +94,7 @@ namespace nanoFramework.TestFramework
                             }
                             else
                             {
-                                Console.WriteLine($"Test failed: {method.Name}, {ex.Message}");
+                                Console.WriteLine($"Test failed: {methodName}, {ex.Message}");
                             }
                         }
 
@@ -100,6 +103,17 @@ namespace nanoFramework.TestFramework
             }
 
             return true;
+        }
+
+        private static object[] GetParameters(object attribute)
+        {
+            if (attribute.GetType() != typeof(DataRowAttribute))
+            {
+                return null;
+            }
+
+            var testCaseAttribute = (DataRowAttribute)attribute;
+            return testCaseAttribute.MethodParameters;
         }
     }
 }

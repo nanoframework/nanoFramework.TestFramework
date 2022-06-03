@@ -735,9 +735,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (line.Contains(TestPassed))
                 {
                     // Format is "Test passed: MethodName, ticks";
-                    // We do get split with space if the coma is missing, happens time to time
 
-                    string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0].Split(' ')[0];
+                    string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0];
                     string ticks = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length + method.Length + 2);
 
                     long ticksNum = 0;
@@ -761,7 +760,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     // Format is "Test failed: MethodName, Exception message";
 
-                    string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0].Split(' ')[0];
+                    string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0];
 
                     string exception = line.Substring(line.IndexOf(TestFailed) + TestPassed.Length + method.Length + 2);
 
@@ -783,7 +782,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     // Format is "Test failed: MethodName, Exception message";
 
-                    string method = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length).Split(',')[0].Split(' ')[0];
+                    string method = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length).Split(',')[0];
 
                     string exception = line.Substring(line.IndexOf(TestSkipped) + TestPassed.Length + method.Length + 2);
 

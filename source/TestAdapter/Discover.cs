@@ -137,9 +137,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                                 {
                                     if (attrib.GetType().FullName == typeof(SetupAttribute).FullName ||
                                     attrib.GetType().FullName == typeof(TestMethodAttribute).FullName ||
-                                    attrib.GetType().FullName == typeof(CleanupAttribute).FullName)
+                                    attrib.GetType().FullName == typeof(CleanupAttribute).FullName ||
+                                    attrib.GetType().FullName == typeof(DataRowAttribute).FullName)
                                     {
-                                        var testCase = GetFileNameAndLineNumber(allCsFils, type, method);
+                                        var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib);
                                         testCase.Source = source;
                                         testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
                                         testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
@@ -221,7 +222,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
-        private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method)
+        private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method, object attribute)
         {
             var clName = className.Name;
             var methodName = method.Name;
@@ -242,7 +243,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             {
                                 flret.CodeFilePath = csFile;
                                 flret.LineNumber = lineNum;
-                                flret.DisplayName = method.Name;
+                                flret.DisplayName = Helper.GetTestDisplayName(method, attribute);
                                 return flret;
                             }
 
