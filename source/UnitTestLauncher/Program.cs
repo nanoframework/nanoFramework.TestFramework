@@ -65,10 +65,12 @@ namespace nanoFramework.TestFramework
             foreach (var method in methods)
             {
                 var attribs = method.GetCustomAttributes(true);
+                attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
 
-                foreach (var attrib in attribs)
+                for (int i = 0; i < attribs.Length; i++)
                 {
-                    var methodName = Helper.GetTestDisplayName(method, attrib);
+                    var attrib = attribs[i];
+                    var methodName = Helper.GetTestDisplayName(method, attrib, i);
                     if (attribToRun == attrib.GetType())
                     {
                         try
