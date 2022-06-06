@@ -132,19 +132,21 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             foreach (var method in methods)
                             {
                                 var attribs = method.GetCustomAttributes(true);
-
-                                foreach (var attrib in attribs)
+                                attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
+                                for (int i = 0; i < attribs.Length; i++)
                                 {
+                                    var attrib = attribs[i];
+
                                     if (attrib.GetType().FullName == typeof(SetupAttribute).FullName ||
                                     attrib.GetType().FullName == typeof(TestMethodAttribute).FullName ||
                                     attrib.GetType().FullName == typeof(CleanupAttribute).FullName ||
                                     attrib.GetType().FullName == typeof(DataRowAttribute).FullName)
                                     {
-                                        var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib);
+                                        var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
                                         testCase.Source = source;
                                         testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
                                         testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
-                                        testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute","")));
+                                        testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
                                         testCases.Add(testCase);
                                     }
                                 }
@@ -222,7 +224,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
-        private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method, object attribute)
+        private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method, object attribute, int attributeIndex)
         {
             var clName = className.Name;
             var methodName = method.Name;
@@ -243,7 +245,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             {
                                 flret.CodeFilePath = csFile;
                                 flret.LineNumber = lineNum;
-                                flret.DisplayName = Helper.GetTestDisplayName(method, attribute);
+                                flret.DisplayName = Helper.GetTestDisplayName(method, attribute, attributeIndex);
                                 return flret;
                             }
 
