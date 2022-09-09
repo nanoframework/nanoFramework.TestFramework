@@ -10,7 +10,21 @@ function UpdateTestFrameworkVersion {
     $filecontent = Get-Content($FilePath)
     attrib $FilePath -r
     $filecontent -replace  $versionRegex1, "nanoFramework.TestFramework.$NewVersion" | Out-File $FilePath -Encoding utf8
+    $filecontent = Get-Content($FilePath)
     $filecontent -replace  $versionRegex2, "id=""nanoFramework.TestFramework"" version=""$NewVersion" | Out-File $FilePath -Encoding utf8
+}
+
+function AddGeneratePathProperty {
+    Param(
+        [string] $NewVersion,
+        [string] $FilePath
+    )
+
+    $versionRegex1 = "Include=\""nanoFramework\.TestFramework\"" Version=\""\d+\.\d+\.\d+\"">"
+
+    $filecontent = Get-Content($FilePath)
+    attrib $FilePath -r
+    $filecontent -replace  $versionRegex1, "Include=""nanoFramework.TestFramework"" Version=""$NewVersion"" GeneratePathProperty=""true"">" | Out-File $FilePath -Encoding utf8
 }
 
 "Updating dependency at nf-Visual-Studio-extension" | Write-Host
@@ -18,6 +32,10 @@ function UpdateTestFrameworkVersion {
 # compute authorization header in format "AUTHORIZATION: basic 'encoded token'"
 # 'encoded token' is the Base64 of the string "nfbot:personal-token"
 $auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:MY_GITHUB_TOKEN"))))"
+
+# uncomment these for local debug
+# [Environment]::SetEnvironmentVariable('NBGV_NuGetPackageVersion', '2.0.42', 'Process')
+# [Environment]::SetEnvironmentVariable('Agent_TempDirectory', 'e:\temp', 'Process')
 
 # init/reset these
 $commitMessage = ""
@@ -50,8 +68,13 @@ dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging
 "*****************************************************************************************************" | Write-Host
 "Updating nanoFramework.Tools.MetadataProcessor.MsBuildTask.Net package in VS2019 & VS2022 solution..." | Write-Host
 
-dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
-dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
+dotnet remove VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
+dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework --version $packageTargetVersion
+AddGeneratePathProperty -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj'
+
+dotnet remove VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
+dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework --version $packageTargetVersion
+AddGeneratePathProperty -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj'
 
 #####################
 
