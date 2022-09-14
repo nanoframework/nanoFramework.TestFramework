@@ -138,43 +138,45 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         private void InitializeLogger(IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            if (_logger == null)
+            if (_logger != null)
             {
-                var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
+                return;
+            }
 
-                _logger = new LogMessenger(frameworkHandle, settingsProvider);
+            var settingsProvider = runContext.RunSettings.GetSettings(TestsConstants.SettingsName) as SettingsProvider;
 
-                if (settingsProvider != null)
+            _logger = new LogMessenger(frameworkHandle, settingsProvider);
+
+            if (settingsProvider != null)
+            {
+                // get TestSessionTimeout from runsettings
+                var xml = new XmlDocument();
+                xml.LoadXml(runContext.RunSettings.SettingsXml);
+                var timeout = xml.SelectSingleNode("RunSettings//RunConfiguration//TestSessionTimeout");
+                if (timeout != null && timeout.NodeType == XmlNodeType.Element)
                 {
-                    // get TestSessionTimeout from runsettings
-                    var xml = new XmlDocument();
-                    xml.LoadXml(runContext.RunSettings.SettingsXml);
-                    var timeout = xml.SelectSingleNode("RunSettings//RunConfiguration//TestSessionTimeout");
-                    if (timeout != null && timeout.NodeType == XmlNodeType.Element)
-                    {
-                        int.TryParse(timeout.InnerText, out _testSessionTimeout);
-                    }
-
-                    _settings = settingsProvider.Settings;
-
-                    _logger.LogMessage(
-                        "Getting ready to run tests...",
-                        Settings.LoggingLevel.Detailed);
-
-                    _logger.LogMessage(
-                        "Settings parsed",
-                        Settings.LoggingLevel.Verbose);
+                    int.TryParse(timeout.InnerText, out _testSessionTimeout);
                 }
-                else
-                {
-                    _logger.LogMessage(
-                        "Getting ready to run tests...",
-                        Settings.LoggingLevel.Detailed);
 
-                    _logger.LogMessage(
-                        "No settings for nanoFramework adapter",
-                        Settings.LoggingLevel.Verbose);
-                }
+                _settings = settingsProvider.Settings;
+
+                _logger.LogMessage(
+                    "Getting ready to run tests...",
+                    Settings.LoggingLevel.Detailed);
+
+                _logger.LogMessage(
+                    "Settings parsed",
+                    Settings.LoggingLevel.Verbose);
+            }
+            else
+            {
+                _logger.LogMessage(
+                    "Getting ready to run tests...",
+                    Settings.LoggingLevel.Detailed);
+
+                _logger.LogMessage(
+                    "No settings for nanoFramework adapter",
+                    Settings.LoggingLevel.Verbose);
             }
         }
 
