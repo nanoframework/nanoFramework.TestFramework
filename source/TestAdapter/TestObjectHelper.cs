@@ -51,7 +51,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
             }
 
-            return string.Empty;
+            throw new FileNotFoundException($"Unabl to find nanoClr.");
         }
     }
 }
