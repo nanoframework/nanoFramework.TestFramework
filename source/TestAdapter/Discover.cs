@@ -143,24 +143,50 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         {
                             var attrib = attribs[i];
 
-                            if (attrib.GetType().FullName == typeof(SetupAttribute).FullName ||
-                            attrib.GetType().FullName == typeof(TestMethodAttribute).FullName ||
-                            attrib.GetType().FullName == typeof(CleanupAttribute).FullName ||
-                            attrib.GetType().FullName == typeof(DataRowAttribute).FullName) //TODO: Extract method
+                            if (!IsTestMethod(attrib))
                             {
-                                var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
-                                testCase.Source = source;
-                                testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
-                                testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
-                                testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
-                                testCases.Add(testCase);
+                                continue;
                             }
+
+                            var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
+                            testCase.Source = source;
+                            testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
+                            testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
+                            testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
+                            testCases.Add(testCase);
                         }
                     }
                 }
             }
 
             return testCases;
+        }
+
+        private static bool IsTestMethod(object attrib)
+        {
+            var attributeName = attrib.GetType().FullName;
+
+            if (attributeName == typeof(SetupAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(TestMethodAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(CleanupAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(DataRowAttribute).FullName)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static Assembly App_AssemblyResolve(object sender, ResolveEventArgs args)
