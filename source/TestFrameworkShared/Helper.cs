@@ -15,21 +15,6 @@ namespace nanoFramework.TestFramework
     {
         private delegate bool AnyDelegateType(object source);
 
-        private static string GetJoinedParams(object[] data)
-        {
-            var returnString = string.Empty;
-            foreach (var item in data)
-            {
-                returnString += $"{item} | ";
-            }
-
-            // In each loop iteration we are appending " | " event at the end
-            // To keep return string clean, we are removing last 3 charcters 
-            // Lenght starts from 1, substring from 0
-            // To remove 3 last characters using this method, we need to add 1
-            return returnString.Substring(0, returnString.Length - 4);
-        }
-
         private static bool Any(this object[] array, AnyDelegateType predicate)
         {
             foreach (var item in array)
