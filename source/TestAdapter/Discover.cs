@@ -117,7 +117,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             AppDomain.CurrentDomain.AssemblyResolve += App_AssemblyResolve;
             AppDomain.CurrentDomain.Load(test.GetName());
 
-            Type[] allTypes = test.GetTypes();
+            var allTypes = test.GetTypes().Where(x=> x.IsClass);
             foreach (var type in allTypes)
             {
                 if (!type.IsClass)
@@ -125,29 +125,20 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     continue;
                 }
 
-                var typeAttribs = type.GetCustomAttributes(true);
+                var typeAttribs = type.GetCustomAttributes(true)
+                    .Where(x => x.GetType().FullName == typeof(TestClassAttribute).GetType().FullName);
                 foreach (var typeAttrib in typeAttribs)
                 {
-                    if (typeof(TestClassAttribute).FullName != typeAttrib.GetType().FullName)
-                    {
-                        continue;
-                    }
-
                     var methods = type.GetMethods();
                     // First we look at Setup
                     foreach (var method in methods)
                     {
                         var attribs = method.GetCustomAttributes(true);
                         attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
-                        for (int i = 0; i < attribs.Length; i++)
+                        var attribsToItterate = attribs.Where(x => IsTestMethod(x)).ToArray();
+                        for (int i = 0; i < attribsToItterate.Length; i++)
                         {
-                            var attrib = attribs[i];
-
-                            if (!IsTestMethod(attrib))
-                            {
-                                continue;
-                            }
-
+                            var attrib = attribsToItterate[i];
                             var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
                             testCase.Source = source;
                             testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
