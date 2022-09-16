@@ -46,7 +46,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 return FindNanoClr(dir);
             }
 
-            throw new FileNotFoundException($"Unabl to find nanoClr.");
+            throw new FileNotFoundException($"Unable to find nanoCLR.");
         }
     }
 }
