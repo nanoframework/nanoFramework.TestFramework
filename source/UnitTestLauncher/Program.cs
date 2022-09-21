@@ -26,29 +26,33 @@ namespace nanoFramework.TestFramework
 
             foreach (var type in allTypes)
             {
-                if (type.IsClass)
+                if (!type.IsClass)
                 {
-                    var typeAttribs = type.GetCustomAttributes(true);
+                    continue;
+                }
 
-                    foreach (var typeAttrib in typeAttribs)
+                var typeAttribs = type.GetCustomAttributes(true);
+
+                foreach (var typeAttrib in typeAttribs)
+                {
+                    if (typeof(TestClassAttribute) != typeAttrib.GetType())
                     {
-                        if (typeof(TestClassAttribute) == typeAttrib.GetType())
-                        {
-                            var methods = type.GetMethods();
+                        continue;
+                    }
 
-                            // First we look at Setup
-                            var continueTests = RunTest(methods, typeof(SetupAttribute));
+                    var methods = type.GetMethods();
 
-                            if (continueTests)
-                            {
-                                // then we run the tests
-                                RunTest(methods, typeof(TestMethodAttribute));
-                                RunTest(methods, typeof(DataRowAttribute));
+                    // First we look at Setup
+                    var continueTests = RunTest(methods, typeof(SetupAttribute));
 
-                                // last we handle Cleanup
-                                RunTest(methods, typeof(CleanupAttribute));
-                            }
-                        }
+                    if (continueTests)
+                    {
+                        // then we run the tests
+                        RunTest(methods, typeof(TestMethodAttribute));
+                        RunTest(methods, typeof(DataRowAttribute));
+
+                        // last we handle Cleanup
+                        RunTest(methods, typeof(CleanupAttribute));
                     }
                 }
             }
@@ -71,35 +75,36 @@ namespace nanoFramework.TestFramework
                 {
                     var attrib = attribs[i];
                     var methodName = Helper.GetTestDisplayName(method, attrib, i);
-                    if (attribToRun == attrib.GetType())
+                    if (attribToRun != attrib.GetType())
                     {
-                        try
-                        {
-                            dt = DateTime.UtcNow.Ticks;
-                            object[] parameters = GetParameters(attrib);
-                            method.Invoke(null, parameters);
-                            totalTicks = DateTime.UtcNow.Ticks - dt;
+                        continue;
+                    }
 
-                            Console.WriteLine($"Test passed: {methodName}, {totalTicks}");
-                        }
-                        catch (Exception ex)
+                    try
+                    {
+                        dt = DateTime.UtcNow.Ticks;
+                        object[] parameters = GetParameters(attrib);
+                        method.Invoke(null, parameters);
+                        totalTicks = DateTime.UtcNow.Ticks - dt;
+
+                        Console.WriteLine($"Test passed: {methodName}, {totalTicks}");
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.GetType() == typeof(SkipTestException))
                         {
-                            if (ex.GetType() == typeof(SkipTestException))
+                            Console.WriteLine($"Test skipped: {methodName}, {ex.Message}");
+                            if (isSetupMethod)
                             {
-                                Console.WriteLine($"Test skipped: {methodName}, {ex.Message}");
-                                if (isSetupMethod)
-                                {
-                                    // In case the Setup attribute test is skipped, we will skip
-                                    // All the other tests
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Test failed: {methodName}, {ex.Message}");
+                                // In case the Setup attribute test is skipped, we will skip
+                                // All the other tests
+                                return false;
                             }
                         }
-
+                        else
+                        {
+                            Console.WriteLine($"Test failed: {methodName}, {ex.Message}");
+                        }
                     }
                 }
             }

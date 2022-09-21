@@ -117,47 +117,67 @@ namespace nanoFramework.TestPlatform.TestAdapter
             AppDomain.CurrentDomain.AssemblyResolve += App_AssemblyResolve;
             AppDomain.CurrentDomain.Load(test.GetName());
 
-            Type[] allTypes = test.GetTypes();
+            var allTypes = test.GetTypes().Where(x=> x.IsClass);
             foreach (var type in allTypes)
             {
-                if (type.IsClass)
+                if (!type.IsClass)
                 {
-                    var typeAttribs = type.GetCustomAttributes(true);
-                    foreach (var typeAttrib in typeAttribs)
+                    continue;
+                }
+
+                var typeAttribs = type.GetCustomAttributes(true)
+                    .Where(x => x.GetType().FullName == typeof(TestClassAttribute).GetType().FullName);
+                foreach (var typeAttrib in typeAttribs)
+                {
+                    var methods = type.GetMethods();
+                    // First we look at Setup
+                    foreach (var method in methods)
                     {
-                        if (typeof(TestClassAttribute).FullName == typeAttrib.GetType().FullName)
+                        var attribs = method.GetCustomAttributes(true);
+                        attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
+                        var attribsToItterate = attribs.Where(x => IsTestMethod(x)).ToArray();
+                        for (int i = 0; i < attribsToItterate.Length; i++)
                         {
-                            var methods = type.GetMethods();
-                            // First we look at Setup
-                            foreach (var method in methods)
-                            {
-                                var attribs = method.GetCustomAttributes(true);
-                                attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
-                                for (int i = 0; i < attribs.Length; i++)
-                                {
-                                    var attrib = attribs[i];
-
-                                    if (attrib.GetType().FullName == typeof(SetupAttribute).FullName ||
-                                    attrib.GetType().FullName == typeof(TestMethodAttribute).FullName ||
-                                    attrib.GetType().FullName == typeof(CleanupAttribute).FullName ||
-                                    attrib.GetType().FullName == typeof(DataRowAttribute).FullName)
-                                    {
-                                        var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
-                                        testCase.Source = source;
-                                        testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
-                                        testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
-                                        testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
-                                        testCases.Add(testCase);
-                                    }
-                                }
-                            }
-
+                            var attrib = attribsToItterate[i];
+                            var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
+                            testCase.Source = source;
+                            testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
+                            testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
+                            testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
+                            testCases.Add(testCase);
                         }
                     }
                 }
             }
 
             return testCases;
+        }
+
+        private static bool IsTestMethod(object attrib)
+        {
+            var attributeName = attrib.GetType().FullName;
+
+            if (attributeName == typeof(SetupAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(TestMethodAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(CleanupAttribute).FullName)
+            {
+                return true;
+            }
+
+            if (attributeName == typeof(DataRowAttribute).FullName)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static Assembly App_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -233,25 +253,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 StreamReader sr = new StreamReader(csFile);
                 var allFile = sr.ReadToEnd();
-                if (allFile.Contains($"class {clName}"))
+                if (!allFile.Contains($"class {clName}"))
                 {
-                    if (allFile.Contains($" {methodName}("))
-                    {
-                        // We found it!
-                        int lineNum = 1;
-                        foreach (var line in allFile.Split('\r'))
-                        {
-                            if (line.Contains($" {methodName}("))
-                            {
-                                flret.CodeFilePath = csFile;
-                                flret.LineNumber = lineNum;
-                                flret.DisplayName = Helper.GetTestDisplayName(method, attribute, attributeIndex);
-                                return flret;
-                            }
+                    continue;
+                }
 
-                            lineNum++;
-                        }
+                if (!allFile.Contains($" {methodName}("))
+                {
+                    continue;
+                }
+
+                // We found it!
+                int lineNum = 1;
+                foreach (var line in allFile.Split('\r'))
+                {
+                    if (line.Contains($" {methodName}("))
+                    {
+                        flret.CodeFilePath = csFile;
+                        flret.LineNumber = lineNum;
+                        flret.DisplayName = Helper.GetTestDisplayName(method, attribute, attributeIndex);
+                        return flret;
                     }
+
+                    lineNum++;
                 }
             }
 

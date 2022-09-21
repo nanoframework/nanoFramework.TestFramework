@@ -22,10 +22,8 @@ namespace nanoFramework.TestFramework
             {
                 throw new SkipTestException();
             }
-            else
-            {
-                throw new SkipTestException(message);
-            }
+
+            throw new SkipTestException(message);
         }
 
         #endregion

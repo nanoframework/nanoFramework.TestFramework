@@ -28,11 +28,9 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 return nanoClrFullPath;
             }
-            else
-            {
-                var inititialDir = new DirectoryInfo(Path.GetDirectoryName(thisAssemblyDir));
-                return FindNanoClr(inititialDir);
-            }
+            
+            var inititialDir = new DirectoryInfo(Path.GetDirectoryName(thisAssemblyDir));
+            return FindNanoClr(inititialDir);
         }
 
         private static string FindNanoClr(DirectoryInfo initialPath)
@@ -45,13 +43,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     return findnanoClr.First().FullName;
                 }
-                else
-                {
-                    return FindNanoClr(dir);
-                }
+                return FindNanoClr(dir);
             }
 
-            return string.Empty;
+            throw new FileNotFoundException($"Unable to find nanoCLR.");
         }
     }
 }

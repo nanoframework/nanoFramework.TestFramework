@@ -31,7 +31,6 @@ namespace nanoFramework.TestFramework
                 return false;
             }
 
-
             for (int i = 0; i < a.Length; i++)
             {
                 object obja = a.GetValue(i);
@@ -43,87 +42,132 @@ namespace nanoFramework.TestFramework
                     return false;
                 }
 
-                switch (typea.FullName)
+                if (typea == typeof(int))
                 {
-                    case "System.Int32":
-                        if ((int)obja != (int)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.UInt32":
-                        if ((uint)obja != (uint)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Byte":
-                        if ((byte)obja != (byte)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.SByte":
-                        if ((sbyte)obja != (sbyte)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Int16":
-                        if ((short)obja != (short)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.UInt16":
-                        if ((ushort)obja != (ushort)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Int64":
-                        if ((long)obja != (long)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.UInt64":
-                        if ((ulong)obja != (ulong)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Char":
-                        if ((char)obja != (char)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Double":
-                        if ((double)obja != (double)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Boolean":
-                        if ((bool)obja != (bool)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    case "System.Single":
-                        if ((float)obja != (float)objb)
-                        {
-                            return false;
-                        }
-                        break;
-                    default:
-                        if (obja != objb)
-                        {
-                            return false;
-                        }
-                        break;
+                    if ((int)obja != (int)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
                 }
+
+                if (typea == typeof(uint))
+                {
+                    if ((uint)obja != (uint)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(byte))
+                {
+                    if ((byte)obja != (byte)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(sbyte))
+                {
+                    if ((sbyte)obja != (sbyte)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(short))
+                {
+                    if ((short)obja != (short)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(ushort))
+                {
+                    if ((ushort)obja != (ushort)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(long))
+                {
+                    if ((long)obja != (long)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(ulong))
+                {
+                    if ((ulong)obja != (ulong)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(char))
+                {
+                    if ((char)obja != (char)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(double))
+                {
+                    if ((double)obja != (double)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(bool))
+                {
+                    if ((bool)obja != (bool)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (typea == typeof(float))
+                {
+                    if ((float)obja != (float)objb)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (obja != objb)
+                {
+                    return false;
+                }
+
+                continue;
             }
 
             return true;
