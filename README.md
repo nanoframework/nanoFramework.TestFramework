@@ -37,6 +37,10 @@ Simply add the `nanoFramework.TestFramework` nuget to your project and you're go
 
 ![test nuget](assets/test-nuget-test-framework.jpg)
 
+Before running tests make sure to check "Auto Detect runsettings Files" from "Test" menu.
+
+![test runsettings](assets/test-auto-detect-runsettings.jpg)
+
 Once you'll build your project, the tests will be automatically discovered:
 
 ![test discovered](assets/test-discovered.jpg)
