@@ -11,7 +11,6 @@
 | Component | Build Status | NuGet Package |
 |:-|---|---|
 | nanoframework.TestFramework | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=main)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=main) | [![NuGet](https://img.shields.io/nuget/v/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
-| nanoframework.TestFramework (preview) | [![Build Status](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_apis/build/status/nanoFramework.TestFramework?repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop)](https://dev.azure.com/nanoframework/nanoframework.TestFramework/_build/latest?definitionId=67&repoName=nanoframework%2FnanoFramework.TestFramework&branchName=develop) | [![NuGet](https://img.shields.io/nuget/vpre/nanoframework.TestFramework.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoframework.TestFramework/) |
 
 ## What is the .NET **nanoFramework** Test Framework
 
@@ -53,12 +52,11 @@ To have more details on usage of the framework, please refer to the detailed [do
 
 ## Know limitations
 
-.NET nanoFramework Test Framework is supported by VS2019, only. We have no plans to address the shortcomings that prevent it from being used in VS2017.
-Despite of that you can still run Unit Tests on VS2017 but only from the VS Test console.
+.NET nanoFramework Test Framework is supported in Visual Studio versions 2022 and 2019, only. Visual Studio 2017 is not fully supported. Unit Tests can be run only from the VS Test console.
 
 ## What you'll find in this repository
 
-This repository contains the source of the core elements. You'll find them in `sources` directory. The Visual Studio projects in the root directory will open those elements. 
+This repository contains the source of the core elements. You'll find them in `sources` directory. The Visual Studio project is in the root directory will open those elements.
 
 ## Sample pack
 
