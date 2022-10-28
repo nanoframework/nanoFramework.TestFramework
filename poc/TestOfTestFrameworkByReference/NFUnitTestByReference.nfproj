@@ -21,7 +21,7 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <PropertyGroup>
-    <RunSettingsFilePath>$(MSBuildProjectDirectory)\nano.runsettings</RunSettingsFilePath>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DataRowTests.cs" />
@@ -35,7 +35,7 @@
     <ProjectReference Include="..\..\source\UnitTestLauncher\nanoFramework.UnitTestLauncher.nfproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nano.runsettings" />
+    <None Include=".runsettings" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
