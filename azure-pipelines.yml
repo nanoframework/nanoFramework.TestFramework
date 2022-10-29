@@ -117,6 +117,19 @@ jobs:
     env:
       GITHUB_TOKEN: $(GITHUB_TOKEN)
 
+  - task: Cache@2
+    displayName: Cache NuGet packages
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['StartReleaseCandidate'], false),
+        not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+      )
+    continueOnError: true
+    inputs:
+      key: 'nuget | **/packages.lock.json'
+      path: $(UserProfile)/.nuget/packages
+
   - task: NuGetCommand@2
     displayName: NuGet restore Test Adapter
     retryCountOnTaskFailure: 2
