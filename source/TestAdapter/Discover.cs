@@ -103,54 +103,63 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// <returns>A list of test cases</returns>
         public static List<TestCase> FindTestCases(string source)
         {
-            List<TestCase> testCases = new List<TestCase>();
+            List<TestCase> collectionOfTestCases = new List<TestCase>();
 
             var nfprojSources = FindNfprojSources(source);
             if (nfprojSources.Length == 0)
             {
-                return testCases;
+                return collectionOfTestCases;
             }
 
-            var allCsFils = GetAllCsFileNames(nfprojSources);
+            var allCsFiles = GetAllCsFileNames(nfprojSources);
 
+            // developer note: we have to use LoadFile() and not Load() which loads the assembly into the caller domain
             Assembly test = Assembly.LoadFile(source);
             AppDomain.CurrentDomain.AssemblyResolve += App_AssemblyResolve;
             AppDomain.CurrentDomain.Load(test.GetName());
 
-            var allTypes = test.GetTypes().Where(x=> x.IsClass);
-            foreach (var type in allTypes)
-            {
-                if (!type.IsClass)
-                {
-                    continue;
-                }
+            var typeCandidatesForTests = test.GetTypes()
+                                            .Where(x => x.IsClass);
 
-                var typeAttribs = type.GetCustomAttributes(true)
-                    .Where(x => x.GetType().FullName == typeof(TestClassAttribute).GetType().FullName);
-                foreach (var typeAttrib in typeAttribs)
+            foreach (var typeCandidate in typeCandidatesForTests)
+            {
+                var testClasses = typeCandidate.GetCustomAttributes(true)
+                                      .Where(x => x.GetType().FullName == typeof(TestClassAttribute).FullName);
+
+                foreach (var testClassAttrib in testClasses)
                 {
-                    var methods = type.GetMethods();
+                    var methods = typeCandidate.GetMethods();
+
                     // First we look at Setup
                     foreach (var method in methods)
                     {
-                        var attribs = method.GetCustomAttributes(true);
-                        attribs = Helper.RemoveTestMethodIfDataRowExists(attribs);
-                        var attribsToItterate = attribs.Where(x => IsTestMethod(x)).ToArray();
-                        for (int i = 0; i < attribsToItterate.Length; i++)
+                        var methodAttribs = method.GetCustomAttributes(true);
+                        methodAttribs = Helper.RemoveTestMethodIfDataRowExists(methodAttribs);
+
+                        var testMethodsToItterate = methodAttribs.Where(x => IsTestMethod(x)).ToArray();
+
+                        for (int i = 0; i < testMethodsToItterate.Length; i++)
                         {
-                            var attrib = attribsToItterate[i];
-                            var testCase = GetFileNameAndLineNumber(allCsFils, type, method, attrib, i);
+                            var testMethodAttrib = testMethodsToItterate[i];
+                            var testCase = GetFileNameAndLineNumber(
+                                allCsFiles,
+                                typeCandidate,
+                                method,
+                                testMethodAttrib,
+                                i);
+
                             testCase.Source = source;
                             testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
-                            testCase.FullyQualifiedName = $"{type.FullName}.{testCase.DisplayName}";
-                            testCase.Traits.Add(new Trait("Type", attrib.GetType().Name.Replace("Attribute", "")));
-                            testCases.Add(testCase);
+                            testCase.FullyQualifiedName = $"{typeCandidate.FullName}.{testCase.DisplayName}";
+                            testCase.Traits.Add(new Trait("Type", testMethodAttrib.GetType().Name.Replace("Attribute", "")));
+
+                            collectionOfTestCases.Add(testCase);
                         }
                     }
                 }
             }
 
-            return testCases;
+            return collectionOfTestCases;
         }
 
         private static bool IsTestMethod(object attrib)
@@ -244,42 +253,54 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
-        private static TestCase GetFileNameAndLineNumber(string[] csFiles, Type className, MethodInfo method, object attribute, int attributeIndex)
+        private static TestCase GetFileNameAndLineNumber(
+            string[] csFiles,
+            Type className,
+            MethodInfo method,
+            object attribute,
+            int attributeIndex)
         {
-            var clName = className.Name;
-            var methodName = method.Name;
-            TestCase flret = new TestCase();
+            TestCase testCase = new TestCase();
+
             foreach (var csFile in csFiles)
             {
-                StreamReader sr = new StreamReader(csFile);
-                var allFile = sr.ReadToEnd();
-                if (!allFile.Contains($"class {clName}"))
+                using (StreamReader sr = new StreamReader(csFile))
                 {
-                    continue;
-                }
+                    var fileContent = sr.ReadToEnd();
 
-                if (!allFile.Contains($" {methodName}("))
-                {
-                    continue;
-                }
-
-                // We found it!
-                int lineNum = 1;
-                foreach (var line in allFile.Split('\r'))
-                {
-                    if (line.Contains($" {methodName}("))
+                    if (!fileContent.Contains($"class {className.Name}"))
                     {
-                        flret.CodeFilePath = csFile;
-                        flret.LineNumber = lineNum;
-                        flret.DisplayName = Helper.GetTestDisplayName(method, attribute, attributeIndex);
-                        return flret;
+                        continue;
                     }
 
-                    lineNum++;
+                    if (!fileContent.Contains($" {method.Name}("))
+                    {
+                        continue;
+                    }
+
+                    // We found it!
+                    int lineNumber = 1;
+
+                    foreach (var line in fileContent.Split('\r'))
+                    {
+                        if (line.Contains($" {method.Name}("))
+                        {
+                            testCase.CodeFilePath = csFile;
+                            testCase.LineNumber = lineNumber;
+                            testCase.DisplayName = Helper.GetTestDisplayName(
+                                method,
+                                attribute,
+                                attributeIndex);
+
+                            return testCase;
+                        }
+
+                        lineNumber++;
+                    }
                 }
             }
 
-            return flret;
+            return testCase;
         }
     }
 }
