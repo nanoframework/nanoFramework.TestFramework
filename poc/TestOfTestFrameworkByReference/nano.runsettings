@@ -8,7 +8,7 @@
        <TargetFrameworkVersion>net48</TargetFrameworkVersion>
 	   <TargetPlatform>x64</TargetPlatform>
        <!-- Comment the following line or adjust it if you want to test the TestAdapter. Path has to be absolute or relative to the build folder of the test dll -->
-       <TestAdaptersPaths>E:\GitHub\nf-nanoFramework.TestFramework\source\TestAdapter\bin\Debug\net4.8</TestAdaptersPaths>
+       <TestAdaptersPaths>E:\GitHub\nf-nanoFramework.TestFramework\source\TestAdapter\bin\Debug\net4.8;E:\GitHub\nf-nanoFramework.TestFramework\source\UnitTestLauncher\bin\Debug</TestAdaptersPaths>
    </RunConfiguration>
    <nanoFrameworkAdapter>
        <Logging>None</Logging>
