@@ -119,6 +119,7 @@ jobs:
 
   - task: NuGetCommand@2
     displayName: NuGet restore Test Adapter
+    retryCountOnTaskFailure: 2
     inputs:
       restoreSolution: 'nanoFramework.TestAdapter.sln'
       feedsToUse: config
@@ -126,6 +127,7 @@ jobs:
   
   - task: NuGetCommand@2
     displayName: NuGet restore Test Framework
+    retryCountOnTaskFailure: 2
     inputs:
       restoreSolution: 'nanoFramework.TestFramework.sln'
       feedsToUse: config
