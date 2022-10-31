@@ -4,12 +4,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NFUnitTestByReference", "TestOfTestFrameworkByReference\NFUnitTestByReference.nfproj", "{FBD29C49-D7DC-425E-BAD1-1AE63484A6CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91} = {F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}
+	EndProjectSection
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.TestFramework", "..\source\TestFramework\nanoFramework.TestFramework.nfproj", "{D66A7774-AFAB-466B-9CFB-3485B02F4AF4}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestFrameworkShared", "..\source\TestFrameworkShared\TestFrameworkShared.shproj", "{55F048B5-6739-43C5-A93D-DB61DB8E912F}"
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.UnitTestLauncher", "..\source\UnitTestLauncher\nanoFramework.UnitTestLauncher.nfproj", "{897FC4EA-823D-4343-8CC6-B6F28C3FF91E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nanoFramework.TestAdapter", "..\source\TestAdapter\nanoFramework.TestAdapter.csproj", "{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +40,10 @@ Global
 		{897FC4EA-823D-4343-8CC6-B6F28C3FF91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{897FC4EA-823D-4343-8CC6-B6F28C3FF91E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{897FC4EA-823D-4343-8CC6-B6F28C3FF91E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,5 +53,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\source\TestFrameworkShared\TestFrameworkShared.projitems*{55f048b5-6739-43c5-a93d-db61db8e912f}*SharedItemsImports = 13
+		..\source\TestFrameworkShared\TestFrameworkShared.projitems*{f967dd1c-f1e4-4fe0-afcd-15544ced3b91}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
