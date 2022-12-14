@@ -9,6 +9,7 @@
     <Import_RootNamespace>TestFrameworkShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AssertFailedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CleanupAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataRowAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
