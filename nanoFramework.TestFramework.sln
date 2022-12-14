@@ -8,6 +8,13 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.TestFramework
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TestFrameworkShared", "source\TestFrameworkShared\TestFrameworkShared.shproj", "{55F048B5-6739-43C5-A93D-DB61DB8E912F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{177B2F99-E031-410F-88EF-C0C46289B80C}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+		source\package.nuspec = source\package.nuspec
+		version.json = version.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

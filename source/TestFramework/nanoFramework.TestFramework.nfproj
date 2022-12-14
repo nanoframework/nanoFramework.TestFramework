@@ -30,9 +30,10 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="CollectionAssert.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
-    <Compile Include="TestFramework.cs" />
+    <Compile Include="Assert.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
