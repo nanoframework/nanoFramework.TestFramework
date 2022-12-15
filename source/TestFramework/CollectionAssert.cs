@@ -18,7 +18,7 @@ namespace nanoFramework.TestFramework
     {
         private const string CollectionEqualReason = "{0}({1})";
         private const string NumberOfElementsDiff = "Different number of elements.";
-        private const string ElementsAtIndexDontMatch = "Element at index {0} do not match.";
+        private const string ElementsAtIndexDontMatch = "Element at index {0} do not match. Expected:<{1}>. Actual:<{2}>.";
         private const string BothCollectionsSameReference = "Both collection references point to the same collection object. {0}";
         private const string BothCollectionsSameElements = "Both collection contain same elements.";
 
@@ -120,14 +120,17 @@ namespace nanoFramework.TestFramework
             ICollection actual,
             ref string reason)
         {
-            if (expected != actual)
+            if (expected
+                != actual)
             {
-                if (expected == null || actual == null)
+                if (expected == null
+                    || actual == null)
                 {
                     return false;
                 }
 
-                if (expected.Count != actual.Count)
+                if (expected.Count
+                    != actual.Count)
                 {
                     reason = NumberOfElementsDiff;
                     return false;
@@ -138,13 +141,21 @@ namespace nanoFramework.TestFramework
 
                 int num = 0;
 
-                while (enumerator.MoveNext() && enumerator2.MoveNext())
+                while (enumerator.MoveNext()
+                       && enumerator2.MoveNext())
                 {
-                    if (!object.Equals(enumerator.Current, enumerator2.Current))
+                    if (!object.Equals(
+                        enumerator.Current,
+                        enumerator2.Current))
                     {
                         reason = string.Format(
                             ElementsAtIndexDontMatch,
-                            new object[1] { num });
+                            new object[3]
+                            {
+                                num,
+                                enumerator.Current,
+                                enumerator2.Current
+                            });
 
                         return false;
                     }
@@ -157,9 +168,8 @@ namespace nanoFramework.TestFramework
                 return true;
             }
 
-            reason = string.Format(
-                BothCollectionsSameReference,
-                new object[1] { string.Empty });
+            reason = string.Format(BothCollectionsSameReference,
+                                   new object[1] { string.Empty });
 
             return true;
         }
