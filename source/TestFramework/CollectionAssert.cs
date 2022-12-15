@@ -140,7 +140,7 @@ namespace nanoFramework.TestFramework
 
                 while (enumerator.MoveNext() && enumerator2.MoveNext())
                 {
-                    if (!enumerator.Current.Equals(enumerator2.Current))
+                    if (!object.Equals(enumerator.Current, enumerator2.Current))
                     {
                         reason = string.Format(
                             ElementsAtIndexDontMatch,
