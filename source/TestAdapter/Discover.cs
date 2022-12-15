@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace nanoFramework.TestPlatform.TestAdapter
 {
@@ -60,22 +61,22 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     Settings.LoggingLevel.Verbose);
             }
 
-            foreach (var source in sources)
+            foreach (var sourceFile in sources)
             {
                 _logger.LogMessage(
-                    $"  New file processed: {source}",
+                    $"  New file processed: {sourceFile}",
                     Settings.LoggingLevel.Detailed);
 
-                if (!File.Exists(source))
+                if (!File.Exists(sourceFile))
                 {
                     _logger.LogMessage(
-                        $"  File doesn't exist: {source}",
+                        $"  File doesn't exist: {sourceFile}",
                         Settings.LoggingLevel.Detailed);
 
                     continue;
                 }
 
-                var cases = FindTestCases(source);
+                var cases = ComposeTestCases(sourceFile);
                 if (cases.Count > 0)
                 {
                     _logger.LogMessage(
@@ -97,24 +98,26 @@ namespace nanoFramework.TestPlatform.TestAdapter
         }
 
         /// <summary>
-        /// Find tests cases based on the source file
+        /// Compose tests cases for the Unit Test assembly.
         /// </summary>
-        /// <param name="source">the link on a file</param>
-        /// <returns>A list of test cases</returns>
-        public static List<TestCase> FindTestCases(string source)
+        /// <param name="sourceFile">Path to the assembly file containing the Unit Tests.</param>
+        /// <returns>A list of <see cref="TestCase"/>.</returns>
+        public static List<TestCase> ComposeTestCases(string sourceFile)
         {
             List<TestCase> collectionOfTestCases = new List<TestCase>();
 
-            var nfprojSources = FindNfprojSources(source);
-            if (nfprojSources.Length == 0)
+            // try to find nfproj file for this unit test assembly
+            var nfprojFile = FindNfprojFile(sourceFile);
+            
+            if (!nfprojFile.Any())
             {
                 return collectionOfTestCases;
             }
 
-            var allCsFiles = GetAllCsFileNames(nfprojSources);
+            var allCsFiles = GetAllCsFiles(nfprojFile);
 
             // developer note: we have to use LoadFile() and not Load() which loads the assembly into the caller domain
-            Assembly test = Assembly.LoadFile(source);
+            Assembly test = Assembly.LoadFile(sourceFile);
             AppDomain.CurrentDomain.AssemblyResolve += App_AssemblyResolve;
             AppDomain.CurrentDomain.Load(test.GetName());
 
@@ -141,14 +144,15 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         for (int i = 0; i < testMethodsToItterate.Length; i++)
                         {
                             var testMethodAttrib = testMethodsToItterate[i];
-                            var testCase = GetFileNameAndLineNumber(
+                            
+                            var testCase = BuildTestCaseFromSourceFile(
                                 allCsFiles,
                                 typeCandidate,
                                 method,
                                 testMethodAttrib,
                                 i);
 
-                            testCase.Source = source;
+                            testCase.Source = sourceFile;
                             testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
                             testCase.FullyQualifiedName = $"{typeCandidate.FullName}.{testCase.DisplayName}";
                             testCase.Traits.Add(new Trait("Type", testMethodAttrib.GetType().Name.Replace("Attribute", "")));
@@ -205,21 +209,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
         }
 
-        private static string[] GetAllCsFileNames(FileInfo[] nfprojSources)
+        private static string[] GetAllCsFiles(FileInfo[] nfprojFiles)
         {
             List<string> allCsFiles = new List<string>();
-            foreach (var nfproj in nfprojSources)
+
+            foreach (var nfproj in nfprojFiles)
             {
-                var csFiles = Directory.GetFiles(Path.GetDirectoryName(nfproj.FullName), "*.cs", SearchOption.AllDirectories);
-                // Get rid of those in /bin / obj
-                var csFilesClean = csFiles.Where(m => !(m.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") || m.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}")));
-                allCsFiles.AddRange(csFilesClean);
+                // read nfproj file content
+                var nfprojContent = File.ReadAllText(nfproj.FullName);
+
+                // get all Compile items from the project file
+                string compilePattern = "(?><Compile Include=\")(?<source_file>.+)(?>\")";
+                var compileItems = Regex.Matches(nfprojContent, compilePattern, RegexOptions.IgnoreCase);
+
+                foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
+                {
+                    allCsFiles.Add($"{Path.GetFullPath(nfproj.DirectoryName)}\\{compileItem.Groups["source_file"].Value}");
+                }
             }
 
             return allCsFiles.ToArray();
         }
 
-        private static FileInfo[] FindNfprojSources(string source)
+        private static FileInfo[] FindNfprojFile(string source)
         {
             if (string.IsNullOrEmpty(source))
             {
@@ -233,8 +245,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     return new FileInfo[0];
                 }
 
-                // Find all the potential *.cs files present at same level or above a nfproj file,
-                // if no nfproj file, then we will skip this source
+                // iterate through the parent folders until an nfproj file is found
                 var mainDirectory = new DirectoryInfo(Path.GetDirectoryName(source));
 
                 FileInfo[] nfproj = mainDirectory?.GetFiles("*.nfproj");
@@ -242,18 +253,18 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (nfproj.Length == 0
                     && mainDirectory?.Parent != null)
                 {
-                    return FindNfprojSources(mainDirectory?.Parent.FullName);
+                    return FindNfprojFile(mainDirectory?.Parent.FullName);
                 }
 
                 return nfproj;
             }
             catch(Exception ex)
             {
-                throw new FileNotFoundException($"Exception raised when finding NF project sources: '{ex}' searching for {source}");
+                throw new FileNotFoundException($"Exception raised when finding NF project file: '{ex}' searching for {source}");
             }
         }
 
-        private static TestCase GetFileNameAndLineNumber(
+        private static TestCase BuildTestCaseFromSourceFile(
             string[] csFiles,
             Type className,
             MethodInfo method,
@@ -262,41 +273,38 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             TestCase testCase = new TestCase();
 
-            foreach (var csFile in csFiles)
+            foreach (var sourceFile in csFiles)
             {
-                using (StreamReader sr = new StreamReader(csFile))
+                var fileContent = File.ReadAllText(sourceFile);
+
+                if (!fileContent.Contains($"class {className.Name}"))
                 {
-                    var fileContent = sr.ReadToEnd();
+                    continue;
+                }
 
-                    if (!fileContent.Contains($"class {className.Name}"))
+                if (!fileContent.Contains($" {method.Name}("))
+                {
+                    continue;
+                }
+
+                // We've found the file
+                int lineNumber = 1;
+
+                foreach (var line in fileContent.Split('\r'))
+                {
+                    if (line.Contains($" {method.Name}("))
                     {
-                        continue;
+                        testCase.CodeFilePath = sourceFile;
+                        testCase.LineNumber = lineNumber;
+                        testCase.DisplayName = Helper.GetTestDisplayName(
+                            method,
+                            attribute,
+                            attributeIndex);
+
+                        return testCase;
                     }
 
-                    if (!fileContent.Contains($" {method.Name}("))
-                    {
-                        continue;
-                    }
-
-                    // We found it!
-                    int lineNumber = 1;
-
-                    foreach (var line in fileContent.Split('\r'))
-                    {
-                        if (line.Contains($" {method.Name}("))
-                        {
-                            testCase.CodeFilePath = csFile;
-                            testCase.LineNumber = lineNumber;
-                            testCase.DisplayName = Helper.GetTestDisplayName(
-                                method,
-                                attribute,
-                                attributeIndex);
-
-                            return testCase;
-                        }
-
-                        lineNumber++;
-                    }
+                    lineNumber++;
                 }
             }
 
