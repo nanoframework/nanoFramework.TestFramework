@@ -80,7 +80,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 InitializeLogger(runContext, frameworkHandle);
                 foreach (var source in sources)
                 {
-                    var testsCases = TestDiscoverer.FindTestCases(source);
+                    var testsCases = TestDiscoverer.ComposeTestCases(source);
 
                     RunTests(testsCases, runContext, frameworkHandle);
                 }
