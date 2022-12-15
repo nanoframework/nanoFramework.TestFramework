@@ -21,14 +21,14 @@ namespace nanoFramework.TestFramework
         private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
         private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
         private const string AreSameGivenValues = "Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {0}";
-        private const string IsNotInstanceOfFailMsg = "Wrong Type:&lt;{1}&gt;. Actual type:&lt;{2}&gt;. {0}";
-        private const string IsInstanceOfFailMsg = "{0} Expected type:&lt;{1}&gt;. Actual type:&lt;{2}&gt;.";
+        private const string IsNotInstanceOfFailMsg = "Wrong Type:<{1}>. Actual type:<{2}>. {0}";
+        private const string IsInstanceOfFailMsg = "{0} Expected type:<{1}>. Actual type:<{2}>.";
         private const string StringContainsFailMsg = "{2} does not contains {1}. {0}";
         private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
-        private const string AreEqualFailMsg = "Expected:&lt;{1}&gt;. Actual:&lt;{2}&gt;. {0}";
-        private const string AreNotEqualFailMsg = "Expected any value except:&lt;{1}&gt;. Actual:&lt;{2}&gt;. {0}";
+        private const string AreEqualFailMsg = "Expected:<{1}>. Actual:<{2}>. {0}";
+        private const string AreNotEqualFailMsg = "Expected any value except:<{1}>. Actual:<{2}>. {0}";
         private const string NullParameterToAssert = "The parameter '{0}' is invalid. The value cannot be null. {1}.";
 
         #region SkipTest
