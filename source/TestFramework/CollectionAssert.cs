@@ -64,11 +64,44 @@ namespace nanoFramework.TestFramework
         /// <param name="actual"> The second collection to compare. This is the collection produced by the code under test.</param>
         /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(ICollection expected, ICollection actual, string message = "")
+        public static void AreEqual(
+            ICollection expected,
+            ICollection actual,
+            string message = "")
         {
             string reason = string.Empty;
 
-            if (!AreCollectionsEqual(expected, actual, ref reason))
+            if (AreCollectionsEqual(expected,
+                                    actual,
+                                    ref reason))
+            {
+                Assert.HandleFail(
+                    "CollectionAssert.AreNotEqual",
+                    string.Format(CollectionEqualReason, new object[2]
+                    {
+                        message,
+                        reason
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// Tests whether the specified collections are unequal and throws an exception if the two collections are equal. Equality is defined as having the same elements in the same order and quantity. Different references to the same value are considered equal.
+        /// </summary>
+        /// <param name="notExpected">The first collection to compare. This is the collection the tests expects not to match <paramref name="actual"/>.</param>
+        /// <param name="actual"> The second collection to compare. This is the collection produced by the code under test.</param>
+        /// <param name="message"> The message to include in the exception when actual is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal to <paramref name="actual"/>.</exception>
+        public static void AreNotEqual(
+            ICollection notExpected,
+            ICollection actual,
+            string message = "")
+        {
+            string reason = string.Empty;
+
+            if (!AreCollectionsEqual(notExpected,
+                                     actual,
+                                     ref reason))
             {
                 Assert.HandleFail(
                     "CollectionAssert.AreEqual",
