@@ -109,7 +109,7 @@ namespace nanoFramework.TestFramework
         #region Equal
 
         /// <summary>
-        /// Tests whether the specified objects are equal and throws an exception if the two objects are not equal. 
+        /// Tests whether the specified objects are equal and throws an exception if the two objects are unequal. 
         /// </summary>
         /// <param name="expected">The first objects to compare. This is the objects the tests expects.</param>
         /// <param name="actual">The second objects to compare. This is the objects produced by the code under test.</param>
@@ -132,7 +132,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -155,7 +155,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -171,7 +171,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -195,7 +195,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -209,10 +209,10 @@ namespace nanoFramework.TestFramework
             string message = "") => AreEqual(
                 expected,
                 actual,
-                message);    
+                message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -235,7 +235,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -251,7 +251,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -274,7 +274,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -290,7 +290,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -313,7 +313,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -329,7 +329,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -352,7 +352,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -368,7 +368,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -391,7 +391,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -407,7 +407,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -430,7 +430,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -446,7 +446,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -469,7 +469,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -485,7 +485,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -508,7 +508,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -521,10 +521,10 @@ namespace nanoFramework.TestFramework
             string message = "") => AreEqual(
                 expected,
                 actual,
-                message);    
+                message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -547,7 +547,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -563,7 +563,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -586,7 +586,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -602,7 +602,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -625,7 +625,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -641,7 +641,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -664,7 +664,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -680,7 +680,7 @@ namespace nanoFramework.TestFramework
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -703,7 +703,7 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
+        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
@@ -723,7 +723,7 @@ namespace nanoFramework.TestFramework
         #region NotEqual
 
         /// <summary>
-        /// Tests whether the specified object are not equal and throws an exception if the two object are equal. 
+        /// Tests whether the specified object are unequal and throws an exception if the two object are equal. 
         /// </summary>
         /// <param name="notExpected">The first object to compare. This is the object the tests expects.</param>
         /// <param name="actual">The second object to compare. This is the object produced by the code under test.</param>
@@ -746,588 +746,588 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            bool expected,
+            bool notExpected,
             bool actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            bool expected,
+            bool notExpected,
             bool actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            int expected,
+            int notExpected,
             int actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            int expected,
+            int notExpected,
             int actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            Array expected,
+            Array notExpected,
             Array actual,
             string message = "")
         {
-            if (!expected.SequenceEqual(actual))
+            if (!notExpected.SequenceEqual(actual))
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            Array expected,
+            Array notExpected,
             Array actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
-                message); 
+                message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            uint expected,
+            uint notExpected,
             uint actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            uint expected,
+            uint notExpected,
             uint actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            short expected,
+            short notExpected,
             short actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            short expected,
+            short notExpected,
             short actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            ushort expected,
+            ushort notExpected,
             ushort actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            ushort expected,
+            ushort notExpected,
             ushort actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            long expected,
+            long notExpected,
             long actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            long expected,
+            long notExpected,
             long actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            ulong expected,
+            ulong notExpected,
             ulong actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            ulong expected,
+            ulong notExpected,
             ulong actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            byte expected,
+            byte notExpected,
             byte actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            byte expected,
+            byte notExpected,
             byte actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            char expected,
+            char notExpected,
             char actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            char expected,
+            char notExpected,
             char actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            sbyte expected,
+            sbyte notExpected,
             sbyte actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            sbyte expected,
+            sbyte notExpected,
             sbyte actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            double expected,
+            double notExpected,
             double actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            double expected,
+            double notExpected,
             double actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            float expected,
+            float notExpected,
             float actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            float expected,
+            float notExpected,
             float actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            string expected,
+            string notExpected,
             string actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            string expected,
+            string notExpected,
             string actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         public static void AreNotEqual(
-            DateTime expected,
+            DateTime notExpected,
             DateTime actual,
             string message = "")
         {
-            if (expected != actual)
+            if (notExpected != actual)
             {
                 return;
             }
 
             HandleAreNotEqualFail(
-                expected,
+                notExpected,
                 actual,
                 message);
         }
 
         /// <summary>
-        /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
+        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
         /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
+        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/>.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
         public static void NotEqual(
-            DateTime expected,
+            DateTime notExpected,
             DateTime actual,
             string message = "") => AreNotEqual(
-                expected,
+                notExpected,
                 actual,
                 message);
 
@@ -1851,7 +1851,7 @@ namespace nanoFramework.TestFramework
 
             HandleFail("Assert.AreNotEqual", message2);
         }
-        
+
         internal static void CheckParameterNotNull(
             object param,
             string assertionName,
