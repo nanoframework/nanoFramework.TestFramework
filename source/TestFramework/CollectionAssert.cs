@@ -71,12 +71,12 @@ namespace nanoFramework.TestFramework
         {
             string reason = string.Empty;
 
-            if (AreCollectionsEqual(expected,
+            if (!AreCollectionsEqual(expected,
                                     actual,
                                     ref reason))
             {
                 Assert.HandleFail(
-                    "CollectionAssert.AreNotEqual",
+                    "CollectionAssert.AreEqual",
                     string.Format(CollectionEqualReason, new object[2]
                     {
                         message,
@@ -99,12 +99,12 @@ namespace nanoFramework.TestFramework
         {
             string reason = string.Empty;
 
-            if (!AreCollectionsEqual(notExpected,
+            if (AreCollectionsEqual(notExpected,
                                      actual,
                                      ref reason))
             {
                 Assert.HandleFail(
-                    "CollectionAssert.AreEqual",
+                    "CollectionAssert.AreNotEqual",
                     string.Format(CollectionEqualReason, new object[2]
                     {
                         message,
