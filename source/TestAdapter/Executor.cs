@@ -764,7 +764,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0];
 
-                    string exception = line.Substring(line.IndexOf(TestFailed) + TestPassed.Length + method.Length + 2);
+                    string exception = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length + method.Length + 2);
 
                     // Find the test
                     var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
@@ -786,7 +786,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     string method = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length).Split(',')[0];
 
-                    string exception = line.Substring(line.IndexOf(TestSkipped) + TestPassed.Length + method.Length + 2);
+                    string exception = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length + method.Length + 2);
 
                     // Find the test
                     var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
