@@ -109,6 +109,29 @@ namespace nanoFramework.TestFramework
         #region Equal
 
         /// <summary>
+        /// Tests whether the specified objects are equal and throws an exception if the two objects are not equal. 
+        /// </summary>
+        /// <param name="expected">The first objects to compare. This is the objects the tests expects.</param>
+        /// <param name="actual">The second objects to compare. This is the objects produced by the code under test.</param>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
+        public static void AreEqual(
+            object expected,
+            object actual,
+            string message = "")
+        {
+            if (expected == actual)
+            {
+                return;
+            }
+
+            HandleAreEqualFail(
+                expected,
+                actual,
+                message);
+        }
+
+        /// <summary>
         /// Tests whether the specified values are equal and throws an exception if the two values are not equal. 
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
@@ -698,6 +721,29 @@ namespace nanoFramework.TestFramework
         #endregion
 
         #region NotEqual
+
+        /// <summary>
+        /// Tests whether the specified object are not equal and throws an exception if the two object are equal. 
+        /// </summary>
+        /// <param name="notExpected">The first object to compare. This is the object the tests expects.</param>
+        /// <param name="actual">The second object to compare. This is the object produced by the code under test.</param>
+        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal to <paramref name="actual"/>.</exception>
+        public static void AreNotEqual(
+            object notExpected,
+            object actual,
+            string message = "")
+        {
+            if (notExpected != actual)
+            {
+                return;
+            }
+
+            HandleAreNotEqualFail(
+                notExpected,
+                actual,
+                message);
+        }
 
         /// <summary>
         /// Tests whether the specified values are not equal and throws an exception if the two values are equal. 
