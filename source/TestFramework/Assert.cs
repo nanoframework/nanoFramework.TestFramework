@@ -120,7 +120,7 @@ namespace nanoFramework.TestFramework
             object actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -143,7 +143,7 @@ namespace nanoFramework.TestFramework
             bool actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -183,7 +183,7 @@ namespace nanoFramework.TestFramework
             int actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -223,7 +223,7 @@ namespace nanoFramework.TestFramework
             Array actual,
             string message = "")
         {
-            if (expected.SequenceEqual(actual))
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -262,7 +262,7 @@ namespace nanoFramework.TestFramework
             uint actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -301,7 +301,7 @@ namespace nanoFramework.TestFramework
             short actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -340,7 +340,7 @@ namespace nanoFramework.TestFramework
             ushort actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -379,7 +379,7 @@ namespace nanoFramework.TestFramework
             long actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -418,7 +418,7 @@ namespace nanoFramework.TestFramework
             ulong actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -457,7 +457,7 @@ namespace nanoFramework.TestFramework
             byte actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -496,7 +496,7 @@ namespace nanoFramework.TestFramework
             char actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -535,7 +535,7 @@ namespace nanoFramework.TestFramework
             sbyte actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -574,7 +574,7 @@ namespace nanoFramework.TestFramework
             double actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -613,7 +613,7 @@ namespace nanoFramework.TestFramework
             float actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -652,7 +652,7 @@ namespace nanoFramework.TestFramework
             string actual,
             string message = "")
         {
-            if (expected == actual)
+            if (string.Compare(expected, actual) == 0)
             {
                 return;
             }
@@ -691,7 +691,7 @@ namespace nanoFramework.TestFramework
             DateTime actual,
             string message = "")
         {
-            if (expected == actual)
+            if (expected.Equals(actual))
             {
                 return;
             }
@@ -734,15 +734,13 @@ namespace nanoFramework.TestFramework
             object actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -757,15 +755,13 @@ namespace nanoFramework.TestFramework
             bool actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -796,15 +792,13 @@ namespace nanoFramework.TestFramework
             int actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -835,15 +829,13 @@ namespace nanoFramework.TestFramework
             Array actual,
             string message = "")
         {
-            if (!notExpected.SequenceEqual(actual))
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -874,15 +866,13 @@ namespace nanoFramework.TestFramework
             uint actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -913,15 +903,13 @@ namespace nanoFramework.TestFramework
             short actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -952,15 +940,13 @@ namespace nanoFramework.TestFramework
             ushort actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -991,15 +977,13 @@ namespace nanoFramework.TestFramework
             long actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1031,15 +1015,13 @@ namespace nanoFramework.TestFramework
             ulong actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1070,15 +1052,13 @@ namespace nanoFramework.TestFramework
             byte actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1109,15 +1089,13 @@ namespace nanoFramework.TestFramework
             char actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1148,15 +1126,13 @@ namespace nanoFramework.TestFramework
             sbyte actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1187,15 +1163,13 @@ namespace nanoFramework.TestFramework
             double actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1226,15 +1200,13 @@ namespace nanoFramework.TestFramework
             float actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1265,15 +1237,13 @@ namespace nanoFramework.TestFramework
             string actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (string.Compare(notExpected, actual) == 0)
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1304,15 +1274,13 @@ namespace nanoFramework.TestFramework
             DateTime actual,
             string message = "")
         {
-            if (notExpected != actual)
+            if (notExpected.Equals(actual))
             {
-                return;
+                HandleAreNotEqualFail(
+                    notExpected,
+                    actual,
+                    message);
             }
-
-            HandleAreNotEqualFail(
-                notExpected,
-                actual,
-                message);
         }
 
         /// <summary>
@@ -1596,7 +1564,7 @@ namespace nanoFramework.TestFramework
             object actual,
             string message = "")
         {
-            if (!expected.Equals(actual))
+            if (expected != actual)
             {
                 string message2 = message;
 
@@ -1637,7 +1605,7 @@ namespace nanoFramework.TestFramework
             object actual,
             string message = "")
         {
-            if (notExpected.Equals(actual))
+            if (notExpected == actual)
             {
                 HandleFail("Assert.AreNotSame", message);
             }
