@@ -5,13 +5,15 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(TF_BUILD)' == 'True' or '$(ContinuousIntegrationBuild)' == 'True'">true</RestoreLockedMode>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.1.6856" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.3.2" />
     <PackageReference Include="nanoFramework.nanoCLR.Win32" GeneratePathProperty="true">
-      <Version>1.8.0.570</Version>
+      <Version>1.8.0.751</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -39,8 +41,8 @@
 
   <!-- need this here to make sure the latest version of WIN32 nanoCLR is used in Azure Pipeline builds -->
   <Target Name="SetNanoCLRLocation_AzurePipeline" AfterTargets="Build" Condition="'$(TF_BUILD)' == 'True'">
-    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
-    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\lib\net48\nanoFramework.nanoCLR.exe" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="$(PkgnanoFramework_nanoCLR_Win32)\tools\vcruntime140.dll" DestinationFolder="$(TargetDir)" />
   </Target>
   
 </Project>
