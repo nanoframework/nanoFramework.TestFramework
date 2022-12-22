@@ -114,8 +114,6 @@ jobs:
   - task: InstallNanoMSBuildComponents@1
     condition: ne( variables['StartReleaseCandidate'], true )
     displayName: Install nanoFramework MSBuild components
-    env:
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: Cache@2
     displayName: Cache NuGet packages
@@ -132,6 +130,7 @@ jobs:
 
   - task: NuGetCommand@2
     displayName: NuGet restore Test Adapter
+    condition: succeeded()
     retryCountOnTaskFailure: 2
     inputs:
       restoreSolution: 'nanoFramework.TestAdapter.sln'
@@ -140,6 +139,7 @@ jobs:
   
   - task: NuGetCommand@2
     displayName: NuGet restore Test Framework
+    condition: succeeded()
     retryCountOnTaskFailure: 2
     inputs:
       restoreSolution: 'nanoFramework.TestFramework.sln'
@@ -148,6 +148,7 @@ jobs:
   
   - task: VSBuild@1
     displayName: Build Test Adapter
+    condition: succeeded()
     inputs:
       solution: 'nanoFramework.TestAdapter.sln'
       platform: '$(buildPlatform)'
@@ -156,6 +157,7 @@ jobs:
 
   - task: VSBuild@1
     displayName: Build Test Framework
+    condition: succeeded()
     inputs:
       solution: 'nanoFramework.TestFramework.sln'
       platform: '$(buildPlatform)'
@@ -213,7 +215,11 @@ jobs:
 
   - task: DotNetCoreCLI@2
     displayName: Install SignTool tool
-    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['System.PullRequest.PullRequestId'], '')
+      )
     inputs:
       command: custom
       custom: tool
@@ -232,11 +238,19 @@ jobs:
       --descriptionUrl "https://github.com/$env:Build_Repository_Name"
     displayName: Sign packages
     continueOnError: true
-    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['System.PullRequest.PullRequestId'], '')
+      )
 
   # publish artifacts (only possible if this is not a PR originated on a fork)
   - task: PublishBuildArtifacts@1
-    condition: and( succeeded(), ne(variables['system.pullrequest.isfork'], true) )
+    condition: >-
+      and(
+        succeeded(),
+        ne(variables['system.pullrequest.isfork'], true)
+      )
     displayName: Publish deployables artifacts
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -246,7 +260,11 @@ jobs:
   # push NuGet packages to Azure Artifacts feed (always happens except on PR builds)
   - task: NuGetCommand@2
     displayName: Push NuGet packages to Azure Artifacts
-    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['System.PullRequest.PullRequestId'], '')
+      )
     continueOnError: true
     inputs:
       command: push
@@ -257,7 +275,11 @@ jobs:
 
   # push NuGet class lib package to NuGet (always happens except on PR builds)
   - task: NuGetCommand@2
-    condition: and( succeeded(), eq(variables['System.PullRequest.PullRequestId'], '') )
+    condition: >-
+      and(
+        succeeded(),
+        eq(variables['System.PullRequest.PullRequestId'], '')
+      )
     continueOnError: true
     displayName: Push NuGet packages to NuGet
     inputs:
