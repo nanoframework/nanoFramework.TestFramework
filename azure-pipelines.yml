@@ -337,6 +337,12 @@ jobs:
   - script: nbgv cloud -a -c
     condition: succeeded()
     displayName: Set build number
+  
+  # wait for 15min to allow the 1st batch to get updated
+  # only if this wasn't triggered by the pipeline
+  - powershell: Start-Sleep -Seconds (15*60)
+    displayName: Wait for 15min
+    condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
 
   # update dependents
   - task: PowerShell@2
