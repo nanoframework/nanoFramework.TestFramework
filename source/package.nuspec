@@ -19,7 +19,7 @@
     <tags>nanoFramework C# csharp netmf netnf unittest </tags>
     <packageTypes>
       <packageType name="Dependency" />
-    </packageTypes>
+    </packageTypes> 
   </metadata>
   <files>
     <file src="TestAdapter\bin\Release\net4.8\*.dll" target="lib/net48" />
