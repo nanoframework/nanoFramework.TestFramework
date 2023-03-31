@@ -10,7 +10,7 @@ using System.Xml;
 namespace nanoFramework.TestPlatform.TestAdapter
 {
     /// <summary>
-    /// Settings for the nanoFramework tests
+    /// Settings for .NET nanoFramework Test Adapter.
     /// </summary>
     public class Settings
     {
@@ -23,6 +23,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// The serial port number to run the tests on a real hardware
         /// </summary>
         public string RealHardwarePort { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Path to a local nanoCLR instance to use to run Unit Tests.
+        /// </summary>
+        public string PathToLocalCLRInstance { get; set; } = string.Empty;
 
         /// <summary>
         /// Level of logging for test execution.
