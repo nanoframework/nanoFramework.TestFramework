@@ -4,10 +4,6 @@
 // See LICENSE file in the project root for full license information.
 //
 
-using System;
-using System.Diagnostics;
-using System.Threading;
-
 namespace nanoFramework.TestFramework.Test
 {
     [TestClass]
@@ -20,21 +16,21 @@ namespace nanoFramework.TestFramework.Test
         {
             var additionResult = number1 + number2;
 
-            Assert.Equal(additionResult, result);
+            Assert.AreEqual(additionResult, result);
         }
 
         [TestMethod]
         [DataRow("TestString")]
         public void TestString(string testData)
         {
-            Assert.Equal(testData, "TestString");
+            Assert.AreEqual(testData, "TestString");
         }
 
         [TestMethod]
         [DataRow("adsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassa")]
         public void TestLongString(string testData)
         {
-            Assert.Equal(testData, "adsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassa");
+            Assert.AreEqual(testData, "adsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassaadsdasdasasddassa");
         }
 
         [TestMethod]
@@ -42,7 +38,7 @@ namespace nanoFramework.TestFramework.Test
         public void TestStringWithComma(string formatString, double value, string outcomeMessage)
         {
             // Test alignment operator which is the "," and a number. Negative is right aligned, positive left aligned
-            Assert.Equal(string.Format(formatString, value), outcomeMessage);
+            Assert.AreEqual(string.Format(formatString, value), outcomeMessage);
         }
     }
 }

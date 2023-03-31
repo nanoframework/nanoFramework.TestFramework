@@ -6,7 +6,6 @@
 
 using nanoFramework.Runtime.Native;
 using nanoFramework.TestFramework;
-using System;
 using System.Diagnostics;
 using static nanoFramework.Runtime.Native.SystemInfo;
 
@@ -17,15 +16,21 @@ namespace NFUnitTest
     {
         [Setup]
         public void SetupMethodWillPass()
-        { }
+        {
+            // Method intentionally left empty.
+        }
 
         [TestMethod]
         public void MethodWillPass1()
-        { }
+        {
+            // Method intentionally left empty.
+        }
 
         [TestMethod]
         public void MethodWillPass2()
-        { }
+        {
+            // Method intentionally left empty.
+        }
 
         [TestMethod]
         public void MethodWillSkip()
@@ -42,7 +47,9 @@ namespace NFUnitTest
 
         [TestMethod]
         public void MethodWillPass3()
-        { }
+        {
+            // Method intentionally left empty.
+        }
 
 
         [TestMethod]
@@ -56,8 +63,8 @@ namespace NFUnitTest
 
             double on42 = 42.1;
             double maxDouble = double.MaxValue;
-            Assert.Equal(42.1, on42);
-            Assert.Equal(double.MaxValue, maxDouble);
+            Assert.AreEqual(42.1, on42);
+            Assert.AreEqual(double.MaxValue, maxDouble);
         }
 
         [TestMethod]
