@@ -30,9 +30,9 @@ namespace nanoFramework.TestPlatform.TestAdapter
     [ExtensionUri(TestsConstants.NanoExecutor)]
     class Executor : ITestExecutor
     {
-        private const string TestPassed = "Test passed: ";
-        private const string TestFailed = "Test failed: ";
-        private const string TestSkipped = "Test skipped: ";
+        private const string TestPassed = "Test passed";
+        private const string TestFailed = "Test failed";
+        private const string TestSkipped = "Test skipped";
         private const string Exiting = "Exiting.";
         private const string Done = "Done.";
         private Settings _settings;
@@ -554,6 +554,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
             foreach (var test in tests)
             {
                 TestResult result = new TestResult(test) { Outcome = TestOutcome.None };
+
+                foreach (var t in result.Traits)
+                {
+                    result.Traits.Add(new Trait(t.Name, ""));
+                }
+
                 results.Add(result);
             }
 
@@ -731,94 +737,101 @@ namespace nanoFramework.TestPlatform.TestAdapter
             StringBuilder testOutput = new StringBuilder();
 
             bool readyFound = false;
+            string method;
+            TestResult testResult = new TestResult(new TestCase());
+            string[] resultDataSet = default;
 
             foreach (var line in outputStrings)
             {
-                if (line.Contains(TestPassed))
+                if ((line.Contains(TestPassed)
+                    || (line.Contains(TestFailed))
+                    || (line.Contains(TestSkipped))))
                 {
-                    // Format is "Test passed: MethodName, ticks";
+                    resultDataSet = line.Split(',');
 
-                    string method = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length).Split(',')[0];
-                    string ticks = line.Substring(line.IndexOf(TestPassed) + TestPassed.Length + method.Length + 2);
+                    // sanity check for enough data
+                    if (resultDataSet.Length != 3)
+                    {
+                        // something wrong!
+                        _logger.LogPanicMessage($"*** ERROR: can't parse test result {line}");
 
-                    long ticksNum = 0;
-                    long.TryParse(ticks, out ticksNum);
+                        continue;
+                    }
+
+                    method = resultDataSet[1].Trim();
 
                     // Find the test
-                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
-                    if (res != null)
+                    testResult = results.FirstOrDefault(m => m.TestCase.FullyQualifiedName == method);
+
+                    if (testResult is null)
                     {
-                        res.Duration = TimeSpan.FromTicks(ticksNum);
-                        res.Outcome = TestOutcome.Passed;
-                        res.Messages.Add(new TestResultMessage(
-                            TestResultMessage.StandardOutCategory,
-                            testOutput.ToString()));
+                        // something wrong!
+                        _logger.LogPanicMessage($"*** ERROR: can't find test result for test {method}");
+
+                        continue;
                     }
+                }
+
+                if (line.Contains(TestPassed))
+                {
+                    // Format is "Test passed,MethodName,ticks";
+
+                    string ticks = resultDataSet[2];
+                    long.TryParse(ticks, out long ticksNum);
+
+                    testResult.Duration = TimeSpan.FromTicks(ticksNum);
+                    testResult.Outcome = TestOutcome.Passed;
+                    testResult.Messages.Add(new TestResultMessage(
+                        TestResultMessage.StandardOutCategory,
+                        testOutput.ToString()));
 
                     // reset test output
                     testOutput = new StringBuilder();
                 }
                 else if (line.Contains(TestFailed))
                 {
-                    // Format is "Test failed: MethodName, Exception message";
+                    // Format is "Test failed,MethodName,Exception message";
 
-                    string method = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length).Split(',')[0];
-
-                    string exception = line.Substring(line.IndexOf(TestFailed) + TestFailed.Length + method.Length + 2);
-
-                    // Find the test
-                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
-                    if (res != null)
-                    {
-                        res.ErrorMessage = exception;
-                        res.Outcome = TestOutcome.Failed;
-                        res.Messages.Add(new TestResultMessage(
-                            TestResultMessage.StandardErrorCategory,
-                            testOutput.ToString()));
-                    }
+                    testResult.ErrorMessage = resultDataSet[2];
+                    testResult.Outcome = TestOutcome.Failed;
+                    testResult.Messages.Add(new TestResultMessage(
+                        TestResultMessage.StandardErrorCategory,
+                        testOutput.ToString()));
 
                     // reset test output
                     testOutput = new StringBuilder();
                 }
                 else if (line.Contains(TestSkipped))
                 {
-                    // Format is "Test failed: MethodName, Exception message";
+                    // Format is "Test failed,MethodName,Exception message";
 
-                    string method = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length).Split(',')[0];
+                    testResult.ErrorMessage = resultDataSet[2];
+                    testResult.Outcome = TestOutcome.Skipped;
+                    testResult.Messages.Add(new TestResultMessage(
+                        TestResultMessage.StandardErrorCategory,
+                        testOutput.ToString()));
 
-                    string exception = line.Substring(line.IndexOf(TestSkipped) + TestSkipped.Length + method.Length + 2);
+                    // If this is a Steup Test, set all the other tests from the class to skipped as well
+                    var trait = testResult.TestCase.Traits.FirstOrDefault();
 
-                    // Find the test
-                    var res = results.FirstOrDefault(m => m.TestCase.DisplayName == method);
-                    if (res != null)
+                    if (trait != null)
                     {
-                        res.ErrorMessage = exception;
-                        res.Outcome = TestOutcome.Skipped;
-                        res.Messages.Add(new TestResultMessage(
-                            TestResultMessage.StandardErrorCategory,
-                            testOutput.ToString()));
-
-                        // If this is a Steup Test, set all the other tests from the class to skipped as well
-                        var trait = res.TestCase.Traits.FirstOrDefault();
-                        if (trait != null)
+                        if (trait.Value == "Setup" && trait.Name == "Type")
                         {
-                            if (trait.Value == "Setup" && trait.Name == "Type")
+                            // A test name is the full qualify name of the metho.methodname, finding the list . index will give all the familly name
+                            var testCasesToSkipName = testResult.TestCase.FullyQualifiedName.Substring(0, testResult.TestCase.FullyQualifiedName.LastIndexOf('.'));
+                            var allTestToSkip = results.Where(m => m.TestCase.FullyQualifiedName.Contains(testCasesToSkipName));
+                            foreach (var testToSkip in allTestToSkip)
                             {
-                                // A test name is the full qualify name of the metho.methodname, finding the list . index will give all the familly name
-                                var testCasesToSkipName = res.TestCase.FullyQualifiedName.Substring(0, res.TestCase.FullyQualifiedName.LastIndexOf('.'));
-                                var allTestToSkip = results.Where(m => m.TestCase.FullyQualifiedName.Contains(testCasesToSkipName));
-                                foreach (var testToSkip in allTestToSkip)
+                                if(testToSkip.TestCase.FullyQualifiedName == resultDataSet[1])
                                 {
-                                    if(testToSkip.TestCase.DisplayName == method)
-                                    {
-                                        continue;
-                                    }
-
-                                    testToSkip.Outcome = TestOutcome.Skipped;
-                                    res.Messages.Add(new TestResultMessage(
-                                        TestResultMessage.StandardErrorCategory,
-                                        $"Setup method '{method}' has been skipped."));
+                                    continue;
                                 }
+
+                                testToSkip.Outcome = TestOutcome.Skipped;
+                                testResult.Messages.Add(new TestResultMessage(
+                                    TestResultMessage.StandardErrorCategory,
+                                    $"Setup method '{testResult.DisplayName}' has been skipped."));
                             }
                         }
                     }
