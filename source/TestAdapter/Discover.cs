@@ -148,13 +148,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             var testCase = BuildTestCaseFromSourceFile(
                                 allCsFiles,
                                 typeCandidate,
-                                method,
-                                testMethodAttrib,
-                                i);
+                                method);
 
                             testCase.Source = sourceFile;
                             testCase.ExecutorUri = new Uri(TestsConstants.NanoExecutor);
-                            testCase.FullyQualifiedName = $"{typeCandidate.FullName}.{testCase.DisplayName}";
+                            testCase.FullyQualifiedName = $"{typeCandidate.FullName}.{method.Name}.{i}";
                             testCase.Traits.Add(new Trait("Type", testMethodAttrib.GetType().Name.Replace("Attribute", "")));
 
                             collectionOfTestCases.Add(testCase);
@@ -267,9 +265,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private static TestCase BuildTestCaseFromSourceFile(
             string[] csFiles,
             Type className,
-            MethodInfo method,
-            object attribute,
-            int attributeIndex)
+            MethodInfo method)
         {
             TestCase testCase = new TestCase();
 
@@ -296,10 +292,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         testCase.CodeFilePath = sourceFile;
                         testCase.LineNumber = lineNumber;
-                        testCase.DisplayName = Helper.GetTestDisplayName(
-                            method,
-                            attribute,
-                            attributeIndex);
+                        testCase.DisplayName = method.Name;
 
                         return testCase;
                     }

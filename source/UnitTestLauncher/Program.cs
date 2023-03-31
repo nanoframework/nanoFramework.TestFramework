@@ -74,7 +74,8 @@ namespace nanoFramework.TestFramework
                 for (int i = 0; i < attribs.Length; i++)
                 {
                     var attrib = attribs[i];
-                    var methodName = Helper.GetTestDisplayName(method, attrib, i);
+                    var methodName = $"{method.DeclaringType.FullName}.{method.Name}.{i}";
+
                     if (attribToRun != attrib.GetType())
                     {
                         continue;
@@ -87,13 +88,16 @@ namespace nanoFramework.TestFramework
                         method.Invoke(null, parameters);
                         totalTicks = DateTime.UtcNow.Ticks - dt;
 
-                        Console.WriteLine($"Test passed: {methodName}, {totalTicks}");
+                        // on change this pattern it has to be updated at Executor.CheckAllTests 
+                        Console.WriteLine($"Test passed,{methodName},{totalTicks}");
                     }
                     catch (Exception ex)
                     {
                         if (ex.GetType() == typeof(SkipTestException))
                         {
-                            Console.WriteLine($"Test skipped: {methodName}, {ex.Message}");
+                            // on change this pattern it has to be updated at Executor.CheckAllTests
+                            Console.WriteLine($"Test skipped,{methodName},{ex.Message}");
+
                             if (isSetupMethod)
                             {
                                 // In case the Setup attribute test is skipped, we will skip
@@ -103,7 +107,8 @@ namespace nanoFramework.TestFramework
                         }
                         else
                         {
-                            Console.WriteLine($"Test failed: {methodName}, {ex.Message}");
+                            // on change this pattern it has to be updated at Executor.CheckAllTests 
+                            Console.WriteLine($"Test failed,{methodName},{ex.Message}");
                         }
                     }
                 }

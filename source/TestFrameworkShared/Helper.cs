@@ -27,23 +27,6 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
-        /// Generates test display name based on passed <paramref name="method"/>, <paramref name="attribute"/> and <paramref name="attributeIndex"/>. 
-        /// </summary>
-        /// <returns>Returns method name with attributeIndex if passed attribute is of DataRow type</returns>
-        public static string GetTestDisplayName(MethodInfo method, object attribute, int attributeIndex)
-        {
-            // Comparing via full name, because attribute parameter is from "TestFramework.dll"
-            // and current type TestCaseAttribute is in scope of "TestAdapter" due to shared project
-            // The same reason - reflection to get value
-            if (attribute.GetType().FullName == typeof(DataRowAttribute).FullName)
-            {
-                return $"{method.Name} (index {attributeIndex})";
-            }
-
-            return method.Name;
-        }
-
-        /// <summary>
         /// Removes "TestMethod" attribute from array if "DataRow" attribute exists in the same array
         /// </summary>
         /// <param name="attribs">Array of attributes to check</param>
