@@ -4,7 +4,9 @@
 // See LICENSE file in the project root for full license information.
 //
 
-namespace nanoFramework.TestFramework.Test
+using nanoFramework.TestFramework;
+
+namespace NFUnitTest
 {
     [TestClass]
     public class TestOfDataRow
