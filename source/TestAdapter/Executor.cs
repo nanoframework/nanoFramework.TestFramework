@@ -80,7 +80,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             try
             {
                 InitializeLogger(runContext, frameworkHandle);
-                
+
                 foreach (var source in sources)
                 {
                     var testsCases = TestDiscoverer.ComposeTestCases(source);
@@ -198,8 +198,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
             var serialDebugClient = PortBase.CreateInstanceForSerial(true, 2000);
 
         retryConnection:
-            
-            if(string.IsNullOrEmpty(_settings.RealHardwarePort))
+
+            if (string.IsNullOrEmpty(_settings.RealHardwarePort))
             {
                 _logger.LogMessage($"Waiting for device enumeration to complete.", Settings.LoggingLevel.Verbose);
             }
@@ -241,7 +241,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 device = serialDebugClient.NanoFrameworkDevices.FirstOrDefault(m => m.SerialNumber == _settings.RealHardwarePort);
 
                 // sanity check
-                if(device is null)
+                if (device is null)
                 {
                     // no device, done here
                     _logger.LogMessage($"No device available at {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
@@ -595,6 +595,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 return results;
             }
 
+            // update nanoCLR instance, if not running a local one
+            if (string.IsNullOrEmpty(_settings.PathToLocalCLRInstance))
+            {
+                NanoCLRHelper.UpdateNanoCLRInstance(
+                    _settings.CLRVersion,
+                    _logger);
+            }
+
             _logger.LogMessage(
                 "Processing assemblies to load into test runner...",
                 Settings.LoggingLevel.Verbose);
@@ -621,7 +629,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
 
             // if requested, set diagnostic output
-            if(_settings.Logging > Settings.LoggingLevel.None)
+            if (_settings.Logging > Settings.LoggingLevel.None)
             {
                 arguments.Append(" -v diag");
             }
@@ -640,7 +648,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 var cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
                 var exitCode = cliResult.ExitCode;
-                
+
                 // read standard output
                 var output = cliResult.StandardOutput;
 
@@ -684,7 +692,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     results.First().Outcome = TestOutcome.Failed;
                     results.First().ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
-                    
+
                     return results;
                 }
             }
@@ -793,7 +801,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             var allTestToSkip = results.Where(m => m.TestCase.FullyQualifiedName.Contains(testCasesToSkipName));
                             foreach (var testToSkip in allTestToSkip)
                             {
-                                if(testToSkip.TestCase.FullyQualifiedName == resultDataSet[1])
+                                if (testToSkip.TestCase.FullyQualifiedName == resultDataSet[1])
                                 {
                                     continue;
                                 }

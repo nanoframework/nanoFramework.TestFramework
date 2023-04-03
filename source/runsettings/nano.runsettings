@@ -11,5 +11,6 @@
    <nanoFrameworkAdapter>
        <Logging>None</Logging>
        <IsRealHardware>False</IsRealHardware>
+       <CLRVersion></CLRVersion><!--Specify the nanoCLR version to use. If not specified, the latest available will be used. -->
    </nanoFrameworkAdapter>
 </RunSettings>
