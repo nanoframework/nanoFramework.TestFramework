@@ -31,7 +31,7 @@ function AddGeneratePathProperty {
 
 # compute authorization header in format "AUTHORIZATION: basic 'encoded token'"
 # 'encoded token' is the Base64 of the string "nfbot:personal-token"
-$auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:MY_GITHUB_TOKEN"))))"
+$auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:MY_GITHUB_TOKEN")))"
 
 # uncomment these for local debug
 # [Environment]::SetEnvironmentVariable('NBGV_NuGetPackageVersion', '2.0.42', 'Process')
