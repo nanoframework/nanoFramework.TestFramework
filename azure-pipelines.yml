@@ -87,7 +87,11 @@ jobs:
 #########################################################
 # build 
 - job: Build_Test_Framework
-  condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
+  condition: >-
+    and(
+      succeeded(),
+      eq(variables['UPDATE_DEPENDENTS'], 'false')
+    )
   
   dependsOn:
     - Get_Build_Flags
@@ -316,6 +320,7 @@ jobs:
 - job: Update_Dependents
   condition: >-
     and(
+      succeeded(),
       or(
         eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'),
         eq(variables['UPDATE_DEPENDENTS'], 'true')
@@ -358,7 +363,11 @@ jobs:
 - job: Report_Build_Failure
   dependsOn:
   - Build_Test_Framework
-  condition: failed('Build_Test_Framework')
+  condition: >-
+    and(
+      succeededOrFailed(),
+      failed('Build_Test_Framework')
+    )
 
   pool:
     vmImage: 'windows-latest'
