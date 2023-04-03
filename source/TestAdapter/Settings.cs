@@ -15,12 +15,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
     public class Settings
     {
         /// <summary>
-        /// True to run the tests on real hardware
+        /// True to run the tests on real hardware.
         /// </summary>
         public bool IsRealHardware { get; set; } = false;
 
         /// <summary>
-        /// The serial port number to run the tests on a real hardware
+        /// The serial port number to run the tests on a real hardware.
         /// </summary>
         public string RealHardwarePort { get; set; } = string.Empty;
 
@@ -35,7 +35,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public string CLRVersion { get; set; } = string.Empty;
 
         /// <summary>
-        /// Level of logging for test execution.
+        /// Level of logging for Unit Test execution.
         /// </summary>
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
 
@@ -76,13 +76,19 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     settings.CLRVersion = clrversion.Value;
                 }
+
+                var pathtolocalclrinstance = node.SelectSingleNode(nameof(PathToLocalCLRInstance))?.FirstChild;
+                if (pathtolocalclrinstance != null && pathtolocalclrinstance.NodeType == XmlNodeType.Text)
+                {
+                    settings.PathToLocalCLRInstance = pathtolocalclrinstance.Value;
+                }
             }
 
             return settings;
         }
 
         /// <summary>
-        /// The log level
+        /// The log level.
         /// </summary>
         public enum LoggingLevel
         {
