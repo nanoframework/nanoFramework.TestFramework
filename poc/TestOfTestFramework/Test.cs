@@ -18,8 +18,8 @@ namespace nanoFramework.TestFramework.Test
         {
             Debug.WriteLine("Test will raise exception");
 
-            Assert.Throws(typeof(Exception), ThrowMe);
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
+            Assert.ThrowsException(typeof(Exception), ThrowMe);
+            Assert.ThrowsException(typeof(ArgumentOutOfRangeException), () =>
             {
                 Debug.WriteLine("To see another way of doing this");
                 // This should throw an ArgumentException
@@ -28,7 +28,7 @@ namespace nanoFramework.TestFramework.Test
 
             try
             {
-                Assert.Throws(typeof(Exception), () => { Debug.WriteLine("Nothing will be thrown"); });
+                Assert.ThrowsException(typeof(Exception), () => { Debug.WriteLine("Nothing will be thrown"); });
             }
             catch (Exception)
             {
