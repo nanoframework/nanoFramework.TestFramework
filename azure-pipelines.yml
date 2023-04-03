@@ -19,10 +19,6 @@ trigger:
       - assets/*
       - config/*
       - .github/*
-
-  tags:
-    include: 
-      - v*
     
 # PR always trigger build
 pr:
@@ -124,8 +120,7 @@ jobs:
     condition: >-
       and(
         succeeded(),
-        eq(variables['StartReleaseCandidate'], false),
-        not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+        eq(variables['StartReleaseCandidate'], false)
       )
     continueOnError: true
     inputs:
