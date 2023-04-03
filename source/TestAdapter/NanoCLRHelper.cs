@@ -30,14 +30,16 @@ namespace nanoFramework.TestAdapter
                 .WithValidation(CommandResultValidation.None);
 
             // setup cancellation token with a timeout of 1 minute
-            using (var cts = new CancellationTokenSource())
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
             {
-                cts.CancelAfter(TimeSpan.FromMinutes(1));
-
                 var cliResult = cmd.ExecuteBufferedAsync(cts.Token).Task.Result;
 
                 if (cliResult.ExitCode == 0)
                 {
+                    // this will be either (on update): 
+                    // Tool 'nanoclr' was successfully updated from version '1.0.205' to version '1.0.208'.
+                    // or (update becoming reinstall with same version, if there is no new version):
+                    // Tool 'nanoclr' was reinstalled with the latest stable version (version '1.0.208').
                     var regexResult = Regex.Match(cliResult.StandardOutput, @"((?>version ')(?'version'\d+\.\d+\.\d+)(?>'))");
 
                     if (regexResult.Success)

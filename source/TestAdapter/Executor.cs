@@ -636,10 +636,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                  .WithValidation(CommandResultValidation.None);
 
             // setup cancellation token with a timeout of 5 seconds
-            using (var cts = new CancellationTokenSource())
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
             {
-                cts.CancelAfter(TimeSpan.FromSeconds(5));
-
                 var cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
                 var exitCode = cliResult.ExitCode;
                 
