@@ -4,6 +4,8 @@
 // See LICENSE file in the project root for full license information.
 //
 
+using CliWrap;
+using CliWrap.Buffered;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
@@ -78,6 +80,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             try
             {
                 InitializeLogger(runContext, frameworkHandle);
+                
                 foreach (var source in sources)
                 {
                     var testsCases = TestDiscoverer.ComposeTestCases(source);
@@ -120,8 +123,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                     else
                     {
-                        // we are connecting to WIN32 nanoCLR
-                        results = RunTestOnEmulator(groups.ToList());
+                        // we are connecting to nanoCLR CLI
+                        results = RunTestOnEmulatorAsync(
+                            groups.ToList(),
+                            _logger).GetAwaiter().GetResult();
                     }
 
                     foreach (var result in results)
@@ -536,7 +541,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
 
                 _logger.LogMessage($"Tests finished.", Settings.LoggingLevel.Verbose);
-                CheckAllTests(output.ToString(), results);
+                ParseTestResults(output.ToString(), results);
             }
             else
             {
@@ -566,17 +571,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
-        private List<TestResult> RunTestOnEmulator(List<TestCase> tests)
+        private async Task<List<TestResult>> RunTestOnEmulatorAsync(
+            List<TestCase> tests,
+            LogMessenger _logger)
         {
+            List<TestResult> results = PrepareListResult(tests);
+
             _logger.LogMessage(
-                "Setting up test runner in *** nanoCLR WIN32***",
+                "Setting up test runner in *** nanoCLR CLI ***",
                 Settings.LoggingLevel.Detailed);
 
             _logger.LogMessage(
                 $"Timeout set to {_testSessionTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
-            List<TestResult> results = PrepareListResult(tests);
+            // check if nanoCLR needs to be installed/updated
+            if (!NanoCLRHelper.NanoClrIsInstalled
+                && !NanoCLRHelper.InstallNanoClr(_logger))
+            {
+                results.First().Outcome = TestOutcome.Failed;
+                results.First().ErrorMessage = "Failed to install/update nanoCLR CLI. Check log for details.";
+
+                return results;
+            }
 
             _logger.LogMessage(
                 "Processing assemblies to load into test runner...",
@@ -586,143 +603,96 @@ namespace nanoFramework.TestPlatform.TestAdapter
             var workingDirectory = Path.GetDirectoryName(source);
             var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
 
-            // prepare the process start of the WIN32 nanoCLR
-            _nanoClr = new Process();
+            // prepare launch of nanoCLR CLI
+            StringBuilder arguments = new StringBuilder();
 
-            AutoResetEvent outputWaitHandle = new AutoResetEvent(false);
-            AutoResetEvent errorWaitHandle = new AutoResetEvent(false);
-            StringBuilder output = new StringBuilder();
-            StringBuilder error = new StringBuilder();
+            // assemblies to load
+            arguments.Append("run --assemblies ");
 
-            try
+            foreach (var pe in allPeFiles)
             {
-                // prepare parameters to load nanoCLR, include:
-                // 1. unit test launcher
-                // 2. mscorlib
-                // 3. test framework
-                // 4. test application
-                StringBuilder str = new StringBuilder();
-                foreach (var pe in allPeFiles)
+                arguments.Append($" \"{Path.Combine(workingDirectory, pe)}\"");
+            }
+
+            // should we use a local nanoCLR instance?
+            if (!string.IsNullOrEmpty(_settings.PathToLocalCLRInstance))
+            {
+                arguments.Append($"  --localinstance \"{_settings.PathToLocalCLRInstance}\"");
+            }
+
+            // if requested, set diagnostic output
+            if(_settings.Logging > Settings.LoggingLevel.None)
+            {
+                arguments.Append(" -v diag");
+            }
+
+            _logger.LogMessage(
+                $"Launching nanoCLR with these arguments: '{arguments}'",
+                Settings.LoggingLevel.Verbose);
+
+            // launch nanoCLR
+            var cmd = Cli.Wrap("nanoclr")
+                 .WithArguments(arguments.ToString())
+                 .WithValidation(CommandResultValidation.None);
+
+            // setup cancellation token with a timeout of 5 seconds
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            {
+                var cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
+                var exitCode = cliResult.ExitCode;
+                
+                // read standard output
+                var output = cliResult.StandardOutput;
+
+                if (exitCode == 0)
                 {
-                    str.Append($" -load \"{Path.Combine(workingDirectory, pe)}\"");
+                    try
+                    {
+                        // process output to gather tests results
+                        ParseTestResults(output, results);
+
+                        _logger.LogMessage(output, Settings.LoggingLevel.Verbose);
+
+                        if (!output.Contains(Done))
+                        {
+                            results.First().Outcome = TestOutcome.Failed;
+                            results.First().ErrorMessage = output;
+                        }
+
+                        var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed
+                                                                   && m.Outcome != TestOutcome.Passed
+                                                                   && m.Outcome != TestOutcome.Skipped);
+
+                        if (notPassedOrFailed.Any())
+                        {
+                            notPassedOrFailed.First().ErrorMessage = output;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogMessage(
+                            $"Fatal exception when processing test results: >>>{ex.Message}\r\n{output}",
+                            Settings.LoggingLevel.Detailed);
+
+                        results.First().Outcome = TestOutcome.Failed;
+                    }
                 }
-
-                string parameter = str.ToString();
-
-                _logger.LogMessage(
-                    $"Parameters to pass to nanoCLR: <{parameter}>",
-                    Settings.LoggingLevel.Verbose);
-
-                var nanoClrLocation = TestObjectHelper.GetNanoClrLocation();
-                if (string.IsNullOrEmpty(nanoClrLocation))
+                else
                 {
-                    _logger.LogPanicMessage("Can't find nanoCLR Win32 in any of the directories!");
+                    _logger.LogPanicMessage($"nanoCLR ended with '{exitCode}' exit code.\r\n>>>>>>>>>>>>>\r\n{output}\r\n>>>>>>>>>>>>>");
+
                     results.First().Outcome = TestOutcome.Failed;
-                    results.First().ErrorMessage = "Can't find nanoCLR Win32 in any of the directories!";
+                    results.First().ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                    
                     return results;
-                }
-
-                _logger.LogMessage($"Found nanoCLR Win32: {nanoClrLocation}", Settings.LoggingLevel.Verbose);
-                _nanoClr.StartInfo = new ProcessStartInfo(nanoClrLocation, parameter)
-                {
-                    WorkingDirectory = workingDirectory,
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true
-                };
-
-                _logger.LogMessage(
-                    $"Launching process with nanoCLR (from {Path.GetFullPath(TestObjectHelper.GetNanoClrLocation())})",
-                    Settings.LoggingLevel.Verbose);
-
-                // launch nanoCLR
-                if (!_nanoClr.Start())
-                {
-                    results.First().Outcome = TestOutcome.Failed;
-                    results.First().ErrorMessage = "Failed to start nanoCLR";
-
-                    _logger.LogPanicMessage(
-                        "Failed to start nanoCLR!");
-                }
-
-                _nanoClr.OutputDataReceived += (sender, e) =>
-                {
-                    if (e.Data == null)
-                    {
-                        outputWaitHandle.Set();
-                    }
-                    else
-                    {
-                        output.AppendLine(e.Data);
-                    }
-                };
-
-                _nanoClr.ErrorDataReceived += (sender, e) =>
-                {
-                    if (e.Data == null)
-                    {
-                        errorWaitHandle.Set();
-                    }
-                    else
-                    {
-                        error.AppendLine(e.Data);
-                    }
-                };
-
-                _nanoClr.Start();
-
-                _nanoClr.BeginOutputReadLine();
-                _nanoClr.BeginErrorReadLine();
-
-                _logger.LogMessage(
-                    $"nanoCLR started @ process ID: {_nanoClr.Id}",
-                    Settings.LoggingLevel.Detailed);
-
-
-                // wait for exit, no worries about the outcome
-                _nanoClr.WaitForExit(_testSessionTimeout);
-
-                CheckAllTests(output.ToString(), results);
-                _logger.LogMessage(output.ToString(), Settings.LoggingLevel.Verbose);
-                if (!output.ToString().Contains(Done))
-                {
-                    results.First().Outcome = TestOutcome.Failed;
-                    results.First().ErrorMessage = output.ToString();
-                }
-
-                var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed && m.Outcome != TestOutcome.Passed && m.Outcome != TestOutcome.Skipped);
-                if (notPassedOrFailed.Any())
-                {
-                    notPassedOrFailed.First().ErrorMessage = output.ToString();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogMessage(
-                    $"Fatal exception when processing test results: >>>{ex.Message}\r\n{output}\r\n{error}",
-                    Settings.LoggingLevel.Detailed);
-
-                results.First().Outcome = TestOutcome.Failed;
-                results.First().ErrorMessage = $"Fatal exception when processing test results. Set logging to 'Detailed' for details.";
-            }
-            finally
-            {
-                if (!_nanoClr.HasExited)
-                {
-                    _logger.LogMessage(
-                        "Attempting to kill nanoCLR process...",
-                        Settings.LoggingLevel.Verbose);
-
-                    _nanoClr.Kill();
-                    _nanoClr.WaitForExit(2000);
                 }
             }
 
             return results;
         }
 
-        private void CheckAllTests(string rawOutput, List<TestResult> results)
+        private void ParseTestResults(string rawOutput, List<TestResult> results)
         {
             var outputStrings = Regex.Replace(
                 rawOutput,
