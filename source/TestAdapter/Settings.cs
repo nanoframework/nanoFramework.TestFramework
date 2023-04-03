@@ -30,6 +30,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public string PathToLocalCLRInstance { get; set; } = string.Empty;
 
         /// <summary>
+        /// Version of nanoCLR instance to use when running Unit Tests.
+        /// </summary>
+        public string CLRVersion { get; set; } = string.Empty;
+
+        /// <summary>
         /// Level of logging for test execution.
         /// </summary>
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
@@ -64,6 +69,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     {
                         settings.Logging = logging;
                     }
+                }
+
+                var clrversion = node.SelectSingleNode(nameof(CLRVersion))?.FirstChild;
+                if (clrversion != null && clrversion.NodeType == XmlNodeType.Text)
+                {
+                    settings.CLRVersion = clrversion.Value;
                 }
             }
 
