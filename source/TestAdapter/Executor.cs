@@ -194,18 +194,52 @@ namespace nanoFramework.TestPlatform.TestAdapter
             List<TestResult> results = PrepareListResult(tests);
             List<byte[]> assemblies = new List<byte[]>();
             int retryCount = 0;
+            NanoDeviceBase device = null;
 
-            var serialDebugClient = PortBase.CreateInstanceForSerial(true, 2000);
+            bool realHardwarePortSet = !string.IsNullOrEmpty(_settings.RealHardwarePort);
+
+            PortBase serialDebugClient;
+
+            if (realHardwarePortSet)
+            {
+                serialDebugClient = PortBase.CreateInstanceForSerial(false);
+
+                _logger.LogMessage($"Checking device on port {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
+
+                try
+                {
+                    serialDebugClient.AddDevice(_settings.RealHardwarePort);
+
+                    device = serialDebugClient.NanoFrameworkDevices[0];
+
+                    // all good here, proceed to execute tests
+                    goto executeTests;
+                }
+#if DEBUG
+                catch (Exception ex)
+#else
+                catch
+#endif
+                {
+                    results.First().Outcome = TestOutcome.Failed;
+                    results.First().ErrorMessage = $"Couldn't find any valid nanoDevice @ {_settings.RealHardwarePort}. Maybe try to disable the device watchers in Visual Studio Extension! If the situation persists reboot the device and/or disconnect and connect it again.";
+
+                    _logger.LogMessage($"Couldn't find any valid nanoDevice @ {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
+
+                    return results;
+                }
+            }
+            else
+            {
+                serialDebugClient = PortBase.CreateInstanceForSerial(true,
+                                                                     2000);
+            }
 
         retryConnection:
 
             if (string.IsNullOrEmpty(_settings.RealHardwarePort))
             {
                 _logger.LogMessage($"Waiting for device enumeration to complete.", Settings.LoggingLevel.Verbose);
-            }
-            else
-            {
-                _logger.LogMessage($"Checking device on port {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
             }
 
             while (!serialDebugClient.IsDevicesEnumerationComplete)
@@ -220,39 +254,33 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (retryCount > _numberOfRetries)
                 {
                     results.First().Outcome = TestOutcome.Failed;
-                    results.First().ErrorMessage = $"Couldn't find any device, please try to disable the device scanning in the Visual Studio Extension! If the situation persists reboot the device as well.";
+                    results.First().ErrorMessage = "Couldn't find any valid nanoDevice. Maybe try to disable the device watchers in Visual Studio Extension! If the situation persists reboot the device and/or disconnect and connect it again.";
+
+                    _logger.LogMessage("Couldn't find any valid nanoDevice.", Settings.LoggingLevel.Verbose);
+                    
                     return results;
                 }
                 else
                 {
+                    // add retry counter before trying again
                     retryCount++;
+
+                    // re-scan devices
                     serialDebugClient.ReScanDevices();
+                    
                     goto retryConnection;
                 }
             }
 
             retryCount = 0;
-            NanoDeviceBase device;
 
-            if (serialDebugClient.NanoFrameworkDevices.Count > 1
-                && !string.IsNullOrEmpty(_settings.RealHardwarePort))
+            if (serialDebugClient.NanoFrameworkDevices.Count > 1)
             {
-                // get the device at the requested COM port (if there is one)
-                device = serialDebugClient.NanoFrameworkDevices.FirstOrDefault(m => m.SerialNumber == _settings.RealHardwarePort);
-
-                // sanity check
-                if (device is null)
-                {
-                    // no device, done here
-                    _logger.LogMessage($"No device available at {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
-                    return results;
-                }
-            }
-            else
-            {
-                // no COM port requested, just grab the 1st one
+                // grab the 1st device available
                 device = serialDebugClient.NanoFrameworkDevices[0];
             }
+
+        executeTests:
 
             _logger.LogMessage(
                 $"Getting things ready with {device.Description}",
@@ -290,6 +318,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
 
             retryCount = 0;
+
         retryErase:
             // erase the device
             _logger.LogMessage($"Erase deployment block storage. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Verbose);
@@ -300,6 +329,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     null);
 
             _logger.LogMessage($"Erase result is {eraseResult}.", Settings.LoggingLevel.Verbose);
+
             if (!eraseResult)
             {
                 if (retryCount < _numberOfRetries)
@@ -318,6 +348,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
 
             retryCount = 0;
+
             // initial check 
             if (device.DebugEngine.IsDeviceInInitializeState())
             {
