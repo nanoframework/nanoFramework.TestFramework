@@ -5,8 +5,10 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <LangVersion>8.0</LangVersion>
     <RestoreLockedMode Condition="'$(TF_BUILD)' == 'True' or '$(ContinuousIntegrationBuild)' == 'True'">true</RestoreLockedMode>
   </PropertyGroup>
 
@@ -19,12 +21,9 @@
       <Version>3.6.128</Version>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Diagnostics.Tracing" />
-  </ItemGroup>
   <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />
   
 </Project>
