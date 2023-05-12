@@ -93,6 +93,8 @@ namespace nanoFramework.TestAdapter
                         {
                             logger.LogMessage($"No need to update. Running v{latestPackageVersion}",
                                               Settings.LoggingLevel.Verbose);
+
+                            performInstallUpdate = false;
                         }
                     }
                     else
@@ -137,7 +139,7 @@ namespace nanoFramework.TestAdapter
                         }
                         else
                         {
-                            logger.LogPanicMessage($"*** Failed to install/update nanoclr. {cliResult.StandardOutput}.");
+                            logger.LogPanicMessage($"*** Failed to install/update nanoclr *** {Environment.NewLine} {cliResult.StandardOutput}");
 
                             NanoClrIsInstalled = false;
                         }
@@ -193,23 +195,24 @@ namespace nanoFramework.TestAdapter
                     // Updated to v1.8.1.102
                     // or (on same version):
                     // Already at v1.8.1.102
-                    var regexResult = Regex.Match(cliResult.StandardOutput, @"((?>version )(?'version'\d+\.\d+\.\d+))");
+                    var regexResult = Regex.Match(cliResult.StandardOutput, @"((?>v)(?'version'\d+\.\d+\.\d+\.\d+))");
 
                     if (regexResult.Success)
                     {
-                        logger.LogMessage($"nanoCLR instance updated to v{regexResult.Groups["version"].Value}",
-                                          Settings.LoggingLevel.Verbose);
+                        logger.LogMessage(
+                            $"nanoCLR instance updated to v{regexResult.Groups["version"].Value}",
+                            Settings.LoggingLevel.Verbose);
                     }
                     else
                     {
-                        logger.LogPanicMessage($"*** Failed to update nanoCLR instance. {cliResult.StandardOutput}.");
+                        logger.LogPanicMessage($"*** Failed to update nanoCLR instance ***");
                     }
                 }
                 else
                 {
                     logger.LogMessage(
                         $"Failed to update nanoCLR instance. Exit code {cliResult.ExitCode}.",
-                                          Settings.LoggingLevel.Detailed);
+                        Settings.LoggingLevel.Detailed);
                 }
             }
         }
@@ -217,6 +220,5 @@ namespace nanoFramework.TestAdapter
         {
             public string[] Versions { get; set; }
         }
-
     }
 }
