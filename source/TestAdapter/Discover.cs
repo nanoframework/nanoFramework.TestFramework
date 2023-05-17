@@ -108,7 +108,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             // try to find nfproj file for this unit test assembly
             var nfprojFile = FindNfprojFile(sourceFile);
-            
+
             if (!nfprojFile.Any())
             {
                 return collectionOfTestCases;
@@ -144,7 +144,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         for (int i = 0; i < testMethodsToItterate.Length; i++)
                         {
                             var testMethodAttrib = testMethodsToItterate[i];
-                            
+
                             var testCase = BuildTestCaseFromSourceFile(
                                 allCsFiles,
                                 typeCandidate,
@@ -199,7 +199,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 string path = Path.GetDirectoryName(args.RequestingAssembly.Location);
                 return Assembly.LoadFrom(Path.Combine(path, dllName));
             }
-            catch 
+            catch
             {
                 // this is called on several occasions, some are not related with our types or assemblies
                 // therefore there are calls that can't be resolved and that's OK
@@ -256,7 +256,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 return nfproj;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new FileNotFoundException($"Exception raised when finding NF project file: '{ex}' searching for {source}");
             }

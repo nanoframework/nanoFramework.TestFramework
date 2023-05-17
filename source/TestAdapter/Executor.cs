@@ -257,7 +257,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     results.First().ErrorMessage = "Couldn't find any valid nanoDevice. Maybe try to disable the device watchers in Visual Studio Extension! If the situation persists reboot the device and/or disconnect and connect it again.";
 
                     _logger.LogMessage("Couldn't find any valid nanoDevice.", Settings.LoggingLevel.Verbose);
-                    
+
                     return results;
                 }
                 else
@@ -267,7 +267,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     // re-scan devices
                     serialDebugClient.ReScanDevices();
-                    
+
                     goto retryConnection;
                 }
             }
@@ -578,7 +578,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 _logger.LogMessage("Failed to initialize device.", Settings.LoggingLevel.Error);
             }
-
 
             return results;
         }

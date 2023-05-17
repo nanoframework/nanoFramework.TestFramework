@@ -8,10 +8,10 @@ using CliWrap.Buffered;
 using nanoFramework.TestPlatform.TestAdapter;
 using Newtonsoft.Json;
 using System;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.ComponentModel;
 using System.Net;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace nanoFramework.TestAdapter
 {
