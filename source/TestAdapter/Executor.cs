@@ -48,7 +48,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private const int _timeoutMiliseconds = 1000;
 
         /// test session timeout (from the runsettings file)
-        private int _testSessionTimeout = 300000;
+        private int _testSessionTimeout = 30_0000;
 
         private IFrameworkHandle _frameworkHandle = null;
 
@@ -552,7 +552,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 }
 
                 StringBuilder output = new StringBuilder();
-                bool isFinished = false;
+                ManualResetEvent testExecutionCompleted = new ManualResetEvent(false);
+
                 // attach listener for messages
                 device.DebugEngine.OnMessage += (message, text) =>
                 {
@@ -560,19 +561,27 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     output.Append(text);
                     if (text.Contains(Done))
                     {
-                        isFinished = true;
+                        // signal test execution completed
+                        testExecutionCompleted.Set();
                     }
                 };
 
                 device.DebugEngine.RebootDevice(RebootOptions.ClrOnly);
 
-                while (!isFinished)
-                {
-                    Thread.Sleep(1);
-                }
+                DateTime timeoutForExecution = DateTime.UtcNow.AddMilliseconds(_testSessionTimeout);
 
-                _logger.LogMessage($"Tests finished.", Settings.LoggingLevel.Verbose);
-                ParseTestResults(output.ToString(), results);
+                if (testExecutionCompleted.WaitOne(_testSessionTimeout))
+                {
+                    _logger.LogMessage($"Tests finished.", Settings.LoggingLevel.Verbose);
+
+                    ParseTestResults(output.ToString(), results);
+                }
+                else
+                {
+                    _logger.LogMessage($"Tests timed out.", Settings.LoggingLevel.Error);
+                    results.First().Outcome = TestOutcome.Failed;
+                    results.First().ErrorMessage = $"Tests timed out in {device.Description}";
+                }
             }
             else
             {
@@ -673,8 +682,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                  .WithArguments(arguments.ToString())
                  .WithValidation(CommandResultValidation.None);
 
-            // setup cancellation token with a timeout of 5 seconds
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            // setup cancellation token with the timeout from settings
+            using (var cts = new CancellationTokenSource(_testSessionTimeout))
             {
                 var cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
                 var exitCode = cliResult.ExitCode;
