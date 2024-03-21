@@ -31,19 +31,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.14.2\lib\mscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="nanoFramework.TestFramework">
-      <HintPath>..\packages\nanoFramework.TestFramework.2.1.71\lib\nanoFramework.TestFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="nanoFramework.UnitTestLauncher">
-      <HintPath>..\packages\nanoFramework.TestFramework.2.1.71\lib\nanoFramework.UnitTestLauncher.exe</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="nano.runsettings" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.15.5\lib\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="nanoFramework.TestFramework">
+      <HintPath>..\packages\nanoFramework.TestFramework.2.1.87\lib\nanoFramework.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="nanoFramework.UnitTestLauncher">
+      <HintPath>..\packages\nanoFramework.TestFramework.2.1.87\lib\nanoFramework.UnitTestLauncher.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <!-- MANUAL UPDATE HERE -->

@@ -43,10 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.14.2\lib\mscorlib.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.15.5\lib\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.Runtime.Native">
-      <HintPath>..\packages\nanoFramework.Runtime.Native.1.6.6\lib\nanoFramework.Runtime.Native.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Runtime.Native.1.6.12\lib\nanoFramework.Runtime.Native.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="CopyTestAdapter" AfterTargets="Build">
