@@ -274,11 +274,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             retryCount = 0;
 
-            if (serialDebugClient.NanoFrameworkDevices.Count > 1)
-            {
-                // grab the 1st device available
-                device = serialDebugClient.NanoFrameworkDevices[0];
-            }
+            // grab the 1st device available
+            device = serialDebugClient.NanoFrameworkDevices[0];
 
         executeTests:
 
