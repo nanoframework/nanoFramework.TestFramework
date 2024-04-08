@@ -12,12 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.6.6" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="8.2.0.7535" />
-    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.9.0" />
-    <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.4.36" />
+    <PackageReference Include="CliWrap" Version="3.6.1" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.1.6856" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.5.0" />
+    <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.4.23" />
      <PackageReference Include="Nerdbank.GitVersioning">
-      <Version>3.6.133</Version>
+      <Version>3.6.132</Version>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
