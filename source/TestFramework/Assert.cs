@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using TestFrameworkShared;
 
 namespace nanoFramework.TestFramework
@@ -1604,7 +1605,7 @@ namespace nanoFramework.TestFramework
         /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
         public static void IsNull(object value, string message = "")
         {
-            if (value != null)
+            if (value is not null)
             {
                 HandleFail("Assert.IsNull", message);
             }
@@ -1624,10 +1625,10 @@ namespace nanoFramework.TestFramework
         /// </summary>
         /// <param name="value">The object the test expects not to be null.</param>
         /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is null./exception>
-        public static void IsNotNull(object value, string message = "")
+        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
+        public static void IsNotNull([NotNull] object value, string message = "")
         {
-            if (value == null)
+            if (value is null)
             {
                 HandleFail("Assert.IsNotNull", message);
             }
