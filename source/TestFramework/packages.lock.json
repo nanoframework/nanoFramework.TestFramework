@@ -10,9 +10,9 @@
       },
       "nanoFramework.System.Runtime": {
         "type": "Direct",
-        "requested": "[1.0.6, 1.0.6]",
-        "resolved": "1.0.6",
-        "contentHash": "n87itPUMSsOJkUsdoXr0vhiBTggZBMgCtIIC7c+RsVAhF2u/0TU/h+ZLNyFL8Xhl0taPcTN4LiPPTkI+e95Q/g=="
+        "requested": "[1.0.16, 1.0.16]",
+        "resolved": "1.0.16",
+        "contentHash": "EsciU5awZfaDsNgpEdIAej3kOWrZ3ZYJNaYjX3SYVrlEFY1R5zpNML2qFnhAJmRaKskjQuI+mXphpz9AUlPkmA=="
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
