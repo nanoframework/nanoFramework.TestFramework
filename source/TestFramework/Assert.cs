@@ -7,6 +7,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using TestFrameworkShared;
 
 namespace nanoFramework.TestFramework
@@ -54,9 +55,7 @@ namespace nanoFramework.TestFramework
         /// <param name="condition">The condition the test expects to be true.</param>
         /// <param name="message">The message to include in the exception when condition is false. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if condition is <see langword="false"/>.</exception>
-        public static void IsTrue(
-            bool condition,
-            string message = "")
+        public static void IsTrue(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
         {
             if (!condition)
             {
@@ -83,9 +82,7 @@ namespace nanoFramework.TestFramework
         /// <param name="condition">The condition the test expects to be false.</param>
         /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
-        public static void IsFalse(
-            bool condition,
-            string message = "")
+        public static void IsFalse(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
         {
             if (condition)
             {
