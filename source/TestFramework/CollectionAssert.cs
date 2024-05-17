@@ -6,6 +6,7 @@
 
 
 using System.Collections;
+using TestFrameworkShared;
 
 namespace nanoFramework.TestFramework
 {
@@ -33,7 +34,7 @@ namespace nanoFramework.TestFramework
         /// <exception cref=""></exception>
         public static void Empty(ICollection collection, string message = "")
         {
-            Assert.CheckParameterNotNull(collection, "CollectionAssert.Empty", "collection", string.Empty);
+            Assert.EnsureParameterIsNotNull(collection, "CollectionAssert.Empty");
 
             if (collection.Count != 0)
             {
@@ -49,7 +50,7 @@ namespace nanoFramework.TestFramework
         /// <exception cref="AssertFailedException">Raises an exception if the collection is not empty.</exception>
         public static void NotEmpty(ICollection collection, string message = "")
         {
-            Assert.CheckParameterNotNull(collection, "CollectionAssert.NotEmpty", "collection", string.Empty);
+            Assert.EnsureParameterIsNotNull(collection, "CollectionAssert.NotEmpty");
 
             if (collection.Count == 0)
             {

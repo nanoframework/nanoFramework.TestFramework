@@ -30,7 +30,16 @@ namespace nanoFramework.TestFramework
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
         private const string AreEqualFailMsg = "Expected:<{1}>. Actual:<{2}>. {0}";
         private const string AreNotEqualFailMsg = "Expected any value except:<{1}>. Actual:<{2}>. {0}";
-        private const string NullParameterToAssert = "The parameter '{0}' is invalid. The value cannot be null. {1}.";
+
+        internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
+        {
+            if (value is not null)
+            {
+                return;
+            }
+
+            HandleFail(assertion, $"The parameter '{parameter}' is invalid. The value cannot be null.");
+        }
 
         public static void SkipTest(string message = null)
         {
@@ -763,8 +772,8 @@ namespace nanoFramework.TestFramework
             string other,
             string message = "")
         {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
+            EnsureParameterIsNotNull(expected, "Assert.Contains");
+            EnsureParameterIsNotNull(other, "Assert.Contains");
 
             if (other.IndexOf(expected) < 0)
             {
@@ -791,8 +800,8 @@ namespace nanoFramework.TestFramework
             string other,
             string message = "")
         {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
+            EnsureParameterIsNotNull(expected, "Assert.Contains");
+            EnsureParameterIsNotNull(other, "Assert.Contains");
 
             if (other.IndexOf(expected) >= 0)
             {
@@ -819,8 +828,8 @@ namespace nanoFramework.TestFramework
             string other,
             string message = "")
         {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
+            EnsureParameterIsNotNull(expected, "Assert.Contains");
+            EnsureParameterIsNotNull(other, "Assert.Contains");
 
             // We have to take the last index as the text can contains multiple times the same word
             if (other.LastIndexOf(expected) == other.Length - expected.Length)
@@ -850,8 +859,8 @@ namespace nanoFramework.TestFramework
             string other,
             string message = "")
         {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
+            EnsureParameterIsNotNull(expected, "Assert.Contains");
+            EnsureParameterIsNotNull(other, "Assert.Contains");
 
             if (other.IndexOf(expected) == 0)
             {
@@ -1133,24 +1142,6 @@ namespace nanoFramework.TestFramework
             });
 
             HandleFail("Assert.AreNotEqual", message2);
-        }
-
-        internal static void CheckParameterNotNull(
-            object param,
-            string assertionName,
-            string parameterName,
-            string message)
-        {
-            if (param == null)
-            {
-                HandleFail(
-                    assertionName,
-                    string.Format(NullParameterToAssert, new object[2]
-                    {
-                        parameterName,
-                        message
-                    }));
-            }
         }
     }
 }
