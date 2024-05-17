@@ -32,19 +32,10 @@ namespace nanoFramework.TestFramework
         private const string AreNotEqualFailMsg = "Expected any value except:<{1}>. Actual:<{2}>. {0}";
         private const string NullParameterToAssert = "The parameter '{0}' is invalid. The value cannot be null. {1}.";
 
-        #region SkipTest
-
-        public static void SkipTest(string message = "")
+        public static void SkipTest(string message = null)
         {
-            if (string.IsNullOrEmpty(message))
-            {
-                throw new SkipTestException();
-            }
-
             throw new SkipTestException(message);
         }
-
-        #endregion
 
         #region true/false
 
