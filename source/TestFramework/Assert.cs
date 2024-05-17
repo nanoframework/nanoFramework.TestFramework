@@ -170,7 +170,6 @@ namespace nanoFramework.TestFramework
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
         public static void AreEqual(
             int expected,
@@ -191,7 +190,6 @@ namespace nanoFramework.TestFramework
         /// </summary>
         /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
@@ -1600,7 +1598,7 @@ namespace nanoFramework.TestFramework
         /// <param name="value">The object the test expects to be null.</param>
         /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
-        public static void IsNull(object value, string message = "")
+        public static void IsNull(object value, [CallerArgumentExpression(nameof(value))] string message = "")
         {
             if (value is not null)
             {
@@ -1623,7 +1621,7 @@ namespace nanoFramework.TestFramework
         /// <param name="value">The object the test expects not to be null.</param>
         /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
-        public static void IsNotNull([NotNull] object value, string message = "")
+        public static void IsNotNull([NotNull] object value, [CallerArgumentExpression(nameof(value))] string message = "")
         {
             if (value is null)
             {
@@ -1636,19 +1634,19 @@ namespace nanoFramework.TestFramework
         /// </summary>
         /// <param name="value">The object the test expects not to be null.</param>
         /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is null./exception>
+        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsNotNull.")]
         public static void NotNull(object obj, string message = "") => IsNotNull(obj, message);
 
         /// <summary>
         /// Tests whether the code specified by delegate action throws exact given exception
         /// of type <paramref name="exceptionType"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
-        /// does not throws exception or throws exception of type other than <paramref name="exceptionType"/>.
+        /// does not throw exception or throws exception of type other than <paramref name="exceptionType"/>.
         /// </summary>
         /// <param name="exceptionType">Type of exception expected to be thrown.</param>
         /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
-        /// <param name="message">The message to include in the exception when action does not throws exception of type <paramref name="exceptionType"/>.</param>
-        /// <exception cref="AssertFailedException">Thrown if action does not throws exception of type <paramref name="exceptionType"/>.</exception>
+        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exceptionType"/>.</param>
+        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exceptionType"/>.</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
         public static void ThrowsException(
             Type exceptionType,
@@ -1688,12 +1686,12 @@ namespace nanoFramework.TestFramework
         /// <summary>
         /// Tests whether the code specified by delegate action throws exact given exception
         /// of type <paramref name="exceptionType"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
-        /// does not throws exception or throws exception of type other than <paramref name="exceptionType"/>.
+        /// does not throw exception or throws exception of type other than <paramref name="exceptionType"/>.
         /// </summary>
         /// <param name="exceptionType">Type of exception expected to be thrown.</param>
         /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
-        /// <param name="message">The message to include in the exception when action does not throws exception of type <paramref name="exceptionType"/>.</param>
-        /// <exception cref="AssertFailedException">Thrown if action does not throws exception of type <paramref name="exceptionType"/>.</exception>
+        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exceptionType"/>.</param>
+        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exceptionType"/>.</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
         [Obsolete("This method is deprecated and will be removed in a future version. Use the new method ThrowsException.")]
         public static void Throws(
