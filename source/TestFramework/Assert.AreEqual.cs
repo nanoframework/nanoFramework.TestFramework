@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using TestFrameworkShared;
 
 namespace nanoFramework.TestFramework
@@ -233,6 +234,7 @@ namespace nanoFramework.TestFramework
             }
         }
 
+        [DoesNotReturn]
         private static void HandleAreEqualFail(object expected, object actual, string message)
         {
             HandleFail("Assert.AreEqual", $"Expected:<{ReplaceNulls(expected)}>. Actual:<{ReplaceNulls(actual)}>. {(message is null ? string.Empty : ReplaceNulls(message))}");

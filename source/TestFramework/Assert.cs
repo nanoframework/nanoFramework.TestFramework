@@ -17,9 +17,9 @@ namespace nanoFramework.TestFramework
     public sealed partial class Assert
     {
         private const string AssertionFailed = "{0} failed. {1}";
+        private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
         
-        private const string Common_ObjectString = "(object)";
         private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
         private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
         private const string AreSameGivenValues = "Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {0}";
@@ -27,8 +27,6 @@ namespace nanoFramework.TestFramework
         private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
-        private const string AreEqualFailMsg = "Expected:<{1}>. Actual:<{2}>. {0}";
-        private const string AreNotEqualFailMsg = "Expected any value except:<{1}>. Actual:<{2}>. {0}";
 
         internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
         {
@@ -111,6 +109,7 @@ namespace nanoFramework.TestFramework
             }
         }
 
+        [DoesNotReturn]
         public static void SkipTest(string message = null)
         {
             throw new SkipTestException(message);
@@ -381,7 +380,7 @@ namespace nanoFramework.TestFramework
             string text = input.ToString();
             if (text == null)
             {
-                return Common_ObjectString;
+                return ObjectAsString;
             }
 
             return ReplaceNullChars(text);
