@@ -28,6 +28,29 @@ namespace nanoFramework.TestFramework
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
 
+        /// <summary>
+        /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
+        /// </summary>
+        /// <param name="expected">The first object to compare. This is the value the test expects.</param>
+        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
+        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not the same as <paramref name="expected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> does not refer to the same object as <paramref name="actual"/>.</exception>
+        public static void AreSame(object expected, object actual, [CallerArgumentExpression(nameof(actual))] string message = "")
+        {
+            if (ReferenceEquals(expected, actual))
+            {
+                return;
+            }
+
+            if (expected is ValueType || actual is ValueType)
+            {
+                HandleFail("Assert.AreSame", $"Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {ReplaceNulls(message)}");
+                
+            }
+
+            HandleFail("Assert.AreSame", ReplaceNulls(message));
+        }
+
         internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
         {
             if (value is not null)
@@ -239,30 +262,6 @@ namespace nanoFramework.TestFramework
         #region types, objects
 
 
-        /// <summary>
-        /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
-        /// </summary>
-        /// <param name="expected">The first object to compare. This is the value the test expects.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not the same as <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> does not refer to the same object as <paramref name="actual"/>.</exception>
-        public static void AreSame(
-            object expected,
-            object actual,
-            string message = "")
-        {
-            if (expected != actual)
-            {
-                string message2 = message;
-
-                if (expected is ValueType && actual is ValueType)
-                {
-                    message2 = string.Format(AreSameGivenValues, new object[1] { (message == null) ? string.Empty : ReplaceNulls(message) });
-                }
-
-                HandleFail("Assert.AreSame", message2);
-            }
-        }
 
         /// <summary>
         /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
