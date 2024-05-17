@@ -332,9 +332,9 @@ namespace nanoFramework.TestFramework
                 return input;
             }
 
-            string replacedString = "";
+            var replacedString = string.Empty;
 
-            for (int i = 0; i < input.Length; i++)
+            for (var i = 0; i < input.Length; i++)
             {
                 if (input[i] == '\0')
                 {
@@ -346,7 +346,7 @@ namespace nanoFramework.TestFramework
                 }
             }
 
-            return replacedString.ToString();
+            return replacedString;
         }
     }
 }
