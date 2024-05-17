@@ -16,7 +16,6 @@ namespace nanoFramework.TestFramework
     /// </summary>
     public sealed partial class Assert
     {
-        private const string AssertionFailed = "{0} failed. {1}";
         private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
         
@@ -346,14 +345,14 @@ namespace nanoFramework.TestFramework
         [DoesNotReturn]
         internal static void HandleFail(string assertion, string message)
         {
-            var text = string.Empty;
+            var safeMessage = string.Empty;
 
             if (!string.IsNullOrEmpty(message))
             {
-                text = ReplaceNulls(message);
+                safeMessage = ReplaceNulls(message);
             }
-
-            throw new AssertFailedException(string.Format(AssertionFailed, assertion, text));
+            
+            throw new AssertFailedException($"{assertion} failed. {safeMessage}");
         }
 
         internal static string ReplaceNulls(object input)
