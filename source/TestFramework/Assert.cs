@@ -197,13 +197,6 @@ namespace nanoFramework.TestFramework
             EnsureParameterIsNotNull(action, "Assert.ThrowsException");
             EnsureParameterIsNotNull(exception, "Assert.ThrowsException");
 
-            string empty = string.Empty;
-
-            if (action == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             try
             {
                 action.Invoke();
