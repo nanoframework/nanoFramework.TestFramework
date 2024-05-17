@@ -379,11 +379,18 @@ namespace nanoFramework.TestFramework
                 return NullAsString;
             }
 
-            string text = input.ToString();
-            if (text == null)
+            string text = null;
+
+            try
             {
-                return ObjectAsString;
+                text = input.ToString();
             }
+            catch (NotImplementedException)
+            {
+                // Move along
+            }
+
+            text ??= ObjectAsString;
 
             return ReplaceNullChars(text);
         }
