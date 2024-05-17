@@ -135,6 +135,37 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
+        /// Tests whether the specified object is non-null and throws an exception if it is null.
+        /// </summary>
+        /// <param name="value">The object the test expects not to be null.</param>
+        /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
+        public static void IsNotNull([NotNull] object value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            if (value is not null)
+            {
+            }
+
+            HandleFail("Assert.IsNotNull", message);
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is null and throws an exception if it is not.
+        /// </summary>
+        /// <param name="value">The object the test expects to be null.</param>
+        /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
+        public static void IsNull(object value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            HandleFail("Assert.IsNull", message);
+        }
+
+        /// <summary>
         /// Tests whether the specified condition is true and throws an exception if the condition is false.
         /// </summary>
         /// <param name="condition">The condition the test expects to be true.</param>
@@ -280,33 +311,6 @@ namespace nanoFramework.TestFramework
 
 
 
-        /// <summary>
-        /// Tests whether the specified object is null and throws an exception if it is not.
-        /// </summary>
-        /// <param name="value">The object the test expects to be null.</param>
-        /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
-        public static void IsNull(object value, [CallerArgumentExpression(nameof(value))] string message = "")
-        {
-            if (value is not null)
-            {
-                HandleFail("Assert.IsNull", message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is non-null and throws an exception if it is null.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be null.</param>
-        /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
-        public static void IsNotNull([NotNull] object value, [CallerArgumentExpression(nameof(value))] string message = "")
-        {
-            if (value is null)
-            {
-                HandleFail("Assert.IsNotNull", message);
-            }
-        }
 
         /// <summary>
         /// Tests whether the code specified by delegate action throws exact given exception
