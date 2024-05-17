@@ -28,6 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DataRowTests.cs" />
+    <Compile Include="Mock\MockObject.cs" />
     <Compile Include="SkipFewMethods.cs" />
     <Compile Include="SkipTestClass.cs" />
     <Compile Include="Test.cs" />

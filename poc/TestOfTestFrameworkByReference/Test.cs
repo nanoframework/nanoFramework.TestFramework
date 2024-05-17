@@ -5,189 +5,267 @@
 //
 
 using System;
-using System.Diagnostics;
 using System.Threading;
+using nanoFramework.TestFramework;
+using NFUnitTest.Mock;
+using TestFrameworkShared;
 
-namespace nanoFramework.TestFramework.Test
+namespace NFUnitTest
 {
     [TestClass]
     public class TestOfTest
     {
-        [TestMethod]
-        public void TestRaisesException()
-        {
-            Debug.WriteLine("Test will raise exception");
-            Assert.Throws(typeof(Exception), ThrowMe);
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
-            {
-                Debug.WriteLine("To see another way of doing this");
-                // This should throw an ArgumentException
-                Thread.Sleep(-2);
-            });
-            try
-            {
-                Assert.Throws(typeof(Exception), () => { Debug.WriteLine("Nothing will be thrown"); });
-            }
-            catch (Exception)
-            {
-                Debug.WriteLine("Exception raised, perfect");
-            }
-        }
-
-        private void ThrowMe()
-        {
-            throw new Exception("Test failed and it's a shame");
-        }
-
-        [TestMethod]
-        public void TestCheckAllEqual()
-        {
-            Debug.WriteLine("Test will check that all the Equal are actually equal");
-
-            // Arrange
-            byte bytea = 42; byte byteb = 42;
-            char chara = (char)42; char charb = (char)42;
-            sbyte sbytea = 42; sbyte sbyteb = 42;
-            int inta = 42; int intb = 42;
-            uint uinta = 42; uint uintb = 42;
-            long longa = 42; long longb = 42;
-            ulong ulonga = 42; ulong ulongb = 42;
-            bool boola = true; bool boolb = true;
-            short shorta = 42; short shortb = 42;
-            ushort ushorta = 42; ushort ushortb = 42;
-            float floata = 42; float floatb = 42;
-            int[] intArraya = new int[5] { 1, 2, 3, 4, 5 };
-            int[] intArrayb = new int[5] { 1, 2, 3, 4, 5 };
-            object obja = new object(); object objb = obja;
-            string stra = "42"; string strb = "42";
-            byte[] arrayempty = new byte[0];
-
-            // Assert
-            Assert.IsTrue(boola);
-            Assert.AreEqual(bytea, byteb);
-            Assert.AreEqual(chara, charb);
-            Assert.AreEqual(sbytea, sbyteb);
-            Assert.AreEqual(inta, intb);
-            Assert.AreEqual(uinta, uintb);
-            Assert.AreEqual(longa, longb);
-            Assert.AreEqual(ulonga, ulongb);
-            Assert.AreEqual(boola, boolb);
-            Assert.AreEqual(shorta, shortb);
-            Assert.AreEqual(ushorta, ushortb);
-            Assert.AreEqual(floata, floatb);
-            CollectionAssert.AreEqual(intArraya, intArrayb);
-            Assert.AreEqual(stra, strb);
-            Assert.AreSame(obja, objb);
-            CollectionAssert.Empty(arrayempty);
-        }
-
-        [TestMethod]
-        public void TestCheckAllNotEqual()
-        {
-            Debug.WriteLine("Test will check that all the NotEqual are actually equal");
-
-            // Arrange
-            byte bytea = 42; byte byteb = 43;
-            char chara = (char)42; char charb = (char)43;
-            sbyte sbytea = 42; sbyte sbyteb = 43;
-            int inta = 42; int intb = 43;
-            uint uinta = 42; uint uintb = 43;
-            long longa = 42; long longb = 43;
-            ulong ulonga = 42; ulong ulongb = 43;
-            bool boola = true; bool boolb = false;
-            short shorta = 42; short shortb = 43;
-            ushort ushorta = 42; ushort ushortb = 43;
-            float floata = 42; float floatb = 43;
-            int[] intArraya = new int[5] { 1, 2, 3, 4, 5 };
-            int[] intArrayb = new int[5] { 1, 2, 3, 4, 6 };
-            int[] intArraybis = new int[4] { 1, 2, 3, 4 };
-            int[] intArrayter = null;
-            object obja = new object(); object objb = new object();
-            string stra = "42"; string strb = "43";
-
-            // Assert
-            Assert.IsFalse(boolb);
-            Assert.AreNotEqual(bytea, byteb);
-            Assert.AreNotEqual(chara, charb);
-            Assert.AreNotEqual(sbytea, sbyteb);
-            Assert.AreNotEqual(inta, intb);
-            Assert.AreNotEqual(uinta, uintb);
-            Assert.AreNotEqual(longa, longb);
-            Assert.AreNotEqual(ulonga, ulongb);
-            Assert.AreNotEqual(boola, boolb);
-            Assert.AreNotEqual(shorta, shortb);
-            Assert.AreNotEqual(ushorta, ushortb);
-            Assert.AreNotEqual(floata, floatb);
-            Assert.AreNotEqual(intArraya, intArrayb);
-            Assert.AreNotEqual(intArraya, intArraybis);
-            Assert.AreNotEqual(intArraya, intArrayter);
-            Assert.AreNotEqual(stra, strb);
-            Assert.AreNotSame(obja, objb);
-            CollectionAssert.NotEmpty(intArraya);
-        }
-
-        [TestMethod]
-        public void TestNullEmpty()
-        {
-            Debug.WriteLine("Test null, not null, types");
-
-            // Arrange
-            object objnull = null;
-            object objnotnull = new object();
-            Type typea = typeof(int);
-            Type typeb = typeof(int);
-            Type typec = typeof(long);
-
-            // Assert
-            Assert.IsNull(objnull);
-            Assert.IsNotNull(objnotnull);
-            Assert.AreEqual(typea, typeb);
-            Assert.AreNotEqual(typea, typec);
-        }
-
-        [TestMethod]
-        public void TestStringComparison()
-        {
-            Debug.WriteLine("Test string, Contains, EndsWith, StartWith");
-
-            // Arrange
-            string tocontains = "this text contains and end with contains";
-            string startcontains = "contains start this text";
-            string contains = "contains";
-            string doesnotcontains = "this is totally something else";
-            string empty = string.Empty;
-
-            // Assert
-            Assert.Contains(contains, tocontains);
-            Assert.DoesNotContains(contains, doesnotcontains);
-            Assert.DoesNotContains(contains, empty);
-            Assert.StartsWith(contains, startcontains);
-            Assert.EndsWith(contains, tocontains);
-        }
-
         [Setup]
         public void RunSetup()
         {
-            Debug.WriteLine("Setup");
-        }
-
-        public void Nothing()
-        {
-            Debug.WriteLine("Nothing and should not be called");
+            Console.WriteLine("Methods with [Setup] will run before tests.");
         }
 
         [Cleanup]
         public void Cleanup()
         {
-            Debug.WriteLine("Cleanup");
+            Console.WriteLine("Methods with [Cleanup] will run after tests.");
+        }
+
+        [TestMethod]
+        public void TestAreEqual()
+        {
+            Console.WriteLine("Test will check that all the AreEqual are actually equal and that AreNotEqual fails");
+
+            // Arrange
+            const bool boolA = true; const bool boolB = true;
+            const byte byteA = 42; const byte byteB = 42;
+            const char charA = (char)42; const char charB = (char)42;
+            var dateTimeA = new DateTime(2024, 4, 20);
+            var dateTimeB = new DateTime(2024, 4, 20);
+            const float floatA = 42; const float floatB = 42;
+            const int intA = 42; const int intB = 42;
+            var intArrayA = new[] { 1, 2, 3, 4, 5 };
+            var intArrayB = new[] { 1, 2, 3, 4, 5 };
+            const long longA = 42; const long longB = 42;
+            var objA = new object(); var objB = objA;
+            const sbyte sbyteA = 42; const sbyte sbyteB = 42;
+            const short shortA = 42; const short shortB = 42;
+            const string stringA = "42"; const string stringB = "42";
+            const uint uintA = 42; const uint uintB = 42;
+            const ulong ulongA = 42; const ulong ulongB = 42;
+            const ushort ushortA = 42; const ushort ushortB = 42;
+
+            // Assert
+            Assert.AreEqual(boolA, boolB);
+            Assert.AreEqual(byteA, byteB);
+            Assert.AreEqual(charA, charB);
+            Assert.AreEqual(dateTimeA, dateTimeB);
+            Assert.AreEqual(floatA, floatB);
+            Assert.AreEqual(intA, intB);
+            Assert.AreEqual(longA, longB);
+            Assert.AreEqual(objA, objB);
+            Assert.AreEqual(sbyteA, sbyteB);
+            Assert.AreEqual(shortA, shortB);
+            Assert.AreEqual(stringA, stringB);
+            Assert.AreEqual(uintA, uintB);
+            Assert.AreEqual(ulongA, ulongB);
+            Assert.AreEqual(ushortA, ushortB);
+            Assert.AreSame(objA, objB);
+            CollectionAssert.AreEqual(intArrayA, intArrayB);
+
+            CatchAssertException(() => Assert.AreNotEqual(boolA, boolB));
+            CatchAssertException(() => Assert.AreNotEqual(byteA, byteB));
+            CatchAssertException(() => Assert.AreNotEqual(charA, charB));
+            CatchAssertException(() => Assert.AreNotEqual(dateTimeA, dateTimeB));
+            CatchAssertException(() => Assert.AreNotEqual(floatA, floatB));
+            CatchAssertException(() => Assert.AreNotEqual(intA, intB));
+            CatchAssertException(() => Assert.AreNotEqual(longA, longB));
+            CatchAssertException(() => Assert.AreNotEqual(objA, objB));
+            CatchAssertException(() => Assert.AreNotEqual(sbyteA, sbyteB));
+            CatchAssertException(() => Assert.AreNotEqual(shortA, shortB));
+            CatchAssertException(() => Assert.AreNotEqual(stringA, stringB));
+            CatchAssertException(() => Assert.AreNotEqual(uintA, uintB));
+            CatchAssertException(() => Assert.AreNotEqual(ulongA, ulongB));
+            CatchAssertException(() => Assert.AreNotEqual(ushortA, ushortB));
+            CatchAssertException(() => Assert.AreNotSame(objA, objB));
+            CatchAssertException(() => CollectionAssert.AreNotEqual(intArrayA, intArrayB));
+        }
+
+        [TestMethod]
+        public void TestAreNotEqual()
+        {
+            Console.WriteLine("Test will check that all the AreNotEqual are actually not equal and AreEqual fails");
+
+            // Arrange
+            const bool boolA = true; const bool boolB = false;
+            const byte byteA = 42; const byte byteB = 43;
+            const char charA = (char)42; const char charB = (char)43;
+            var dateTimeA = new DateTime(2024, 4, 20);
+            var dateTimeB = new DateTime(2024, 4, 21);
+            const float floatA = 42; const float floatB = 43;
+            const int intA = 42; const int intB = 43;
+            var intArrayA = new[] { 1, 2, 3, 4, 5 };
+            var intArrayB = new[] { 5, 4, 3, 2, 1 };
+            const long longA = 42; const long longB = 43;
+            var objA = new object(); var objB = new object();
+            const sbyte sbyteA = 42; const sbyte sbyteB = 43;
+            const short shortA = 42; const short shortB = 43;
+            const string stringA = "42"; const string stringB = "43";
+            const uint uintA = 42; const uint uintB = 43;
+            const ulong ulongA = 42; const ulong ulongB = 43;
+            const ushort ushortA = 42; const ushort ushortB = 43;
+
+            // Assert
+            Assert.AreNotEqual(boolA, boolB);
+            Assert.AreNotEqual(byteA, byteB);
+            Assert.AreNotEqual(charA, charB);
+            Assert.AreNotEqual(dateTimeA, dateTimeB);
+            Assert.AreNotEqual(floatA, floatB);
+            Assert.AreNotEqual(intA, intB);
+            Assert.AreNotEqual(longA, longB);
+            Assert.AreNotEqual(objA, objB);
+            Assert.AreNotEqual(sbyteA, sbyteB);
+            Assert.AreNotEqual(shortA, shortB);
+            Assert.AreNotEqual(stringA, stringB);
+            Assert.AreNotEqual(uintA, uintB);
+            Assert.AreNotEqual(ulongA, ulongB);
+            Assert.AreNotEqual(ushortA, ushortB);
+            Assert.AreNotSame(objA, objB);
+            CollectionAssert.AreNotEqual(intArrayA, intArrayB);
+
+            CatchAssertException(() => Assert.AreEqual(boolA, boolB));
+            CatchAssertException(() => Assert.AreEqual(byteA, byteB));
+            CatchAssertException(() => Assert.AreEqual(charA, charB));
+            CatchAssertException(() => Assert.AreEqual(dateTimeA, dateTimeB));
+            CatchAssertException(() => Assert.AreEqual(floatA, floatB));
+            CatchAssertException(() => Assert.AreEqual(intA, intB));
+            CatchAssertException(() => Assert.AreEqual(longA, longB));
+            CatchAssertException(() => Assert.AreEqual(objA, objB));
+            CatchAssertException(() => Assert.AreEqual(sbyteA, sbyteB));
+            CatchAssertException(() => Assert.AreEqual(shortA, shortB));
+            CatchAssertException(() => Assert.AreEqual(stringA, stringB));
+            CatchAssertException(() => Assert.AreEqual(uintA, uintB));
+            CatchAssertException(() => Assert.AreEqual(ulongA, ulongB));
+            CatchAssertException(() => Assert.AreEqual(ushortA, ushortB));
+            CatchAssertException(() => Assert.AreSame(objA, objB));
+            CatchAssertException(() => CollectionAssert.AreEqual(intArrayA, intArrayB));
+        }
+
+        [TestMethod]
+        public void TestInstanceOfType()
+        {
+            var mockObject = new MockObject();
+            var notMockObject = new object();
+
+            Assert.IsInstanceOfType(mockObject, typeof(MockObject));
+            Assert.IsNotInstanceOfType(notMockObject, typeof(MockObject));
+
+            CatchAssertException(() => Assert.IsInstanceOfType(notMockObject, typeof(MockObject)));
+            CatchAssertException(() => Assert.IsNotInstanceOfType(mockObject, typeof(MockObject)));
+        }
+
+        [TestMethod]
+        public void TestNullNotNull()
+        {
+            Console.WriteLine("Test null, not null");
+
+            // Arrange
+            var nullObject = (object) null;
+            var notNullObject = new object();
+
+            // Assert
+            Assert.IsNull(nullObject);
+            Assert.IsNotNull(notNullObject);
+
+            CatchAssertException(() => Assert.IsNull(notNullObject));
+            CatchAssertException(() => Assert.IsNotNull(nullObject));
+        }
+
+        [TestMethod]
+        public void TestStringComparison()
+        {
+            Console.WriteLine("Test string, Contains, EndsWith, StartWith");
+
+            // Arrange
+            const string contains = "contains";
+            const string endsWithContains = "this text contains and end with contains";
+            const string startsWithContains = "contains start this text";
+            const string doesNotContain = "this is totally something else";
+            var empty = string.Empty;
+
+            // Assert
+            Assert.Contains(contains, endsWithContains);
+            Assert.EndsWith(contains, endsWithContains);
+            Assert.StartsWith(contains, startsWithContains);
+            Assert.DoesNotContains(contains, doesNotContain);
+            Assert.DoesNotContains(contains, empty);
+
+            CatchAssertException(() => Assert.Contains(contains, doesNotContain));
+            CatchAssertException(() => Assert.EndsWith(contains, doesNotContain));
+            CatchAssertException(() => Assert.StartsWith(contains, doesNotContain));
+            CatchAssertException(() => Assert.DoesNotContains(contains, startsWithContains));
+        }
+
+        [TestMethod]
+        public void TestThrowsException()
+        {
+            Console.WriteLine("Test will raise exception");
+
+            Assert.ThrowsException(typeof(Exception), ThrowsException);
+            Assert.ThrowsException(typeof(ArgumentOutOfRangeException), () =>
+            {
+                Console.WriteLine("To see another way of doing this");
+                // This should throw an ArgumentException
+                Thread.Sleep(-2);
+            });
+
+            try
+            {
+                Assert.ThrowsException(typeof(Exception), () => { Console.WriteLine("Nothing will be thrown"); });
+            }
+            catch (AssertFailedException)
+            {
+                Console.WriteLine("AssertFailedException raised because no exception was thrown, perfect");
+            }
+
+            try
+            {
+                Assert.ThrowsException(typeof(ArgumentNullException), ThrowsException);
+            }
+            catch (AssertFailedException)
+            {
+                Console.WriteLine("AssertFailedException raised because wrong exception was thrown, perfect");
+            }
+
+        }
+
+        [TestMethod]
+        public void TestTrueFalse()
+        {
+            Assert.IsTrue(true);
+            Assert.IsFalse(false);
+
+            CatchAssertException(() => Assert.IsTrue(false));
+            CatchAssertException(() => Assert.IsFalse(true));
+        }
+
+        private static void CatchAssertException(Action action)
+        {
+            Assert.ThrowsException(typeof(AssertFailedException), action);
+        }
+
+        public void Nothing()
+        {
+            Console.WriteLine("Nothing and should not be called");
+        }
+
+        private static void ThrowsException()
+        {
+            throw new Exception("Test failed and it's a shame");
         }
     }
 
-    public class SomthingElse
+    public class SomethingElse
     {
         public void NothingReally()
         {
-            Debug.WriteLine("Test failed: This would never get through");
+            Console.WriteLine("Only classes marked with [TestClass] will run tests.");
         }
     }
 }
