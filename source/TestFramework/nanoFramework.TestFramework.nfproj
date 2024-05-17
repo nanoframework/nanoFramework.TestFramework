@@ -31,6 +31,9 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Assert.Obsolete.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+	</Compile>
     <Compile Include="CollectionAssert.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
