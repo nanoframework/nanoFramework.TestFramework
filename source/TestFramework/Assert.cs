@@ -196,6 +196,7 @@ namespace nanoFramework.TestFramework
         {
             if (value is not null)
             {
+                return;
             }
 
             HandleFail("Assert.IsNotNull", message);
