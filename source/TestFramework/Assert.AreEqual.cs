@@ -15,7 +15,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(bool expected, bool actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(bool expected, bool actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -30,7 +30,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(byte expected, byte actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(byte expected, byte actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -45,7 +45,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(char expected, char actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(char expected, char actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -60,7 +60,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(DateTime expected, DateTime actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(DateTime expected, DateTime actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -75,7 +75,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(double expected, double actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(double expected, double actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -90,7 +90,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(float expected, float actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(float expected, float actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -105,7 +105,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(int expected, int actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(int expected, int actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -120,7 +120,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(long expected, long actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(long expected, long actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -135,7 +135,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second objects to compare. This is the objects produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(object expected, object actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(object expected, object actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -150,7 +150,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(sbyte expected, sbyte actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(sbyte expected, sbyte actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -165,7 +165,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(short expected, short actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(short expected, short actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -180,7 +180,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(string expected, string actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(string expected, string actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (string.Compare(expected, actual) == 0)
             {
@@ -197,7 +197,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(uint expected, uint actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(uint expected, uint actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -212,7 +212,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(ulong expected, ulong actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(ulong expected, ulong actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
@@ -227,7 +227,7 @@ namespace nanoFramework.TestFramework
         /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
         /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(ushort expected, ushort actual, [CallerArgumentExpression(nameof(expected))] string message = "")
+        public static void AreEqual(ushort expected, ushort actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
             if (!Equals(expected, actual))
             {
