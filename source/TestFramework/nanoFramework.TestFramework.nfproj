@@ -34,6 +34,9 @@
     <Compile Include="Assert.cs" />
     <Compile Include="Assert.AreEqual.cs">
       <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Assert.AreNotEqual.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
 	</Compile>
     <Compile Include="Assert.Obsolete.cs">
       <DependentUpon>Assert.cs</DependentUpon>
