@@ -22,11 +22,27 @@ namespace nanoFramework.TestFramework
         
         private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
         private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
-        private const string AreSameGivenValues = "Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {0}";
         private const string StringContainsFailMsg = "{2} does not contains {1}. {0}";
         private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
+
+        /// <summary>
+        /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
+        /// </summary>
+        /// <param name="notExpected">The first object to compare. This is the value the test expects not to match actual.</param>
+        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
+        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is the same as <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> refers to the same object as <paramref name="actual"/>.</exception>
+        public static void AreNotSame(object notExpected, object actual, [CallerArgumentExpression(nameof(actual))] string message = "")
+        {
+            if (!ReferenceEquals(notExpected, actual))
+            {
+                return;
+            }
+
+            HandleFail("Assert.AreNotSame", ReplaceNulls(message));
+        }
 
         /// <summary>
         /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
@@ -263,23 +279,6 @@ namespace nanoFramework.TestFramework
 
 
 
-        /// <summary>
-        /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
-        /// </summary>
-        /// <param name="notExpected">The first object to compare. This is the value the test expects not to match actual.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is the same as <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> refers to the same object as <paramref name="actual"/>.</exception>
-        public static void AreNotSame(
-            object notExpected,
-            object actual,
-            string message = "")
-        {
-            if (notExpected == actual)
-            {
-                HandleFail("Assert.AreNotSame", message);
-            }
-        }
 
         /// <summary>
         /// Tests whether the specified object is null and throws an exception if it is not.
