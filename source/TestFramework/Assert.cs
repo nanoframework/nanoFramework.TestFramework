@@ -17,13 +17,12 @@ namespace nanoFramework.TestFramework
     public sealed partial class Assert
     {
         private const string AssertionFailed = "{0} failed. {1}";
-        private const string Common_NullInMessages = "(null)";
+        private const string NullAsString = "(null)";
+        
         private const string Common_ObjectString = "(object)";
         private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
         private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
         private const string AreSameGivenValues = "Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {0}";
-        private const string IsNotInstanceOfFailMsg = "Wrong Type:<{1}>. Actual type:<{2}>. {0}";
-        private const string IsInstanceOfFailMsg = "{0} Expected type:<{1}>. Actual type:<{2}>.";
         private const string StringContainsFailMsg = "{2} does not contains {1}. {0}";
         private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
@@ -41,12 +40,62 @@ namespace nanoFramework.TestFramework
             HandleFail(assertion, $"The parameter '{parameter}' is invalid. The value cannot be null.");
         }
 
-        public static void SkipTest(string message = null)
+        /// <summary>
+        /// Tests whether the specified condition is false and throws an exception if the condition is true.
+        /// </summary>
+        /// <param name="condition">The condition the test expects to be false.</param>
+        /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
+        public static void IsFalse(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
         {
-            throw new SkipTestException(message);
+            if (condition)
+            {
+                HandleFail("Assert.IsFalse", message);
+            }
         }
 
-        #region true/false
+        /// <summary>
+        /// Tests whether the specified object is an instance of the expected type and throws an exception if the expected type is not in the inheritance hierarchy of the object.
+        /// </summary>
+        /// <param name="expected">The expected type of value.</param>
+        /// <param name="value">The object the test expects to be of the specified type.</param>
+        /// <param name="message">The message to include in the exception when value is not an instance of expected. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is <see langword="null"/> or <paramref name="expected"/> is not in the inheritance hierarchy of <paramref name="value"/>.</exception>
+        public static void IsInstanceOfType(object value, Type expected, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(expected, "Assert.IsInstanceOfType");
+
+            if (value is not null && expected == value.GetType())
+            {
+                return;
+            }
+
+            // ReSharper disable once MergeConditionalExpression
+            #pragma warning disable IDE0031 // IDE keeps suggesting I change this to value?.GetType() but since we don't have Nullable<T> this won't work in all cases.
+            var actual = value is null ? null : value.GetType();
+            #pragma warning restore IDE0031
+
+            HandleFail("Assert.IsInstanceOfType", $"Expected type:<{expected}>. Actual type:<{ReplaceNulls(actual)}>. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is not an instance of the wrong type and throws an exception if the specified type is in the inheritance hierarchy of the object.
+        /// </summary>
+        /// <param name="value">The object the test expects not to be of the specified type.</param>
+        /// <param name="notExpected">The type that value should not be.</param>
+        /// <param name="message">The message to include in the exception when value is an instance of notExpected. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is not <see langword="null"/> and <paramref name="notExpected"/> is in the inheritance hierarchy of <paramref name="value"/>.</exception>
+        public static void IsNotInstanceOfType(object value, Type notExpected, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(notExpected, "Assert.IsNotInstanceOfType");
+
+            if (value is null || notExpected != value.GetType())
+            {
+                return;
+            }
+
+            HandleFail("Assert.IsNotInstanceOfType", $"Wrong type:<{notExpected}>. Actual type:<{value.GetType()}>. {ReplaceNulls(message)}");
+        }
 
         /// <summary>
         /// Tests whether the specified condition is true and throws an exception if the condition is false.
@@ -62,20 +111,12 @@ namespace nanoFramework.TestFramework
             }
         }
 
-        /// <summary>
-        /// Tests whether the specified condition is false and throws an exception if the condition is true.
-        /// </summary>
-        /// <param name="condition">The condition the test expects to be false.</param>
-        /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
-        public static void IsFalse(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
+        public static void SkipTest(string message = null)
         {
-            if (condition)
-            {
-                HandleFail("Assert.IsFalse", message);
-            }
+            throw new SkipTestException(message);
         }
-        #endregion
+
+
 
         #region Equal
 
@@ -881,68 +922,6 @@ namespace nanoFramework.TestFramework
 
         #region types, objects
 
-        /// <summary>
-        /// Tests whether the specified object is an instance of the expected type and throws an exception if the expected type is not in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="expectedType">The expected type of value.</param>
-        /// <param name="value">The object the test expects to be of the specified type.</param>
-        /// <param name="message">The message to include in the exception when value is not an instance of expectedType. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is <see langword="null"/> or <paramref name="expectedType"/> is not in the inheritance hierarchy of <paramref name="value"/>.</exception>
-        public static void IsInstanceOfType(
-            object value,
-            Type expectedType,
-            string message = "")
-        {
-            if (expectedType == null || value == null)
-            {
-                HandleFail("Assert.IsInstanceOfType", message);
-            }
-
-            if (expectedType != value.GetType())
-            {
-                string message2 = string.Format(IsInstanceOfFailMsg, new object[3]
-                {
-                    (message == null) ? string.Empty : ReplaceNulls(message),
-                    expectedType,
-                    value.GetType()
-                });
-
-                HandleFail("Assert.IsInstanceOfType", message2);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is not an instance of the wrong type and throws an exception if the specified type is in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be of the specified type.</param>
-        /// <param name="wrongType">The type that value should not be.</param>
-        /// <param name="message">The message to include in the exception when value is an instance of wrongType. The message is shown in test results./param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is not <see langword="null"/> and <paramref name="wrongType"/> is in the inheritance hierarchy of <paramref name="value"/>.</exception>
-        public static void IsNotInstanceOfType(
-            object value,
-            Type wrongType,
-            string message = "")
-        {
-            if ((object)wrongType == null)
-            {
-                HandleFail("Assert.IsNotInstanceOfType", message);
-            }
-
-            if (value != null)
-            {
-                if (wrongType != value.GetType())
-                {
-                    string message2 = string.Format(IsNotInstanceOfFailMsg, new object[3]
-                    {
-                        (message == null) ? string.Empty : ReplaceNulls(message),
-                        wrongType,
-                        value.GetType()
-                    });
-
-                    HandleFail("Assert.IsNotInstanceOfType", message2);
-                }
-            }
-        }
 
         /// <summary>
         /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
@@ -1062,23 +1041,24 @@ namespace nanoFramework.TestFramework
         }
         #endregion
 
-        internal static void HandleFail(string assertionName, string message)
+        [DoesNotReturn]
+        internal static void HandleFail(string assertion, string message)
         {
-            string text = string.Empty;
+            var text = string.Empty;
 
             if (!string.IsNullOrEmpty(message))
             {
                 text = ReplaceNulls(message);
             }
 
-            throw new AssertFailedException(string.Format(AssertionFailed, new object[2] { assertionName, text }));
+            throw new AssertFailedException(string.Format(AssertionFailed, assertion, text));
         }
 
         internal static string ReplaceNulls(object input)
         {
             if (input == null)
             {
-                return Common_NullInMessages;
+                return NullAsString;
             }
 
             string text = input.ToString();
