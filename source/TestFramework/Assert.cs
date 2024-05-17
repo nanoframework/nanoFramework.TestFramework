@@ -19,7 +19,6 @@ namespace nanoFramework.TestFramework
         private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
         
-        private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
         private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
 
@@ -81,6 +80,26 @@ namespace nanoFramework.TestFramework
             }
 
             HandleFail("Assert.Contains", $"'{value}' does not contain '{expected}'. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether a string doesn't contain another string.
+        /// </summary>
+        /// <param name="notExpected">The string that is not expected to be found on the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="notExpected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="notExpected"/> string is contained in the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string does not contain the <paramref name="notExpected"/> string.</exception>
+        public static void DoesNotContains(string notExpected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(notExpected, "Assert.DoesNotContains");
+            EnsureParameterIsNotNull(value, "Assert.DoesNotContains");
+
+            if (!value.Contains(notExpected))
+            {
+                return;
+            }
+
+            HandleFail("Assert.DoesNotContains", $"'{value}' should not contain '{notExpected}'. {ReplaceNulls(message)}");
         }
 
         internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
@@ -236,33 +255,6 @@ namespace nanoFramework.TestFramework
         #region string
 
 
-        /// <summary>
-        /// Tests whether a string doesn't contain another string.
-        /// </summary>
-        /// <param name="expected">The string that is not expected to be found on the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is contained in the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string does not contain the <paramref name="expected"/> string.</exception>
-        public static void DoesNotContains(
-            string expected,
-            string other,
-            string message = "")
-        {
-            EnsureParameterIsNotNull(expected, "Assert.Contains");
-            EnsureParameterIsNotNull(other, "Assert.Contains");
-
-            if (other.IndexOf(expected) >= 0)
-            {
-                string message2 = string.Format(StringDoesNotContainsFailMsg, new object[3]
-                {
-                    (message == null) ? string.Empty : ReplaceNulls(message),
-                    ReplaceNulls(expected),
-                    ReplaceNulls(other)
-                });
-
-                HandleFail("Assert.DoesNotContains", message2);
-            }
-        }
 
         /// <summary>
         /// Tests whether a string ends with another string.
