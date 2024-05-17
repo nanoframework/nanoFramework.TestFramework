@@ -19,8 +19,6 @@ namespace nanoFramework.TestFramework
         private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
         
-        private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
-
         /// <summary>
         /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
         /// </summary>
@@ -118,7 +116,7 @@ namespace nanoFramework.TestFramework
                 return;
             }
 
-            HandleFail("Assert.EndsWith", $"{value} does not end with {expected}. {ReplaceNulls(message)}");
+            HandleFail("Assert.EndsWith", $"'{value}' does not end with '{expected}'. {ReplaceNulls(message)}");
         }
 
         internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
@@ -240,6 +238,26 @@ namespace nanoFramework.TestFramework
         }
 
         /// <summary>
+        /// Tests whether a string starts with another string.
+        /// </summary>
+        /// <param name="expected">The string that is expected to be found at the beginning of the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="expected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the beginning of the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string does not start with the <paramref name="expected"/> string.</exception>
+        public static void StartsWith(string expected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(expected, "Assert.StartsWith");
+            EnsureParameterIsNotNull(value, "Assert.StartsWith");
+
+            if (value.StartsWith(expected))
+            {
+                return;
+            }
+
+            HandleFail("Assert.StartsWith", $"'{value}' does not start with '{expected}'. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
         /// Tests whether the code specified by delegate action throws exact given exception
         /// of type <paramref name="exception"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
         /// does not throw exception or throws exception of type other than <paramref name="exception"/>.
@@ -270,43 +288,6 @@ namespace nanoFramework.TestFramework
 
             HandleFail("Assert.ThrowsException", $"No exception thrown. {exception.Name} exception was expected. {ReplaceNulls(message)}");
         }
-
-        #region string
-
-
-
-
-        /// <summary>
-        /// Tests whether a string starts with another string.
-        /// </summary>
-        /// <param name="expected">The string that is expected to be found at the beginning of the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the beginning of the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string does not start with the <paramref name="expected"/> string.</exception>
-        public static void StartsWith(
-            string expected,
-            string other,
-            string message = "")
-        {
-            EnsureParameterIsNotNull(expected, "Assert.Contains");
-            EnsureParameterIsNotNull(other, "Assert.Contains");
-
-            if (other.IndexOf(expected) == 0)
-            {
-                return;
-            }
-
-            string message2 = string.Format(StringDoesNotStartWithFailMsg, new object[3]
-            {
-                (message == null) ? string.Empty : ReplaceNulls(message),
-                ReplaceNulls(expected),
-                ReplaceNulls(other)
-            });
-
-            HandleFail("Assert.StartsWith", message2);
-        }
-
-        #endregion
 
         [DoesNotReturn]
         internal static void HandleFail(string assertion, string message)
