@@ -20,8 +20,6 @@ namespace nanoFramework.TestFramework
         private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
         
-        private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
-        private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
         private const string StringContainsFailMsg = "{2} does not contains {1}. {0}";
         private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
         private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
@@ -185,6 +183,45 @@ namespace nanoFramework.TestFramework
             throw new SkipTestException(message);
         }
 
+        /// <summary>
+        /// Tests whether the code specified by delegate action throws exact given exception
+        /// of type <paramref name="exception"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
+        /// does not throw exception or throws exception of type other than <paramref name="exception"/>.
+        /// </summary>
+        /// <param name="exception">Type of exception expected to be thrown.</param>
+        /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
+        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exception"/>.</param>
+        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exception"/>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
+        public static void ThrowsException(Type exception, Action action, [CallerArgumentExpression(nameof(action))] string message = "")
+        {
+            EnsureParameterIsNotNull(action, "Assert.ThrowsException");
+            EnsureParameterIsNotNull(exception, "Assert.ThrowsException");
+
+            string empty = string.Empty;
+
+            if (action == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception ex)
+            {
+                if (exception == ex.GetType())
+                {
+                    return;
+                }
+                
+                HandleFail("Assert.ThrowsException", $"Threw exception {ex.GetType().Name}, but exception {exception.Name} was expected. {ReplaceNulls(message)}\r\nException Message: {ex.Message}");
+            }
+
+            HandleFail("Assert.ThrowsException", $"No exception thrown. {exception.Name} exception was expected. {ReplaceNulls(message)}");
+        }
+
         #region string
 
         /// <summary>
@@ -304,59 +341,6 @@ namespace nanoFramework.TestFramework
             HandleFail("Assert.StartsWith", message2);
         }
 
-        #endregion
-
-        #region types, objects
-
-
-
-
-
-        /// <summary>
-        /// Tests whether the code specified by delegate action throws exact given exception
-        /// of type <paramref name="exceptionType"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
-        /// does not throw exception or throws exception of type other than <paramref name="exceptionType"/>.
-        /// </summary>
-        /// <param name="exceptionType">Type of exception expected to be thrown.</param>
-        /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
-        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exceptionType"/>.</param>
-        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exceptionType"/>.</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
-        public static void ThrowsException(
-            Type exceptionType,
-            Action action,
-            string message = "")
-        {
-            string empty = string.Empty;
-
-            if (action == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            try
-            {
-                action.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.GetType() == exceptionType)
-                {
-                    return;
-                }
-
-                empty = string.Format(WrongExceptionThrown, ReplaceNulls(message), exceptionType.Name, ex.GetType().Name, ex.Message);
-                HandleFail("Assert.ThrowsException", empty);
-            }
-
-            empty = string.Format(NoExceptionThrown, new object[2]
-            {
-                ReplaceNulls(message),
-                exceptionType.Name
-            });
-
-            HandleFail("Assert.ThrowsException", empty);
-        }
         #endregion
 
         [DoesNotReturn]
