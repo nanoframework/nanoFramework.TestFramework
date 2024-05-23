@@ -5,7 +5,6 @@
 //
 
 using System;
-using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using TestFrameworkShared;
@@ -15,39 +14,209 @@ namespace nanoFramework.TestFramework
     /// <summary>
     /// A collection of helper classes to test various conditions within unit tests. If the condition being tested is not met, an exception is thrown.
     /// </summary>
-    public sealed class Assert
+    public sealed partial class Assert
     {
-        private const string AssertionFailed = "{0} failed. {1}";
-        private const string Common_NullInMessages = "(null)";
-        private const string Common_ObjectString = "(object)";
-        private const string WrongExceptionThrown = "Threw exception {2}, but exception {1} was expected. {0}\r\nException Message: {3}";
-        private const string NoExceptionThrown = "No exception thrown. {1} exception was expected. {0}";
-        private const string AreSameGivenValues = "Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {0}";
-        private const string IsNotInstanceOfFailMsg = "Wrong Type:<{1}>. Actual type:<{2}>. {0}";
-        private const string IsInstanceOfFailMsg = "{0} Expected type:<{1}>. Actual type:<{2}>.";
-        private const string StringContainsFailMsg = "{2} does not contains {1}. {0}";
-        private const string StringDoesNotContainsFailMsg = "{2} should not contain {1}. {0}";
-        private const string StringDoesNotEndWithFailMsg = "{2} does not end with {1}. {0}";
-        private const string StringDoesNotStartWithFailMsg = "{2} does not start with {1}. {0}";
-        private const string AreEqualFailMsg = "Expected:<{1}>. Actual:<{2}>. {0}";
-        private const string AreNotEqualFailMsg = "Expected any value except:<{1}>. Actual:<{2}>. {0}";
-        private const string NullParameterToAssert = "The parameter '{0}' is invalid. The value cannot be null. {1}.";
-
-        #region SkipTest
-
-        public static void SkipTest(string message = "")
+        private const string ObjectAsString = "(object)";
+        private const string NullAsString = "(null)";
+        
+        /// <summary>
+        /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
+        /// </summary>
+        /// <param name="notExpected">The first object to compare. This is the value the test expects not to match actual.</param>
+        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
+        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is the same as <paramref name="notExpected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> refers to the same object as <paramref name="actual"/>.</exception>
+        public static void AreNotSame(object notExpected, object actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
-            if (string.IsNullOrEmpty(message))
+            if (!ReferenceEquals(notExpected, actual))
             {
-                throw new SkipTestException();
+                return;
             }
 
-            throw new SkipTestException(message);
+            HandleFail("Assert.AreNotSame", ReplaceNulls(message));
         }
 
-        #endregion
+        /// <summary>
+        /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
+        /// </summary>
+        /// <param name="expected">The first object to compare. This is the value the test expects.</param>
+        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
+        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not the same as <paramref name="expected"/>. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> does not refer to the same object as <paramref name="actual"/>.</exception>
+        public static void AreSame(object expected, object actual, [CallerArgumentExpression(nameof(actual))] string message = "")
+        {
+            if (ReferenceEquals(expected, actual))
+            {
+                return;
+            }
 
-        #region true/false
+            if (expected is ValueType || actual is ValueType)
+            {
+                HandleFail("Assert.AreSame", $"Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {ReplaceNulls(message)}");
+                
+            }
+
+            HandleFail("Assert.AreSame", ReplaceNulls(message));
+        }
+
+        /// <summary>
+        /// Tests whether a string contains another string.
+        /// </summary>
+        /// <param name="expected">The string that is expected to be found on the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="expected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not contained in the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string contains the <paramref name="expected"/> string.</exception>
+        public static void Contains(string expected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(expected, "Assert.Contains");
+            EnsureParameterIsNotNull(value, "Assert.Contains");
+
+            if (value.Contains(expected))
+            {
+                return;
+            }
+
+            HandleFail("Assert.Contains", $"'{value}' does not contain '{expected}'. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether a string doesn't contain another string.
+        /// </summary>
+        /// <param name="notExpected">The string that is not expected to be found on the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="notExpected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="notExpected"/> string is contained in the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string does not contain the <paramref name="notExpected"/> string.</exception>
+        public static void DoesNotContains(string notExpected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(notExpected, "Assert.DoesNotContains");
+            EnsureParameterIsNotNull(value, "Assert.DoesNotContains");
+
+            if (!value.Contains(notExpected))
+            {
+                return;
+            }
+
+            HandleFail("Assert.DoesNotContains", $"'{value}' should not contain '{notExpected}'. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether a string ends with another string.
+        /// </summary>
+        /// <param name="expected">The string that is expected to be found at the end of the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="expected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the end of the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string does not end with the <paramref name="expected"/> string.</exception>
+        public static void EndsWith(string expected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(expected, "Assert.EndsWith");
+            EnsureParameterIsNotNull(value, "Assert.EndsWith");
+
+            if (value.EndsWith(expected))
+            {
+                return;
+            }
+
+            HandleFail("Assert.EndsWith", $"'{value}' does not end with '{expected}'. {ReplaceNulls(message)}");
+        }
+
+        internal static void EnsureParameterIsNotNull(object value, string assertion, [CallerArgumentExpression(nameof(value))] string parameter = null)
+        {
+            if (value is not null)
+            {
+                return;
+            }
+
+            HandleFail(assertion, $"The parameter '{parameter}' is invalid. The value cannot be null.");
+        }
+
+        /// <summary>
+        /// Tests whether the specified condition is false and throws an exception if the condition is true.
+        /// </summary>
+        /// <param name="condition">The condition the test expects to be false.</param>
+        /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
+        public static void IsFalse(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
+        {
+            if (condition)
+            {
+                HandleFail("Assert.IsFalse", message);
+            }
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is an instance of the expected type and throws an exception if the expected type is not in the inheritance hierarchy of the object.
+        /// </summary>
+        /// <param name="expected">The expected type of value.</param>
+        /// <param name="value">The object the test expects to be of the specified type.</param>
+        /// <param name="message">The message to include in the exception when value is not an instance of expected. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is <see langword="null"/> or <paramref name="expected"/> is not in the inheritance hierarchy of <paramref name="value"/>.</exception>
+        public static void IsInstanceOfType(object value, Type expected, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(expected, "Assert.IsInstanceOfType");
+
+            if (value is not null && expected == value.GetType())
+            {
+                return;
+            }
+
+            // ReSharper disable once MergeConditionalExpression
+            #pragma warning disable IDE0031 // IDE keeps suggesting I change this to value?.GetType() but since we don't have Nullable<T> this won't work in all cases.
+            var actual = value is null ? null : value.GetType();
+            #pragma warning restore IDE0031
+
+            HandleFail("Assert.IsInstanceOfType", $"Expected type:<{expected}>. Actual type:<{ReplaceNulls(actual)}>. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is not an instance of the wrong type and throws an exception if the specified type is in the inheritance hierarchy of the object.
+        /// </summary>
+        /// <param name="value">The object the test expects not to be of the specified type.</param>
+        /// <param name="notExpected">The type that value should not be.</param>
+        /// <param name="message">The message to include in the exception when value is an instance of notExpected. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is not <see langword="null"/> and <paramref name="notExpected"/> is in the inheritance hierarchy of <paramref name="value"/>.</exception>
+        public static void IsNotInstanceOfType(object value, Type notExpected, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            EnsureParameterIsNotNull(notExpected, "Assert.IsNotInstanceOfType");
+
+            if (value is null || notExpected != value.GetType())
+            {
+                return;
+            }
+
+            HandleFail("Assert.IsNotInstanceOfType", $"Wrong type:<{notExpected}>. Actual type:<{value.GetType()}>. {ReplaceNulls(message)}");
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is non-null and throws an exception if it is null.
+        /// </summary>
+        /// <param name="value">The object the test expects not to be null.</param>
+        /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
+        public static void IsNotNull([NotNull] object value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            if (value is not null)
+            {
+                return;
+            }
+
+            HandleFail("Assert.IsNotNull", message);
+        }
+
+        /// <summary>
+        /// Tests whether the specified object is null and throws an exception if it is not.
+        /// </summary>
+        /// <param name="value">The object the test expects to be null.</param>
+        /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
+        public static void IsNull(object value, [CallerArgumentExpression(nameof(value))] string message = "")
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            HandleFail("Assert.IsNull", message);
+        }
 
         /// <summary>
         /// Tests whether the specified condition is true and throws an exception if the condition is false.
@@ -63,1602 +232,46 @@ namespace nanoFramework.TestFramework
             }
         }
 
-        /// <summary>
-        /// Tests whether the specified condition is true and throws an exception if the condition is false.
-        /// </summary>
-        /// <param name="condition">The condition the test expects to be true.</param>
-        /// <param name="message">The message to include in the exception when condition is false. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="false"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsTrue.")]
-        public static void True(
-            bool condition,
-            string message = "") => IsTrue(
-                condition,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified condition is false and throws an exception if the condition is true.
-        /// </summary>
-        /// <param name="condition">The condition the test expects to be false.</param>
-        /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
-        public static void IsFalse(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
+        [DoesNotReturn]
+        public static void SkipTest(string message = null)
         {
-            if (condition)
-            {
-                HandleFail("Assert.IsFalse", message);
-            }
-        }
-        /// <summary>
-        /// Tests whether the specified condition is false and throws an exception if the condition is true.
-        /// </summary>
-        /// <param name="condition">The condition the test expects to be false.</param>
-        /// <param name="message">The message to include in the exception when condition is true. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if condition is <see langword="true"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsFalse.")]
-        public static void False(
-            bool condition,
-            string message = "") => IsFalse(
-                condition,
-                message);
-
-        #endregion
-
-        #region Equal
-
-        /// <summary>
-        /// Tests whether the specified objects are equal and throws an exception if the two objects are unequal. 
-        /// </summary>
-        /// <param name="expected">The first objects to compare. This is the objects the tests expects.</param>
-        /// <param name="actual">The second objects to compare. This is the objects produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            object expected,
-            object actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            bool expected,
-            bool actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            bool expected,
-            bool actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            int expected,
-            int actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            int expected,
-            int actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            Array expected,
-            Array actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            Array expected,
-            Array actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            uint expected,
-            uint actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            uint expected,
-            uint actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            short expected,
-            short actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            short expected,
-            short actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            ushort expected,
-            ushort actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            ushort expected,
-            ushort actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            long expected,
-            long actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            long expected,
-            long actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            ulong expected,
-            ulong actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            ulong expected,
-            ulong actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            byte expected,
-            byte actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            byte expected,
-            byte actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            char expected,
-            char actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            char expected,
-            char actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            sbyte expected,
-            sbyte actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            sbyte expected,
-            sbyte actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            double expected,
-            double actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            double expected,
-            double actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            float expected,
-            float actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            float expected,
-            float actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            string expected,
-            string actual,
-            string message = "")
-        {
-            if (string.Compare(expected, actual) == 0)
-            {
-                return;
-            }
-
-            HandleAreEqualFail(
-                expected,
-                actual,
-                message);
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            string expected,
-            string actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        public static void AreEqual(
-            DateTime expected,
-            DateTime actual,
-            string message = "")
-        {
-            if (!object.Equals(expected, actual))
-            {
-                HandleAreEqualFail(
-                    expected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are equal and throws an exception if the two values are unequal. 
-        /// </summary>
-        /// <param name="expected">The first value to compare. This is the value the tests expects.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is not equal to <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreEqual.")]
-        public static void Equal(
-            DateTime expected,
-            DateTime actual,
-            string message = "") => AreEqual(
-                expected,
-                actual,
-                message);
-
-        #endregion
-
-        #region NotEqual
-
-        /// <summary>
-        /// Tests whether the specified object are unequal and throws an exception if the two object are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first object to compare. This is the object the tests expects.</param>
-        /// <param name="actual">The second object to compare. This is the object produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal to <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            object notExpected,
-            object actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            bool notExpected,
-            bool actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            bool notExpected,
-            bool actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            int notExpected,
-            int actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            int notExpected,
-            int actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            Array notExpected,
-            Array actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            Array notExpected,
-            Array actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            uint notExpected,
-            uint actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            uint notExpected,
-            uint actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            short notExpected,
-            short actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            short notExpected,
-            short actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            ushort notExpected,
-            ushort actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            ushort notExpected,
-            ushort actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            long notExpected,
-            long actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            long notExpected,
-            long actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            ulong notExpected,
-            ulong actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            ulong notExpected,
-            ulong actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            byte notExpected,
-            byte actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            byte notExpected,
-            byte actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            char notExpected,
-            char actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            char notExpected,
-            char actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            sbyte notExpected,
-            sbyte actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            sbyte notExpected,
-            sbyte actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            double notExpected,
-            double actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            double notExpected,
-            double actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            float notExpected,
-            float actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            float notExpected,
-            float actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            string notExpected,
-            string actual,
-            string message = "")
-        {
-            if (string.Compare(notExpected, actual) == 0)
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            string notExpected,
-            string actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/></param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        public static void AreNotEqual(
-            DateTime notExpected,
-            DateTime actual,
-            string message = "")
-        {
-            if (object.Equals(notExpected, actual))
-            {
-                HandleAreNotEqualFail(
-                    notExpected,
-                    actual,
-                    message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified values are unequal and throws an exception if the two values are equal. 
-        /// </summary>
-        /// <param name="notExpected">The first value to compare. This is the value the test expects not to match <paramref name="actual"/>.</param>
-        /// <param name="actual">The second value to compare. This is the value produced by the code under test.</param>
-        /// <param name="message"> The message to include in the exception when <paramref name="actual"/> is equal to <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> is equal <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotEqual.")]
-        public static void NotEqual(
-            DateTime notExpected,
-            DateTime actual,
-            string message = "") => AreNotEqual(
-                notExpected,
-                actual,
-                message);
-
-        #endregion
-
-        #region string
-
-        /// <summary>
-        /// Tests whether a string contains another string.
-        /// </summary>
-        /// <param name="expected">The string that is expected to be found on the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not contained in the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string contains the <paramref name="expected"/> string.</exception>
-        public static void Contains(
-            string expected,
-            string other,
-            string message = "")
-        {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
-
-            if (other.IndexOf(expected) < 0)
-            {
-                string message2 = string.Format(StringContainsFailMsg, new object[3]
-                {
-                    (message == null) ? string.Empty : ReplaceNulls(message),
-                    ReplaceNulls(expected),
-                    ReplaceNulls(other)
-                });
-
-                HandleFail("Assert.Contains", message2);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether a string doesn't contain another string.
-        /// </summary>
-        /// <param name="expected">The string that is not expected to be found on the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is contained in the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string does not contain the <paramref name="expected"/> string.</exception>
-        public static void DoesNotContains(
-            string expected,
-            string other,
-            string message = "")
-        {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
-
-            if (other.IndexOf(expected) >= 0)
-            {
-                string message2 = string.Format(StringDoesNotContainsFailMsg, new object[3]
-                {
-                    (message == null) ? string.Empty : ReplaceNulls(message),
-                    ReplaceNulls(expected),
-                    ReplaceNulls(other)
-                });
-
-                HandleFail("Assert.DoesNotContains", message2);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether a string ends with another string.
-        /// </summary>
-        /// <param name="expected">The string that is expected to be found at the end of the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the end of the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string does not end with the <paramref name="expected"/> string.</exception>
-        public static void EndsWith(
-            string expected,
-            string other,
-            string message = "")
-        {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
-
-            // We have to take the last index as the text can contains multiple times the same word
-            if (other.LastIndexOf(expected) == other.Length - expected.Length)
-            {
-                return;
-            }
-
-            string message2 = string.Format(StringDoesNotEndWithFailMsg, new object[3]
-            {
-                (message == null) ? string.Empty : ReplaceNulls(message),
-                ReplaceNulls(expected),
-                ReplaceNulls(other)
-            });
-
-            HandleFail("Assert.EndsWith", message2);
+            throw new SkipTestException(message);
         }
 
         /// <summary>
         /// Tests whether a string starts with another string.
         /// </summary>
-        /// <param name="expected">The string that is expected to be found at the beginning of the <paramref name="other"/> string.</param>
-        /// <param name="other">The string to check for the <paramref name="expected"/> string.</param>
-        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the beginning of the <paramref name="other"/> string. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if the <paramref name="other"/> string does not start with the <paramref name="expected"/> string.</exception>
-        public static void StartsWith(
-            string expected,
-            string other,
-            string message = "")
+        /// <param name="expected">The string that is expected to be found at the beginning of the <paramref name="value"/> string.</param>
+        /// <param name="value">The string to check for the <paramref name="expected"/> string.</param>
+        /// <param name="message">The message to include in the exception when the <paramref name="expected"/> string is not found at the beginning of the <paramref name="value"/> string. The message is shown in test results.</param>
+        /// <exception cref="AssertFailedException">Thrown if the <paramref name="value"/> string does not start with the <paramref name="expected"/> string.</exception>
+        public static void StartsWith(string expected, string value, [CallerArgumentExpression(nameof(value))] string message = "")
         {
-            Assert.CheckParameterNotNull(expected, "Assert.Contains", "expected", string.Empty);
-            Assert.CheckParameterNotNull(other, "Assert.Contains", "other", string.Empty);
+            EnsureParameterIsNotNull(expected, "Assert.StartsWith");
+            EnsureParameterIsNotNull(value, "Assert.StartsWith");
 
-            if (other.IndexOf(expected) == 0)
+            if (value.StartsWith(expected))
             {
                 return;
             }
 
-            string message2 = string.Format(StringDoesNotStartWithFailMsg, new object[3]
-            {
-                (message == null) ? string.Empty : ReplaceNulls(message),
-                ReplaceNulls(expected),
-                ReplaceNulls(other)
-            });
-
-            HandleFail("Assert.StartsWith", message2);
+            HandleFail("Assert.StartsWith", $"'{value}' does not start with '{expected}'. {ReplaceNulls(message)}");
         }
-
-        #endregion
-
-        #region collection
-
-        /// <summary>
-        /// Tests whether the specified collection is empty.
-        /// </summary>
-        /// <param name="collection">The collection the test expects to be empty.</param>
-        /// <param name="message">The message to include in the exception when the collection is empty. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Raises an exception if the collection is not empty.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the method with the same name in CollectionAssert class.")]
-        public static void Empty(ICollection collection, string message = "")
-        {
-            if (collection.Count != 0)
-            {
-                HandleFail("Assert.Empty", message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified collection is not empty.
-        /// </summary>
-        /// <param name="collection">The collection the test expects not to be empty.</param>
-        /// <param name="message">The message to include in the exception when the collection is not empty. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Raises an exception if the collection is not empty.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the method with the same name in CollectionAssert class.")]
-        public static void NotEmpty(ICollection collection, string message = "")
-        {
-            if (collection.Count == 0)
-            {
-                HandleFail("Assert.NotEmpty", message);
-            }
-        }
-
-        #endregion region
-
-        #region types, objects
-
-        /// <summary>
-        /// Tests whether the specified object is an instance of the expected type and throws an exception if the expected type is not in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="expectedType">The expected type of value.</param>
-        /// <param name="value">The object the test expects to be of the specified type.</param>
-        /// <param name="message">The message to include in the exception when value is not an instance of expectedType. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is <see langword="null"/> or <paramref name="expectedType"/> is not in the inheritance hierarchy of <paramref name="value"/>.</exception>
-        public static void IsInstanceOfType(
-            object value,
-            Type expectedType,
-            string message = "")
-        {
-            if (expectedType == null || value == null)
-            {
-                HandleFail("Assert.IsInstanceOfType", message);
-            }
-
-            if (expectedType != value.GetType())
-            {
-                string message2 = string.Format(IsInstanceOfFailMsg, new object[3]
-                {
-                    (message == null) ? string.Empty : ReplaceNulls(message),
-                    expectedType,
-                    value.GetType()
-                });
-
-                HandleFail("Assert.IsInstanceOfType", message2);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is an instance of the expected type and throws an exception if the expected type is not in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="expectedType">The expected type of value.</param>
-        /// <param name="value">The object the test expects to be of the specified type.</param>
-        /// <param name="message">The message to include in the exception when value is not an instance of expectedType. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is <see langword="null"/> or <paramref name="expectedType"/> is not in the inheritance hierarchy of <paramref name="value"/>.</exception>
-        public static void IsType(
-            Type expectedType,
-            object value,
-            string message = "") => IsInstanceOfType(
-                value,
-                expectedType,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified object is not an instance of the wrong type and throws an exception if the specified type is in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be of the specified type.</param>
-        /// <param name="wrongType">The type that value should not be.</param>
-        /// <param name="message">The message to include in the exception when value is an instance of wrongType. The message is shown in test results./param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is not <see langword="null"/> and <paramref name="wrongType"/> is in the inheritance hierarchy of <paramref name="value"/>.</exception>
-        public static void IsNotInstanceOfType(
-            object value,
-            Type wrongType,
-            string message = "")
-        {
-            if ((object)wrongType == null)
-            {
-                HandleFail("Assert.IsNotInstanceOfType", message);
-            }
-
-            if (value != null)
-            {
-                if (wrongType != value.GetType())
-                {
-                    string message2 = string.Format(IsNotInstanceOfFailMsg, new object[3]
-                    {
-                        (message == null) ? string.Empty : ReplaceNulls(message),
-                        wrongType,
-                        value.GetType()
-                    });
-
-                    HandleFail("Assert.IsNotInstanceOfType", message2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is not an instance of the wrong type and throws an exception if the specified type is in the inheritance hierarchy of the object.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be of the specified type.</param>
-        /// <param name="wrongType">The type that value should not be.</param>
-        /// <param name="message">The message to include in the exception when value is an instance of wrongType. The message is shown in test results./param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="value"/> is not null and <paramref name="wrongType"/> is in the inheritance hierarchy of value.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsNotInstanceOfType.")]
-        public static void IsNotType(
-            Type wrongType,
-            object value,
-            string message = "") => IsNotInstanceOfType(
-                value,
-                wrongType,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
-        /// </summary>
-        /// <param name="expected">The first object to compare. This is the value the test expects.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not the same as <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> does not refer to the same object as <paramref name="actual"/>.</exception>
-        public static void AreSame(
-            object expected,
-            object actual,
-            string message = "")
-        {
-            if (expected != actual)
-            {
-                string message2 = message;
-
-                if (expected is ValueType && actual is ValueType)
-                {
-                    message2 = string.Format(AreSameGivenValues, new object[1] { (message == null) ? string.Empty : ReplaceNulls(message) });
-                }
-
-                HandleFail("Assert.AreSame", message2);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified objects both refer to the same object and throws an exception if the two inputs do not refer to the same object.
-        /// </summary>
-        /// <param name="expected">The first object to compare. This is the value the test expects.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is not the same as <paramref name="expected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> does not refer to the same object as <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreSame.")]
-        public static void Same(
-            object expected,
-            object actual,
-            string message = "") => AreSame(
-                expected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
-        /// </summary>
-        /// <param name="notExpected">The first object to compare. This is the value the test expects not to match actual.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is the same as <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> refers to the same object as <paramref name="actual"/>.</exception>
-        public static void AreNotSame(
-            object notExpected,
-            object actual,
-            string message = "")
-        {
-            if (notExpected == actual)
-            {
-                HandleFail("Assert.AreNotSame", message);
-            }
-        }
-        /// <summary>
-        /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
-        /// </summary>
-        /// <param name="notExpected">The first object to compare. This is the value the test expects not to match actual.</param>
-        /// <param name="actual">The second object to compare. This is the value produced by the code under test.</param>
-        /// <param name="message">The message to include in the exception when <paramref name="actual"/> is the same as <paramref name="notExpected"/>. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if <paramref name="notExpected"/> refers to the same object as <paramref name="actual"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method AreNotSame.")]
-        public static void NotSame(
-            object notExpected,
-            object actual,
-            string message = "") => AreNotSame(
-                notExpected,
-                actual,
-                message);
-
-        /// <summary>
-        /// Tests whether the specified object is null and throws an exception if it is not.
-        /// </summary>
-        /// <param name="value">The object the test expects to be null.</param>
-        /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
-        public static void IsNull(object value, [CallerArgumentExpression(nameof(value))] string message = "")
-        {
-            if (value is not null)
-            {
-                HandleFail("Assert.IsNull", message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is null and throws an exception if it is not.
-        /// </summary>
-        /// <param name="value">The object the test expects to be null.</param>
-        /// <param name="message">The message to include in the exception when value is not null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is not null.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsNull.")]
-        public static void Null(object value, string message = "") => IsNull(value, message);
-
-        /// <summary>
-        /// Tests whether the specified object is non-null and throws an exception if it is null.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be null.</param>
-        /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
-        public static void IsNotNull([NotNull] object value, [CallerArgumentExpression(nameof(value))] string message = "")
-        {
-            if (value is null)
-            {
-                HandleFail("Assert.IsNotNull", message);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether the specified object is non-null and throws an exception if it is null.
-        /// </summary>
-        /// <param name="value">The object the test expects not to be null.</param>
-        /// <param name="message">The message to include in the exception when value is null. The message is shown in test results.</param>
-        /// <exception cref="AssertFailedException">Thrown if value is null.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method IsNotNull.")]
-        public static void NotNull(object obj, string message = "") => IsNotNull(obj, message);
 
         /// <summary>
         /// Tests whether the code specified by delegate action throws exact given exception
-        /// of type <paramref name="exceptionType"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
-        /// does not throw exception or throws exception of type other than <paramref name="exceptionType"/>.
+        /// of type <paramref name="exception"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
+        /// does not throw exception or throws exception of type other than <paramref name="exception"/>.
         /// </summary>
-        /// <param name="exceptionType">Type of exception expected to be thrown.</param>
+        /// <param name="exception">Type of exception expected to be thrown.</param>
         /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
-        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exceptionType"/>.</param>
-        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exceptionType"/>.</exception>
+        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exception"/>.</param>
+        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exception"/>.</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
-        public static void ThrowsException(
-            Type exceptionType,
-            Action action,
-            string message = "")
+        public static void ThrowsException(Type exception, Action action, [CallerArgumentExpression(nameof(action))] string message = "")
         {
-            string empty = string.Empty;
-
-            if (action == null)
-            {
-                throw new ArgumentNullException();
-            }
+            EnsureParameterIsNotNull(action, "Assert.ThrowsException");
+            EnsureParameterIsNotNull(exception, "Assert.ThrowsException");
 
             try
             {
@@ -1666,68 +279,49 @@ namespace nanoFramework.TestFramework
             }
             catch (Exception ex)
             {
-                if (ex.GetType() == exceptionType)
+                if (exception == ex.GetType())
                 {
                     return;
                 }
-
-                empty = string.Format(WrongExceptionThrown, ReplaceNulls(message), exceptionType.Name, ex.GetType().Name, ex.Message);
-                HandleFail("Assert.ThrowsException", empty);
+                
+                HandleFail("Assert.ThrowsException", $"Threw exception {ex.GetType().Name}, but exception {exception.Name} was expected. {ReplaceNulls(message)}\r\nException Message: {ex.Message}");
             }
 
-            empty = string.Format(NoExceptionThrown, new object[2]
-            {
-                ReplaceNulls(message),
-                exceptionType.Name
-            });
-
-            HandleFail("Assert.ThrowsException", empty);
+            HandleFail("Assert.ThrowsException", $"No exception thrown. {exception.Name} exception was expected. {ReplaceNulls(message)}");
         }
-        /// <summary>
-        /// Tests whether the code specified by delegate action throws exact given exception
-        /// of type <paramref name="exceptionType"/> (and not of derived type) and throws <see cref="AssertFailedException"/> if code
-        /// does not throw exception or throws exception of type other than <paramref name="exceptionType"/>.
-        /// </summary>
-        /// <param name="exceptionType">Type of exception expected to be thrown.</param>
-        /// <param name="action">Delegate to code to be tested and which is expected to throw exception.</param>
-        /// <param name="message">The message to include in the exception when action does not throw exception of type <paramref name="exceptionType"/>.</param>
-        /// <exception cref="AssertFailedException">Thrown if action does not throw exception of type <paramref name="exceptionType"/>.</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is <see langword="null"/>.</exception>
-        [Obsolete("This method is deprecated and will be removed in a future version. Use the new method ThrowsException.")]
-        public static void Throws(
-            Type exceptionType,
-            Action action,
-            string message = "") => ThrowsException(
-                exceptionType,
-                action,
-                message);
 
-        #endregion
-
-        internal static void HandleFail(string assertionName, string message)
+        [DoesNotReturn]
+        internal static void HandleFail(string assertion, string message)
         {
-            string text = string.Empty;
+            var safeMessage = string.Empty;
 
             if (!string.IsNullOrEmpty(message))
             {
-                text = ReplaceNulls(message);
+                safeMessage = ReplaceNulls(message);
             }
-
-            throw new AssertFailedException(string.Format(AssertionFailed, new object[2] { assertionName, text }));
+            
+            throw new AssertFailedException($"{assertion} failed. {safeMessage}");
         }
 
         internal static string ReplaceNulls(object input)
         {
             if (input == null)
             {
-                return Common_NullInMessages;
+                return NullAsString;
             }
 
-            string text = input.ToString();
-            if (text == null)
+            string text = null;
+
+            try
             {
-                return Common_ObjectString;
+                text = input.ToString();
             }
+            catch (NotImplementedException)
+            {
+                // Move along
+            }
+
+            text ??= ObjectAsString;
 
             return ReplaceNullChars(text);
         }
@@ -1739,9 +333,9 @@ namespace nanoFramework.TestFramework
                 return input;
             }
 
-            string replacedString = "";
+            var replacedString = string.Empty;
 
-            for (int i = 0; i < input.Length; i++)
+            for (var i = 0; i < input.Length; i++)
             {
                 if (input[i] == '\0')
                 {
@@ -1753,55 +347,7 @@ namespace nanoFramework.TestFramework
                 }
             }
 
-            return replacedString.ToString();
-        }
-
-        private static void HandleAreEqualFail(
-            object expected,
-            object actual,
-            string message)
-        {
-            string message2 = string.Format(AreEqualFailMsg, new object[3]
-            {
-                (message == null) ? string.Empty : ReplaceNulls(message),
-                ReplaceNulls(expected),
-                ReplaceNulls(actual)
-            });
-
-            HandleFail("Assert.AreEqual", message2);
-        }
-
-        private static void HandleAreNotEqualFail(
-            object expected,
-            object actual,
-            string message)
-        {
-            string message2 = string.Format(AreNotEqualFailMsg, new object[3]
-            {
-                (message == null) ? string.Empty : ReplaceNulls(message),
-                ReplaceNulls(expected),
-                ReplaceNulls(actual)
-            });
-
-            HandleFail("Assert.AreNotEqual", message2);
-        }
-
-        internal static void CheckParameterNotNull(
-            object param,
-            string assertionName,
-            string parameterName,
-            string message)
-        {
-            if (param == null)
-            {
-                HandleFail(
-                    assertionName,
-                    string.Format(NullParameterToAssert, new object[2]
-                    {
-                        parameterName,
-                        message
-                    }));
-            }
+            return replacedString;
         }
     }
 }

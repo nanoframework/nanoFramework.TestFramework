@@ -31,10 +31,19 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Assert.cs" />
+    <Compile Include="Assert.AreEqual.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Assert.AreNotEqual.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+	</Compile>
+    <Compile Include="Assert.Obsolete.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
     <Compile Include="CollectionAssert.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
-    <Compile Include="Assert.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
