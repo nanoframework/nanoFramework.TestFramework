@@ -5,6 +5,7 @@
 //
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using nanoFramework.TestFramework;
 using NFUnitTest.Mock;
@@ -263,7 +264,7 @@ namespace NFUnitTest
 
     public class SomethingElse
     {
-        public void NothingReally()
+        public void NothingReally(object value, [CallerArgumentExpression(nameof(value))] string parameter = null)
         {
             Console.WriteLine("Only classes marked with [TestClass] will run tests.");
         }

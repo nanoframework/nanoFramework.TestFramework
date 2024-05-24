@@ -37,11 +37,13 @@
     </Compile>
     <Compile Include="Assert.AreNotEqual.cs">
       <DependentUpon>Assert.cs</DependentUpon>
-	</Compile>
+    </Compile>
     <Compile Include="Assert.Obsolete.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
+    <Compile Include="CallerArgumentExpressionAttribute.cs" />
     <Compile Include="CollectionAssert.cs" />
+    <Compile Include="NullableAttributes.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
   </ItemGroup>
@@ -56,9 +58,6 @@
     <Reference Include="mscorlib, Version=1.15.6.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\..\packages\nanoFramework.CoreLibrary.1.15.5\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="nanoFramework.System.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\packages\nanoFramework.System.Runtime.1.0.27\lib\nanoFramework.System.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

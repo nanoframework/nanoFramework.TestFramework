@@ -20,9 +20,6 @@
     <packageTypes>
       <packageType name="Dependency" />
     </packageTypes> 
-	<dependencies>
-      <dependency id="nanoFramework.System.Runtime" version="1.0.27" />
-    </dependencies>
   </metadata>
   <files>
     <file src="TestAdapter\bin\Release\net4.8\*.dll" target="lib/net48" />
