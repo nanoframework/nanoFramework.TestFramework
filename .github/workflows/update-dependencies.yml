@@ -19,3 +19,4 @@ jobs:
     secrets: inherit
     with:
       solutionsToCheck: 'nanoFramework.TestFramework.sln'
+      exclusionList: 'NFUnit Test Demo,NFUnit Test DemoByReference'
