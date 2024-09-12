@@ -222,7 +222,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
                 {
-                    allCsFiles.Add($"{Path.GetFullPath(nfproj.DirectoryName)}\\{compileItem.Groups["source_file"].Value}");
+                    allCsFiles.Add($"{Path.Combine(Path.GetFullPath(nfproj.DirectoryName), compileItem.Groups["source_file"].Value)}");
                 }
             }
 
