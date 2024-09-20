@@ -13,5 +13,6 @@
    <nanoFrameworkAdapter>
        <Logging>None</Logging>
        <IsRealHardware>False</IsRealHardware>
+       <RunnerExtraArguments></RunnerExtraArguments><!--Specify extra arguments to pass to the test runner. -->
    </nanoFrameworkAdapter>
 </RunSettings>

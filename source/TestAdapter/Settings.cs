@@ -40,6 +40,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
 
         /// <summary>
+        /// Extra arguments to pass to the test runner.
+        /// </summary>
+        public string RunnerExtraArguments { get; set; } = string.Empty;
+
+        /// <summary>
         /// Get settings from an XML node
         /// </summary>
         /// <param name="node"></param>
@@ -81,6 +86,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (pathtolocalclrinstance != null && pathtolocalclrinstance.NodeType == XmlNodeType.Text)
                 {
                     settings.PathToLocalCLRInstance = pathtolocalclrinstance.Value;
+                }
+
+                var runnerExtraArguments = node.SelectSingleNode(nameof(RunnerExtraArguments))?.FirstChild;
+                if (runnerExtraArguments != null && runnerExtraArguments.NodeType == XmlNodeType.Text)
+                {
+                    settings.RunnerExtraArguments = runnerExtraArguments.Value;
                 }
             }
 

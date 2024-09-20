@@ -670,6 +670,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 arguments.Append(" -v diag");
             }
 
+            // add any extra arguments
+            if (!string.IsNullOrEmpty(_settings.RunnerExtraArguments))
+            {
+                arguments.Append($" {_settings.RunnerExtraArguments} ");
+            }
+
             _logger.LogMessage(
                 $"Launching nanoCLR with these arguments: '{arguments}'",
                 Settings.LoggingLevel.Verbose);
