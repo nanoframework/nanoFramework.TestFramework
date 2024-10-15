@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace nanoFramework.TestPlatform.TestAdapter
@@ -222,7 +223,19 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
                 {
-                    allCsFiles.Add($"{Path.Combine(Path.GetFullPath(nfproj.DirectoryName), compileItem.Groups["source_file"].Value)}");
+                    // Depending on the platform Windows/Other, need to transform the path delimiter for compileItem.Groups["source_file"].Value) from / to \ or vice versa
+                    var filePath = compileItem.Groups["source_file"].Value;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Transfor the / into \ in filePath
+                        filePath = filePath.Replace("/", "\\");
+                    }
+                    else
+                    {
+                        filePath = filePath.Replace("\\", "/");
+                    }
+
+                    allCsFiles.Add($"{Path.Combine(Path.GetFullPath(nfproj.DirectoryName), filePath)}");
                 }
             }
 
