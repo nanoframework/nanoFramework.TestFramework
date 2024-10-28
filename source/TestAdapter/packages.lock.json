@@ -37,9 +37,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[2.4.42, )",
-        "resolved": "2.4.42",
-        "contentHash": "3RWlCdTOkf0RDHRc+qFs0Di4QP9JLwaa3msLK1WT+XUeIaG45MJo9WLJ+tBS4rXcn0dHQSAKIP17q374WmaMag==",
+        "requested": "[2.4.47, )",
+        "resolved": "2.4.47",
+        "contentHash": "wmqk72KTPkqaV0VB4alAgtH9q/my1R4SbGvdf7pU4CWklr+4VowDraHtc8xg6JGfPAoGRm9DGYSAL//RN4qTZQ==",
         "dependencies": {
           "Polly": "7.2.3",
           "PropertyChanged.Fody": "2.6.1",
@@ -48,9 +48,9 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.6.139, )",
-        "resolved": "3.6.139",
-        "contentHash": "rq0Ub/Jik7PtMtZtLn0tHuJ01Yt36RQ+eeBe+S7qnJ/EFOX6D4T9zuYD3vQPYKGI6Ro4t2iWgFm3fGDgjBrMfg=="
+        "requested": "[3.6.146, )",
+        "resolved": "3.6.146",
+        "contentHash": "W1eQ8hD9Y/cZ2+ilgxECl003xr1hybpN3fMxoTlMqg++BixETBMWzS4y9s08oHJKXgKtudsoxhITNOEf1OR66w=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
