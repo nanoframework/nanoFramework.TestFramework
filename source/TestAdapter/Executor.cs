@@ -233,7 +233,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 #if DEBUG
                     catch (Exception ex)
 #else
-                catch
+                    catch
 #endif
                     {
                         results.First().Outcome = TestOutcome.Failed;
@@ -434,8 +434,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     // device has left initialization state
                     _logger.LogMessage($"Device is initialized and ready!", Settings.LoggingLevel.Verbose);
-                    await Task.Yield();
 
+                    await Task.Yield();
 
                     //////////////////////////////////////////////////////////
                     // sanity check for devices without native assemblies ?!?!
