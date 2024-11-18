@@ -486,7 +486,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
 
                         // only class libs have this attribute, therefore sanity check is required
-                        string nativeVersion = "";
+                        string nativeVersion = string.Empty;
                         if (match.Count == 1)
                         {
                             nativeVersion = match[0].Value;
