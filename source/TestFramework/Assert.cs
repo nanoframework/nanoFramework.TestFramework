@@ -1,8 +1,5 @@
-﻿//
-// Copyright (c) .NET Foundation and Contributors
-// Portions Copyright (c) Microsoft Corporation.  All rights reserved.
-// See LICENSE file in the project root for full license information.
-//
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +15,7 @@ namespace nanoFramework.TestFramework
     {
         private const string ObjectAsString = "(object)";
         private const string NullAsString = "(null)";
-        
+
         /// <summary>
         /// Tests whether the specified objects refer to different objects and throws an exception if the two inputs refer to the same object.
         /// </summary>
@@ -53,7 +50,7 @@ namespace nanoFramework.TestFramework
             if (expected is ValueType || actual is ValueType)
             {
                 HandleFail("Assert.AreSame", $"Do not pass value types to AreSame(). Values converted to Object will never be the same. Consider using AreEqual(). {ReplaceNulls(message)}");
-                
+
             }
 
             HandleFail("Assert.AreSame", ReplaceNulls(message));
@@ -160,9 +157,9 @@ namespace nanoFramework.TestFramework
             }
 
             // ReSharper disable once MergeConditionalExpression
-            #pragma warning disable IDE0031 // IDE keeps suggesting I change this to value?.GetType() but since we don't have Nullable<T> this won't work in all cases.
+#pragma warning disable IDE0031 // IDE keeps suggesting I change this to value?.GetType() but since we don't have Nullable<T> this won't work in all cases.
             var actual = value is null ? null : value.GetType();
-            #pragma warning restore IDE0031
+#pragma warning restore IDE0031
 
             HandleFail("Assert.IsInstanceOfType", $"Expected type:<{expected}>. Actual type:<{ReplaceNulls(actual)}>. {ReplaceNulls(message)}");
         }
@@ -283,7 +280,7 @@ namespace nanoFramework.TestFramework
                 {
                     return;
                 }
-                
+
                 HandleFail("Assert.ThrowsException", $"Threw exception {ex.GetType().Name}, but exception {exception.Name} was expected. {ReplaceNulls(message)}\r\nException Message: {ex.Message}");
             }
 
@@ -299,7 +296,7 @@ namespace nanoFramework.TestFramework
             {
                 safeMessage = ReplaceNulls(message);
             }
-            
+
             throw new AssertFailedException($"{assertion} failed. {safeMessage}");
         }
 

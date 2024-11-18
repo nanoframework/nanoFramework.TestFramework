@@ -1,17 +1,15 @@
-﻿//
-// Copyright (c) .NET Foundation and Contributors
-// See LICENSE file in the project root for full license information.
-//
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-using CliWrap;
-using CliWrap.Buffered;
-using nanoFramework.TestPlatform.TestAdapter;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
+using CliWrap;
+using CliWrap.Buffered;
+using nanoFramework.TestPlatform.TestAdapter;
+using Newtonsoft.Json;
 
 namespace nanoFramework.TestAdapter
 {
