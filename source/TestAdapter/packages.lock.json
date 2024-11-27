@@ -36,11 +36,10 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[2.5.4, )",
-        "resolved": "2.5.4",
-        "contentHash": "5H4kqe8+CskYxKDpslfLmn7Z39SjkTT9NUHTRkO3d9oyplL1lLvR1YJkwaipNxveTfg78EziFMjsK7QLWo+WCg==",
+        "requested": "[2.5.6, )",
+        "resolved": "2.5.6",
+        "contentHash": "uhicQWLMeMfxuhul5iNbSFdotIuEoiHCOVE70NMZSf1zAm0rg3GxmEL8daZoVhx/dHT9EFIxFWWRSF0xHjHfLw==",
         "dependencies": {
-          "CommunityToolkit.Mvvm": "7.1.2",
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
         }
@@ -56,16 +55,6 @@
         "requested": "[13.0.3, )",
         "resolved": "13.0.3",
         "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
-      },
-      "CommunityToolkit.Mvvm": {
-        "type": "Transitive",
-        "resolved": "7.1.2",
-        "contentHash": "/zEpNH3FIBFY2iZRBi+S3Sia3q2yJgy1IQHnWRW7MdhQIe3IGcA1TGqJdbtjiJBmNy4v7kkPdNzgYlvvNDjXZg==",
-        "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "5.0.0",
-          "System.ComponentModel.Annotations": "5.0.0",
-          "System.Memory": "4.5.4"
-        }
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
@@ -101,11 +90,6 @@
         "dependencies": {
           "System.Memory": "4.5.4"
         }
-      },
-      "System.ComponentModel.Annotations": {
-        "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
       },
       "System.IO.Ports": {
         "type": "Transitive",
@@ -196,11 +180,10 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[2.5.4, )",
-        "resolved": "2.5.4",
-        "contentHash": "5H4kqe8+CskYxKDpslfLmn7Z39SjkTT9NUHTRkO3d9oyplL1lLvR1YJkwaipNxveTfg78EziFMjsK7QLWo+WCg==",
+        "requested": "[2.5.6, )",
+        "resolved": "2.5.6",
+        "contentHash": "uhicQWLMeMfxuhul5iNbSFdotIuEoiHCOVE70NMZSf1zAm0rg3GxmEL8daZoVhx/dHT9EFIxFWWRSF0xHjHfLw==",
         "dependencies": {
-          "CommunityToolkit.Mvvm": "7.1.2",
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
         }
@@ -216,11 +199,6 @@
         "requested": "[13.0.3, )",
         "resolved": "13.0.3",
         "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
-      },
-      "CommunityToolkit.Mvvm": {
-        "type": "Transitive",
-        "resolved": "7.1.2",
-        "contentHash": "/zEpNH3FIBFY2iZRBi+S3Sia3q2yJgy1IQHnWRW7MdhQIe3IGcA1TGqJdbtjiJBmNy4v7kkPdNzgYlvvNDjXZg=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
