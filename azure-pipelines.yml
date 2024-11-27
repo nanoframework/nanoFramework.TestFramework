@@ -102,6 +102,7 @@ jobs:
 
   steps:
   - checkout: self
+    submodules: true
 
   - script: |
       git config --global user.email "nanoframework@outlook.com"

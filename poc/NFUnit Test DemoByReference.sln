@@ -16,6 +16,10 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.UnitTestLaunc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nanoFramework.TestAdapter", "..\source\TestAdapter\nanoFramework.TestAdapter.csproj", "{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nf-debugger", "nf-debugger", "{751D2DBB-0E46-48E4-8E3B-28A258C7C4F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nanoFramework.Tools.DebugLibrary.Net", "..\nf-debugger\nanoFramework.Tools.DebugLibrary.Net\nanoFramework.Tools.DebugLibrary.Net.csproj", "{7579C679-471D-4B10-AB26-D314A8245D34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,15 +48,23 @@ Global
 		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F967DD1C-F1E4-4FE0-AFCD-15544CED3B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7579C679-471D-4B10-AB26-D314A8245D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7579C679-471D-4B10-AB26-D314A8245D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7579C679-471D-4B10-AB26-D314A8245D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7579C679-471D-4B10-AB26-D314A8245D34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7579C679-471D-4B10-AB26-D314A8245D34} = {751D2DBB-0E46-48E4-8E3B-28A258C7C4F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {280DA13F-AFF7-4D5D-BA7F-BFC5E8F19995}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\source\TestFrameworkShared\TestFrameworkShared.projitems*{55f048b5-6739-43c5-a93d-db61db8e912f}*SharedItemsImports = 13
+		..\nf-debugger\nanoFramework.Tools.DebugLibrary.Shared\nanoFramework.Tools.DebugLibrary.Net.projitems*{7579c679-471d-4b10-ab26-d314a8245d34}*SharedItemsImports = 5
 		..\source\TestFrameworkShared\TestFrameworkShared.projitems*{f967dd1c-f1e4-4fe0-afcd-15544ced3b91}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
