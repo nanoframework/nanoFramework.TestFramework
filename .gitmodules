@@ -1,0 +1,3 @@
+[submodule "nf-debugger"]
+	path = nf-debugger
+	url = https://github.com/nanoframework/nf-debugger
