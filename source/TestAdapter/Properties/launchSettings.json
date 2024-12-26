@@ -3,12 +3,13 @@
     "nanoFramework.TestAdapter": {
       "commandName": "Executable",
       "executablePath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe",
-      "commandLineArgs": "E:\\GitHub\\nf-nanoFramework.TestFramework\\poc\\TestOfTestFramework\\bin\\Debug\\NFUnitTest.dll  /Settings:E:\\GitHub\\nf-nanoFramework.TestFramework\\poc\\.runsettings /TestAdapterPath:."
+      "commandLineArgs": "E:\\GitHub\\nf-nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\bin\\Debug\\NFUnitTest.dll /Settings:E:\\GitHub\\nf-nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\nano.runsettings /TestAdapterPath:E:\\GitHub\\nf-nanoFramework.TestFramework\\source\\TestAdapter\\bin\\Debug\\net48",
+      "workingDirectory": "E:\\GitHub\\nf-nanoFramework.TestFramework\\source\\TestAdapter\\bin\\Debug\\net48",
     },
     "nanoFramework.TestAdapter Enterprise": {
       "commandName": "Executable",
       "executablePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe",
-      "commandLineArgs": "C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\bin\\Debug\\NFUnitTest.dll  /Settings:C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\.runsettings /TestAdapterPath:."
+      "commandLineArgs": "C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\bin\\Debug\\NFUnitTest.dll  /Settings:C:\\Repos\\nanoFramework\\lib-CoreLibrary\\nanoFramework.TestFramework\\poc\\TestOfTestFrameworkByReference\\.runsettings /TestAdapterPath:.",
     }
   }
 }

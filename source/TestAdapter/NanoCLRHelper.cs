@@ -171,21 +171,21 @@ namespace nanoFramework.TestAdapter
                 "Upate nanoCLR instance",
                 Settings.LoggingLevel.Verbose);
 
-            var arguments = "instance --update";
+            string arguments = "instance --update";
 
             if (!string.IsNullOrEmpty(clrVersion))
             {
                 arguments += $" --clrversion {clrVersion}";
             }
 
-            var cmd = Cli.Wrap("nanoclr")
+            Command cmd = Cli.Wrap("nanoclr")
                 .WithArguments(arguments)
                 .WithValidation(CommandResultValidation.None);
 
             // setup cancellation token with a timeout of 1 minute
             using (var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
             {
-                var cliResult = cmd.ExecuteBufferedAsync(cts.Token).Task.Result;
+                BufferedCommandResult cliResult = cmd.ExecuteBufferedAsync(cts.Token).Task.Result;
 
                 if (cliResult.ExitCode == 0)
                 {
@@ -193,7 +193,7 @@ namespace nanoFramework.TestAdapter
                     // Updated to v1.8.1.102
                     // or (on same version):
                     // Already at v1.8.1.102
-                    var regexResult = Regex.Match(cliResult.StandardOutput, @"((?>v)(?'version'\d+\.\d+\.\d+\.\d+))");
+                    Match regexResult = Regex.Match(cliResult.StandardOutput, @"((?>v)(?'version'\d+\.\d+\.\d+\.\d+))");
 
                     if (regexResult.Success)
                     {
@@ -203,17 +203,24 @@ namespace nanoFramework.TestAdapter
                     }
                     else
                     {
-                        logger.LogPanicMessage($"*** Failed to update nanoCLR instance ***");
+                        LogUpdateFailure(logger, cliResult);
                     }
                 }
                 else
                 {
-                    logger.LogMessage(
-                        $"Failed to update nanoCLR instance. Exit code {cliResult.ExitCode}.",
-                        Settings.LoggingLevel.Detailed);
+                    LogUpdateFailure(logger, cliResult);
                 }
             }
         }
+
+        private static void LogUpdateFailure(
+            LogMessenger logger,
+            BufferedCommandResult cliResult)
+        {
+            logger.LogPanicMessage($"*** Failed to update nanoCLR instance ***");
+            logger.LogPanicMessage($"\r\nExit code {cliResult.ExitCode}. \r\nOutput: {Environment.NewLine} {cliResult.StandardOutput}");
+        }
+
         internal class NuGetPackage
         {
             public string[] Versions { get; set; }
