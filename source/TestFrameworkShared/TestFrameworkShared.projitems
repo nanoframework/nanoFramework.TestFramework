@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CleanupAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataRowAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultipleAssertionException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SetupAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkipTestException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestClassAttribute.cs" />

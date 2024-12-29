@@ -287,6 +287,43 @@ namespace nanoFramework.TestFramework
             HandleFail("Assert.ThrowsException", $"No exception thrown. {exception.Name} exception was expected. {ReplaceNulls(message)}");
         }
 
+        /// <summary>
+        /// Executes multiple assertions and collects any failures encountered.
+        /// If one or more assertions fail, a <see cref="MultipleAssertionException"/> is thrown containing all the failures.
+        /// </summary>
+        /// <param name="assertions">The actions containing the assertions to execute.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="assertions"/> is null.</exception>
+        /// <exception cref="MultipleAssertionException">Thrown when one or more assertions fail.</exception>
+        public static void Multiple(params Action[] assertions)
+        {
+            if (assertions == null)
+            {
+                throw new ArgumentNullException(nameof(assertions));
+            }
+
+            Exception[] failures = new Exception[assertions.Length];
+            int failuresIndex = 0;
+
+            foreach (Action assertion in assertions)
+            {
+                try
+                {
+                    assertion();
+                }
+                catch (Exception ex)
+                {
+                    failures[failuresIndex++] = ex;
+                }
+            }
+
+            if (failuresIndex > 0)
+            {
+                throw new MultipleAssertionException(failures, failuresIndex);
+            }
+
+            return;
+        }
+
         [DoesNotReturn]
         internal static void HandleFail(string assertion, string message)
         {
