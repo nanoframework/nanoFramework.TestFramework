@@ -37,7 +37,7 @@
         }
     ],
     "sort": "ASC",
-    "template": "${{CHANGELOG}}\n\n**Full Changelog:** ${{RELEASE_DIFF}}\n\nThe following NuGet packages are available from this release:\n\n:package: [Base Class Library](https://www.nuget.org/packages/nanoFramework.CoreLibrary/)\n:package: [Base Class Library w/o reflection](https://www.nuget.org/packages/nanoFramework.CoreLibrary.NoReflection/)",
+    "template": "${{CHANGELOG}}\n\n**Full Changelog:** ${{RELEASE_DIFF}}\n\nThe following NuGet package is available from this release:\n\n:package: [nanoframework.TestFramework](https://www.nuget.org/packages/nanoframework.TestFramework/)",
     "pr_template": "* ${{TITLE}} by @${{AUTHOR}} in #${{NUMBER}}",
     "empty_template": "- no changes",
     "max_tags_to_fetch": 200,
