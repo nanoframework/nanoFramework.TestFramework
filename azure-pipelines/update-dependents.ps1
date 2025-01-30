@@ -42,6 +42,8 @@ $commitMessage = ""
 $prTitle = ""
 $newBranchName = "develop-nfbot/update-dependencies/" + [guid]::NewGuid().ToString()
 $packageTargetVersion = $env:NBGV_NuGetPackageVersion
+$packageName = "nanoframework.testframework"
+$repoMainBranch = "main"
 
 # working directory is agent temp directory
 Write-Debug "Changing working directory to $env:Agent_TempDirectory"
@@ -57,10 +59,34 @@ git config --global user.name nfbot
 git config --global user.email nanoframework@outlook.com
 git config --global core.autocrlf true
 
-Write-Host "Checkout develop branch..."
-git checkout --quiet develop | Out-Null
+Write-Host "Checkout $repoMainBranch branch..."
+git checkout --quiet $repoMainBranch | Out-Null
 
-dotnet nuget add source https://pkgs.dev.azure.com/nanoframework/feed/_packaging/sandbox/nuget/v3/index.json -n nano.azure.feed
+# check if nuget package is already available from nuget.org
+$nugetApiUrl = "https://api.nuget.org/v3-flatcontainer/$packageName/index.json"
+
+function Get-LatestNugetVersion {
+    param (
+        [string]$url
+    )
+    try {
+        $response = Invoke-RestMethod -Uri $url -Method Get
+        return $response.versions[-1]
+    }
+    catch {
+        throw "Error querying NuGet API: $_"
+    }
+}
+
+$latestNugetVersion = Get-LatestNugetVersion -url $nugetApiUrl
+
+while ($latestNugetVersion -ne $packageTargetVersion) {
+    Write-Host "Latest version still not available from nuget.org feed. Waiting 5 minutes..."
+    Start-Sleep -Seconds 300
+    $latestNugetVersion = Get-LatestNugetVersion -url $nugetApiUrl
+}
+
+Write-Host "Version $latestNugetVersion available from nuget.org feed. Proceeding with update."
 
 ####################
 # VS 2019 & 2022
@@ -75,6 +101,7 @@ AddGeneratePathProperty -NewVersion $packageTargetVersion -FilePath 'VisualStudi
 dotnet remove VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework
 dotnet add VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj package nanoFramework.TestFramework --version $packageTargetVersion
 AddGeneratePathProperty -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj'
+nuget restore -uselockfile
 
 #####################
 
@@ -133,10 +160,9 @@ if ($repoStatus -ne "")
     git -c http.extraheader="AUTHORIZATION: $auth" push --set-upstream origin $newBranchName > $null
 
     # start PR
-    # we are hardcoding to 'develop' branch to have a fixed one
-    # this is very important for tags (which don't have branch information)
+    # we are pointing to the $repoMainBranch 
     # considering that the base branch can be changed at the PR ther is no big deal about this 
-    $prRequestBody = @{title="$prTitle";body="$commitMessage";head="$newBranchName";base="develop"} | ConvertTo-Json
+    $prRequestBody = @{title="$prTitle";body="$commitMessage";head="$newBranchName";base="$repoMainBranch"} | ConvertTo-Json
     $githubApiEndpoint = "https://api.github.com/repos/nanoframework/nf-Visual-Studio-extension/pulls"
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
