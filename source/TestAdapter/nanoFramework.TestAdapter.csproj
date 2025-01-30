@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="CliWrap" Version="3.6.7" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.1.6856" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="9.0.0.7889" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.12.0" />
     <PackageReference Include="nanoFramework.Tools.Debugger.Net" Version="2.5.10" />
      <PackageReference Include="Nerdbank.GitVersioning">
