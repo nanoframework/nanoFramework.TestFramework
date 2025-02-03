@@ -92,7 +92,7 @@ Write-Host "Version $latestNugetVersion available from nuget.org feed. Proceedin
 # VS 2019 & 2022
 
 "*****************************************************************************************************" | Write-Host
-"Updating nanoFramework.Tools.MetadataProcessor.MsBuildTask.Net package in VS2019 & VS2022 solution..." | Write-Host
+"Updating nanoFramework.TestFramework package in VS2019 & VS2022 solution..." | Write-Host
 
 dotnet remove VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework
 dotnet add VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj package nanoFramework.TestFramework --version $packageTargetVersion

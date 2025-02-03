@@ -17,6 +17,10 @@ trigger:
       - assets/*
       - .github/*
     
+  tags:
+    include:
+      - v*
+
 # PR always trigger build
 pr:
   autoCancel: true
@@ -29,6 +33,12 @@ resources:
       name: nanoframework/nf-tools
       endpoint: nanoframework
 
+variables:
+  - name: DOTNET_NOLOGO
+    value: true  
+  - name: nugetPackageName
+    value: 'nanoFramework.TestFramework'
+    
 jobs:
 
 ##############################
@@ -90,8 +100,6 @@ jobs:
 
   variables:
     - group: sign-client-credentials
-    - name: DOTNET_NOLOGO
-      value: true  
     - name: buildPlatform
       value: 'Any CPU'  
     - name: buildConfiguration
@@ -329,25 +337,33 @@ jobs:
 
   steps:
   - checkout: self
-  
-  - template: azure-pipelines-templates/install-nuget.yml@templates
+    fetchDepth: 1
+    persistCredentials: true
 
   - script: nbgv cloud -a -c
     condition: succeeded()
     displayName: Set build number
-  
-  # wait for 15min to allow the 1st batch to get updated
-  # only if this wasn't triggered by the pipeline
-  - powershell: Start-Sleep -Seconds (15*60)
-    displayName: Wait for 15min
-    condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
 
-  # update dependents
+  - template: azure-pipelines-templates/update-dependents.yml@templates  
+    parameters:
+      packageName: '$(nugetPackageName)'
+      repositoriesToUpdate: |
+        nanoFramework.Hardware.Stm32
+        nanoframework.System.Runtime
+        System.Collections
+        System.Device.Spi
+        System.IO.Hashing
+        System.Math
+        System.Text
+        System.Threading
+        System.Security.Cryptography
+
+  # update VS extension
   - task: PowerShell@2
-    displayName: Update dependents
+    displayName: Update VS extension
     inputs:
       targetType: filePath
-      filePath: azure-pipelines/update-dependents.ps1
+      filePath: azure-pipelines/update-vs-extension.ps1
     env:
       MY_GITHUB_TOKEN: $(GitHubToken)
 
