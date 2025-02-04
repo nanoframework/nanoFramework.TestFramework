@@ -90,8 +90,12 @@ jobs:
 #########################################################
 # build 
 - job: Build_Test_Framework
-  condition: eq(variables['UPDATE_DEPENDENTS'], 'false')
-  
+  condition: >-
+    and(
+      eq(variables['UPDATE_DEPENDENTS'], 'false'),
+      not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    )
+
   dependsOn:
     - Get_Build_Flags
 
@@ -320,17 +324,17 @@ jobs:
 ##############################
 - job: Update_Dependents
   condition: >-
-    and(
-      succeeded('Get_Build_Flags'),
-      or(
-        eq(dependencies.Get_Build_Flags.outputs['GetPRLabels.RUN_UPDATE_DEPENDENTS'], 'true'),
-        eq(variables['UPDATE_DEPENDENTS'], 'true')
+    or(
+      and(
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+        eq(variables['StartReleaseCandidate'], 'false')
       ),
-      eq(variables['System.PullRequest.PullRequestId'], '')
+      and(
+        contains(variables['getCommitMessage.COMMIT_MESSAGE'], '***UPDATE_DEPENDENTS***'),
+        eq(variables['StartReleaseCandidate'], 'false')
+      ),
+      eq(variables['UPDATE_DEPENDENTS'], 'true')
     )
-  dependsOn:
-    - Get_Build_Flags
-    - Build_Test_Framework
 
   pool:
     vmImage: 'windows-latest'
