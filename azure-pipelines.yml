@@ -43,6 +43,8 @@ jobs:
 
 ##############################
 - job: Get_Build_Flags
+  condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+
   pool:
     vmImage: 'windows-latest'
 
@@ -265,22 +267,6 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: deployables
       ArtifactType: Container
-
-  # push NuGet packages to Azure Artifacts feed (always happens except on PR builds)
-  - task: NuGetCommand@2
-    displayName: Push NuGet packages to Azure Artifacts
-    condition: >-
-      and(
-        succeeded(),
-        eq(variables['System.PullRequest.PullRequestId'], '')
-      )
-    continueOnError: true
-    inputs:
-      command: push
-      nuGetFeedType: external
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-      publishFeedCredentials: 'AzureArtifacts-$(System.TeamProject)'
-      allowPackageConflicts: true
 
   # push NuGet class lib package to NuGet (always happens except on PR builds)
   - task: NuGetCommand@2
