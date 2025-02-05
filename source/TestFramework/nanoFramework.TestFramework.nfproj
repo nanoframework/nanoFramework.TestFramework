@@ -42,9 +42,7 @@
     <Compile Include="Assert.Obsolete.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
-    <Compile Include="CallerArgumentExpressionAttribute.cs" />
     <Compile Include="CollectionAssert.cs" />
-    <Compile Include="NullableAttributes.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
   </ItemGroup>
