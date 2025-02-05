@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using CliWrap;
@@ -55,23 +56,23 @@ namespace nanoFramework.TestAdapter
                         string responseContent = null;
 
                         // check latest version
-                        using (System.Net.WebClient client = new WebClient())
+                        using (HttpClient client = new HttpClient())
                         {
                             try
                             {
                                 // Set the user agent string to identify the client.
-                                client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+                                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
 
                                 // Set any additional headers, if needed.
-                                client.Headers.Add("Content-Type", "application/json");
+                                client.DefaultRequestHeaders.Add("Content-Type", "application/json");
 
                                 // Set the URL to request.
                                 string url = "https://api.nuget.org/v3-flatcontainer/nanoclr/index.json";
 
                                 // Make the HTTP request and retrieve the response.
-                                responseContent = client.DownloadString(url);
+                                responseContent = client.GetStringAsync(url).Result;
                             }
-                            catch (WebException e)
+                            catch (HttpRequestException e)
                             {
                                 // Handle any exceptions that occurred during the request.
                                 Console.WriteLine(e.Message);
