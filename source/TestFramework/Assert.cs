@@ -229,6 +229,11 @@ namespace nanoFramework.TestFramework
             }
         }
 
+        /// <summary>
+        /// Call this method to indicate that a test should be skipped.
+        /// </summary>
+        /// <param name="message">The message to include in the exception when the test is skipped. The message is shown in test results.</param>
+        /// <exception cref="SkipTestException">Thrown to indicate that a test should be skipped.</exception>
         [DoesNotReturn]
         public static void SkipTest(string message = null)
         {
