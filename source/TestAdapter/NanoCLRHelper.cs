@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -64,7 +63,7 @@ namespace nanoFramework.TestAdapter
                                 client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
 
                                 // Set any additional headers, if needed.
-                                client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+                                client.DefaultRequestHeaders.Add("Accept", "application/json");
 
                                 // Set the URL to request.
                                 string url = "https://api.nuget.org/v3-flatcontainer/nanoclr/index.json";
@@ -123,7 +122,7 @@ namespace nanoFramework.TestAdapter
 
                     if (cliResult.ExitCode == 0)
                     {
-                        // this will be either (on update): 
+                        // this will be either (on update):
                         // Tool 'nanoclr' was successfully updated from version '1.0.205' to version '1.0.208'.
                         // or (update becoming reinstall with same version, if there is no new version):
                         // Tool 'nanoclr' was reinstalled with the latest stable version (version '1.0.208').
@@ -190,7 +189,7 @@ namespace nanoFramework.TestAdapter
 
                 if (cliResult.ExitCode == 0)
                 {
-                    // this will be either (on update): 
+                    // this will be either (on update):
                     // Updated to v1.8.1.102
                     // or (on same version):
                     // Already at v1.8.1.102
