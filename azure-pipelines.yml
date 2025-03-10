@@ -344,6 +344,7 @@ jobs:
         System.Threading
         System.Security.Cryptography
         nanoFramework.DependencyInjection
+        nanoFramework.System.Runtime.Serialization
 
   # update VS extension
   - task: PowerShell@2
