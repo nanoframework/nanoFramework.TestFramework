@@ -343,6 +343,7 @@ jobs:
         System.Text
         System.Threading
         System.Security.Cryptography
+        nanoFramework.DependencyInjection
 
   # update VS extension
   - task: PowerShell@2
