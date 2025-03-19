@@ -215,7 +215,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 var nfprojContent = File.ReadAllText(nfproj.FullName);
 
                 // get all Compile items from the project file
-                string compilePattern = "(?><Compile Include=\")(?<source_file>.+)(?>\")";
+                string compilePattern = "<Compile Include=\"(?<source_file>[^\"]+)\"";
                 var compileItems = Regex.Matches(nfprojContent, compilePattern, RegexOptions.IgnoreCase);
 
                 foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
