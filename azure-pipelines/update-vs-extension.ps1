@@ -9,9 +9,9 @@ function UpdateTestFrameworkVersion {
 
     $filecontent = Get-Content($FilePath)
     attrib $FilePath -r
-    $filecontent -replace  $versionRegex1, "nanoFramework.TestFramework.$NewVersion" | Out-File $FilePath -Encoding utf8
+    $filecontent -replace $versionRegex1, "nanoFramework.TestFramework.$NewVersion" | Out-File $FilePath -Encoding utf8 -Force
     $filecontent = Get-Content($FilePath)
-    $filecontent -replace  $versionRegex2, "id=""nanoFramework.TestFramework"" version=""$NewVersion" | Out-File $FilePath -Encoding utf8
+    $filecontent -replace $versionRegex2, "id=""nanoFramework.TestFramework"" version=""$NewVersion" | Out-File $FilePath -Encoding utf8 -Force
 }
 
 function AddGeneratePathProperty {
@@ -24,14 +24,14 @@ function AddGeneratePathProperty {
 
     $filecontent = Get-Content($FilePath)
     attrib $FilePath -r
-    $filecontent -replace  $versionRegex1, "Include=""nanoFramework.TestFramework"" Version=""$NewVersion"" GeneratePathProperty=""true"">" | Out-File $FilePath -Encoding utf8
+    $filecontent -replace $versionRegex1, "Include=""nanoFramework.TestFramework"" Version=""$NewVersion"" GeneratePathProperty=""true"">" | Out-File $FilePath -Encoding utf8 -Force
 }
 
 "Updating dependency at nf-Visual-Studio-extension" | Write-Host
 
 # compute authorization header in format "AUTHORIZATION: basic 'encoded token'"
 # 'encoded token' is the Base64 of the string "nfbot:personal-token"
-$auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:GITHUB_TOKEN")))"
+$auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$env:GITHUB_TOKEN")))" 
 
 # uncomment these for local debug
 # [Environment]::SetEnvironmentVariable('NBGV_NuGetPackageVersion', '2.0.42', 'Process')
@@ -137,6 +137,10 @@ if ($repoStatus -ne "")
     UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/CS.TestApplication-vs2019.vstemplate'
     UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/CS.TestApplication-vs2022.vstemplate'
     UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'CSharp.TestApplication/NFUnitTest.nfproj'
+
+    # update remaining project refs 
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2019/VisualStudio.Extension-vs2019.csproj'
+    UpdateTestFrameworkVersion -NewVersion $packageTargetVersion -FilePath 'VisualStudio.Extension-2022/VisualStudio.Extension-vs2022.csproj'
 
     # create branch to perform updates
     git branch $newBranchName
