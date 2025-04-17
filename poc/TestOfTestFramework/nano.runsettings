@@ -13,5 +13,6 @@
        <CLRVersion></CLRVersion><!--Specify the nanoCLR version to use. If not specified, the latest available will be used. -->
        <PathToLocalCLRInstance></PathToLocalCLRInstance><!--Specify the path to a local nanoCLR instance. If not specified, the default one installed with nanoclr CLR witll be used. -->
        <RunnerExtraArguments></RunnerExtraArguments><!--Specify extra arguments to pass to the test runner. -->
+       <UsePreviewClr>False</UsePreviewClr><!--Set to true to use the preview version of the nanoCLR. -->
    </nanoFrameworkAdapter>
 </RunSettings>

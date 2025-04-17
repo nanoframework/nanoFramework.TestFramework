@@ -14,5 +14,6 @@
        <Logging>None</Logging>
        <IsRealHardware>False</IsRealHardware>
        <RunnerExtraArguments></RunnerExtraArguments><!--Specify extra arguments to pass to the test runner. -->
+       <UsePreviewClr>False</UsePreviewClr><!--Set to true to use the preview version of the nanoCLR. -->
    </nanoFrameworkAdapter>
 </RunSettings>

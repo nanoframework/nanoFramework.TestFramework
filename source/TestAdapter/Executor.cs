@@ -670,6 +670,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 NanoCLRHelper.UpdateNanoCLRInstance(
                     _settings.CLRVersion,
+                    _settings.UsePreviewClr,
                     _logger);
             }
 
