@@ -163,8 +163,15 @@ namespace nanoFramework.TestAdapter
             return NanoClrIsInstalled;
         }
 
+        /// <summary>
+        /// Update the nanoCLR instance.
+        /// </summary>
+        /// <param name="clrVersion">Specific version to use.</param>
+        /// <param name="usePreview"><see langword="true"/> to use preview version, <see langword="false"/> to use stable version.</param>
+        /// <param name="logger">The logger to use to log messages.</param>
         public static void UpdateNanoCLRInstance(
             string clrVersion,
+            bool usePreview,
             LogMessenger logger)
         {
             logger.LogMessage(
@@ -173,9 +180,18 @@ namespace nanoFramework.TestAdapter
 
             string arguments = "instance --update";
 
-            if (!string.IsNullOrEmpty(clrVersion))
+            // use preview parameter has precedence over the version
+            if (usePreview)
             {
-                arguments += $" --clrversion {clrVersion}";
+                arguments += " --preview";
+            }
+            else
+            {
+                // if no preview, check if we have a version to use
+                if (!string.IsNullOrEmpty(clrVersion))
+                {
+                    arguments += $" --version {clrVersion}";
+                }
             }
 
             Command cmd = Cli.Wrap("nanoclr")
@@ -183,7 +199,7 @@ namespace nanoFramework.TestAdapter
                 .WithValidation(CommandResultValidation.None);
 
             // setup cancellation token with a timeout of 1 minute
-            using (var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
             {
                 BufferedCommandResult cliResult = cmd.ExecuteBufferedAsync(cts.Token).Task.Result;
 

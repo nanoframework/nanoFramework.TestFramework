@@ -32,6 +32,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public string CLRVersion { get; set; } = string.Empty;
 
         /// <summary>
+        /// <see langword="true"/> to use a preview version of the nanoCLR instance.
+        /// </summary>
+        /// <remarks>
+        /// Set to <see langword="false"/>, or don't set the property, to use the latest stable version.
+        /// </remarks>
+        public bool UsePreviewClr { get; set; } = false;
+
+        /// <summary>
         /// Level of logging for Unit Test execution.
         /// </summary>
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
@@ -89,6 +97,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (runnerExtraArguments != null && runnerExtraArguments.NodeType == XmlNodeType.Text)
                 {
                     settings.RunnerExtraArguments = runnerExtraArguments.Value;
+                }
+
+                XmlNode usePreviewClr = node.SelectSingleNode(nameof(UsePreviewClr))?.FirstChild;
+                if (usePreviewClr != null && usePreviewClr.NodeType == XmlNodeType.Text)
+                {
+                    settings.UsePreviewClr = usePreviewClr.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
                 }
             }
 
