@@ -20,3 +20,5 @@ jobs:
     with:
       solutionsToCheck: 'nanoFramework.TestFramework.sln'
       exclusionList: 'NFUnit Test Demo,NFUnit Test DemoByReference'
+      previewPackages: ${{ github.event.client_payload.usePreview || 'false' }}
+      branchToPr: ${{ github.event.client_payload.usePreview ? 'develop' : 'main' }}
