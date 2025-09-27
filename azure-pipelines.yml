@@ -125,6 +125,10 @@ jobs:
   - task: InstallNanoMSBuildComponents@1
     condition: ne( variables['StartReleaseCandidate'], true )
     displayName: Install nanoFramework MSBuild components
+    inputs:
+      GitHubToken: $(GitHubToken)
+      usePreview: true
+
 
   - task: Cache@2
     displayName: Cache NuGet packages
