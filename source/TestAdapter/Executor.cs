@@ -723,52 +723,50 @@ namespace nanoFramework.TestPlatform.TestAdapter
             // setup cancellation token with the timeout from settings
             using (var cts = new CancellationTokenSource(_testSessionTimeout))
             {
-                var cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
-                var exitCode = cliResult.ExitCode;
+                BufferedCommandResult cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
+                int exitCode = cliResult.ExitCode;
 
                 // read standard output
-                var output = cliResult.StandardOutput;
+                string output = cliResult.StandardOutput;
 
-                if (exitCode == 0)
+                try
                 {
-                    try
+                    // process output to gather tests results
+                    ParseTestResults(output, results);
+
+                    _logger.LogMessage(output, Settings.LoggingLevel.Verbose);
+
+                    if (!output.Contains(Done))
                     {
-                        // process output to gather tests results
-                        ParseTestResults(output, results);
-
-                        _logger.LogMessage(output, Settings.LoggingLevel.Verbose);
-
-                        if (!output.Contains(Done))
-                        {
-                            results.First().Outcome = TestOutcome.Failed;
-                            results.First().ErrorMessage = output;
-                        }
-
-                        var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed
-                                                                   && m.Outcome != TestOutcome.Passed
-                                                                   && m.Outcome != TestOutcome.Skipped);
-
-                        if (notPassedOrFailed.Any())
-                        {
-                            notPassedOrFailed.First().ErrorMessage = output;
-                        }
-
+                        results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
+                        results.First(t => t.Outcome == TestOutcome.None).ErrorMessage = output;
                     }
-                    catch (Exception ex)
+
+                    var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed
+                                                                && m.Outcome != TestOutcome.Passed
+                                                                && m.Outcome != TestOutcome.Skipped);
+
+                    if (notPassedOrFailed.Any())
                     {
-                        _logger.LogMessage(
-                            $"Fatal exception when processing test results: >>>{ex.Message}\r\n{output}",
-                            Settings.LoggingLevel.Detailed);
-
-                        results.First().Outcome = TestOutcome.Failed;
+                        notPassedOrFailed.Last().ErrorMessage = output;
                     }
+
                 }
-                else
+                catch (Exception ex)
+                {
+                    _logger.LogMessage(
+                        $"Fatal exception when processing test results: >>>{ex.Message}\r\n{output}",
+                        Settings.LoggingLevel.Detailed);
+
+                    results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
+                }
+
+                if (exitCode != 0)
                 {
                     _logger.LogPanicMessage($"nanoCLR ended with '{exitCode}' exit code.\r\n>>>>>>>>>>>>>\r\n{output}\r\n>>>>>>>>>>>>>");
 
-                    results.First().Outcome = TestOutcome.Failed;
-                    results.First().ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                    results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
+                    results.First(t => t.Outcome == TestOutcome.None).ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
 
                     return results;
                 }
