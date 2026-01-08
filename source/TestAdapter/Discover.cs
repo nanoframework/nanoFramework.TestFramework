@@ -107,7 +107,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             // try to find nfproj file for this unit test assembly
             var nfprojFile = FindNfprojFile(sourceFile);
 
-            if (!nfprojFile.Any())
+            if (!Enumerable.Any(nfprojFile))
             {
                 return collectionOfTestCases;
             }

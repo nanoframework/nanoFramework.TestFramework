@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using nanoFramework.TestFramework;
 
 namespace TestFrameworkShared
 {
@@ -10,6 +11,9 @@ namespace TestFrameworkShared
     /// </summary>
     public class AssertFailedException : Exception
     {
+        internal object AssertExpected;
+        internal object AssertActual;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AssertFailedException"/> class.
         /// </summary>

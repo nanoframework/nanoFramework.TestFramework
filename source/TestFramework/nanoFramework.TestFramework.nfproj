@@ -32,14 +32,26 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Assert.cs" />
-    <Compile Include="Assert.AreEqual.cs">
-      <DependentUpon>Assert.cs</DependentUpon>
+    <Compile Include="Assertions\Assert.Count.cs" />
+    <Compile Include="Assertions\CollectionAssert.cs" />
+    <Compile Include="Assertions\Assert.ThrowsException.cs" />
+    <Compile Include="Assertions\Assert.StartsWith.cs" />
+    <Compile Include="Assertions\Assert.IsNull.cs" />
+    <Compile Include="Assertions\Assert.IsInstanceOfType.cs" />
+    <Compile Include="Assertions\Assert.IsTrue.cs" />
+    <Compile Include="Assertions\Assert.EndsWith.cs" />
+    <Compile Include="Assertions\Assert.Contains.cs" />
+    <Compile Include="Assertions\Assert.AreSame.cs" />
+    <Compile Include="Assertions\Assert.cs" />
+    <Compile Include="Assert.NoGenerics.cs" />
+    <Compile Include="Assert.NoGenerics.AreEqual.cs">
+      <DependentUpon>Assert.NoGenerics.cs</DependentUpon>
     </Compile>
-    <Compile Include="Assert.AreNotEqual.cs">
-      <DependentUpon>Assert.cs</DependentUpon>
+    <Compile Include="Assert.NoGenerics.AreNotEqual.cs">
+      <DependentUpon>Assert.NoGenerics.cs</DependentUpon>
     </Compile>
-    <Compile Include="CollectionAssert.cs" />
+    <Compile Include="CollectionAssert.NoGenerics.cs" />
+    <Compile Include="Guard.cs" />
     <Compile Include="OutputHelper.cs" />
     <Compile Include="TestExtensions.cs" />
   </ItemGroup>
@@ -55,10 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>..\..\packages\nanoFramework.CoreLibrary.2.0.0-preview.30\lib\netnano1.0\mscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib, Version=1.17.11.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\packages\nanoFramework.CoreLibrary.1.17.11\lib\mscorlib.dll</HintPath>
+      <HintPath>..\..\packages\nanoFramework.CoreLibrary.2.0.0-preview.33\lib\netnano1.0\mscorlib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="..\TestFrameworkShared\TestFrameworkShared.projitems" Label="Shared" />

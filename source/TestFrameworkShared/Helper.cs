@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.Generic;
+
 namespace nanoFramework.TestFramework
 {
     /// <summary>
@@ -19,6 +21,36 @@ namespace nanoFramework.TestFramework
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains any elements.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The IEnumerable to check for emptiness.</param>
+        /// <returns>true if the source sequence contains any elements; otherwise, false.</returns>
+        public static bool Any<T>(this IEnumerable<T> source)
+        {
+            IEnumerator<T> enumerator = source.GetEnumerator();
+            return enumerator.MoveNext();
+        }
+
+        /// <summary>
+        /// Returns the number of elements in a sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The IEnumerable that contains the elements to be counted.</param>
+        /// <returns>The number of elements in the input sequence.</returns>
+        public static int Count<T>(this IEnumerable<T> source)
+        {
+            int count = 0;
+            IEnumerator<T> enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                count++;
+            }
+
+            return count;
         }
 
         /// <summary>
