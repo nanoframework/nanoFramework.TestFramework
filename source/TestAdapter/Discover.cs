@@ -74,7 +74,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     continue;
                 }
 
-                var cases = ComposeTestCases(sourceFile);
+                var cases = ComposeTestCases(sourceFile, logger);
                 if (cases.Count > 0)
                 {
                     _logger.LogMessage(
@@ -100,31 +100,139 @@ namespace nanoFramework.TestPlatform.TestAdapter
         /// </summary>
         /// <param name="sourceFile">Path to the assembly file containing the Unit Tests.</param>
         /// <returns>A list of <see cref="TestCase"/>.</returns>
-        public static List<TestCase> ComposeTestCases(string sourceFile)
+        public static List<TestCase> ComposeTestCases(string sourceFile, IMessageLogger logger = null)
         {
             List<TestCase> collectionOfTestCases = new List<TestCase>();
 
-            // try to find nfproj file for this unit test assembly
-            var nfprojFile = FindNfprojFile(sourceFile);
-
-            if (!nfprojFile.Any())
+            try
             {
-                return collectionOfTestCases;
-            }
+                // Skip core library assemblies — they can't be reflected into by the desktop CLR
+                // and will never contain test classes.
+                string sourceFileName = Path.GetFileName(sourceFile);
+                if (sourceFileName.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    logger?.SendMessage(
+                        TestMessageLevel.Informational,
+                        $"  Skipping core library: {sourceFile}");
 
-            var allCsFiles = GetAllCsFiles(nfprojFile);
+                    return collectionOfTestCases;
+                }
 
-            // developer note: we have to use LoadFile() and not Load() which loads the assembly into the caller domain
-            Assembly test = Assembly.LoadFile(sourceFile);
-            AppDomain.CurrentDomain.AssemblyResolve += App_AssemblyResolve;
-            AppDomain.CurrentDomain.Load(test.GetName());
+                // try to find project file for this unit test assembly (.nfproj or .csproj)
+                var projectFile = FindProjectFile(sourceFile);
 
-            var typeCandidatesForTests = test.GetTypes()
-                                            .Where(x => x.IsClass);
+                if (!projectFile.Any())
+                {
+                    logger?.SendMessage(
+                        TestMessageLevel.Informational,
+                        $"  No project file found for: {sourceFile}");
+
+                    return collectionOfTestCases;
+                }
+
+                logger?.SendMessage(
+                    TestMessageLevel.Informational,
+                    $"  Found project file: {projectFile.First().FullName}");
+
+                var allCsFiles = GetAllCsFiles(projectFile);
+
+                logger?.SendMessage(
+                    TestMessageLevel.Informational,
+                    $"  Found {allCsFiles.Length} source files");
+
+                // Load assembly from a byte array to avoid locking the file on disk.
+                // This prevents MSBuild copy errors when rebuilding while VS test discovery has loaded the DLL.
+                string sourceDir = Path.GetDirectoryName(sourceFile);
+
+                // Register resolve handler BEFORE loading so dependencies are found during load.
+                // Byte-loaded assemblies have empty Location, so we capture sourceDir in the closure.
+                ResolveEventHandler resolveHandler = (sender, args) =>
+                {
+                    try
+                    {
+                        string assemblyName = args.Name.Split(new[] { ',' })[0];
+
+                        // Never load nanoFramework's mscorlib into the desktop CLR.
+                        // The CLR will unify mscorlib references to its own version,
+                        // which lets nanoFramework types (System.Object, System.Attribute, etc.)
+                        // resolve against the real desktop types.
+                        if (assemblyName.Equals("mscorlib", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return null;
+                        }
+
+                        string dllName = assemblyName + ".dll";
+                        string candidatePath = Path.Combine(sourceDir, dllName);
+
+                        if (File.Exists(candidatePath))
+                        {
+                            return Assembly.Load(File.ReadAllBytes(candidatePath));
+                        }
+                    }
+                    catch
+                    {
+                        // not our assembly, ignore
+                    }
+
+                    return null;
+                };
+
+                AppDomain.CurrentDomain.AssemblyResolve += resolveHandler;
+
+                try
+                {
+                byte[] assemblyBytes = File.ReadAllBytes(sourceFile);
+                Assembly test = Assembly.Load(assemblyBytes);
+
+                logger?.SendMessage(
+                    TestMessageLevel.Informational,
+                    $"  Assembly loaded: {test.FullName}");
+
+                Type[] allTypes;
+                try
+                {
+                    allTypes = test.GetTypes();
+                }
+                catch (ReflectionTypeLoadException rtle)
+                {
+                    logger?.SendMessage(
+                        TestMessageLevel.Warning,
+                        $"  GetTypes() partial load — {rtle.LoaderExceptions?.Length ?? 0} loader exceptions");
+
+                    foreach (var lex in rtle.LoaderExceptions ?? Array.Empty<Exception>())
+                    {
+                        logger?.SendMessage(
+                            TestMessageLevel.Warning,
+                            $"    {lex?.Message}");
+                    }
+
+                    // Use the types that did load successfully
+                    allTypes = rtle.Types.Where(t => t != null).ToArray();
+                }
+
+                var typeCandidatesForTests = allTypes.Where(x => x.IsClass);
+
+                logger?.SendMessage(
+                    TestMessageLevel.Informational,
+                    $"  Found {allTypes.Length} types, {typeCandidatesForTests.Count()} classes");
 
             foreach (var typeCandidate in typeCandidatesForTests)
             {
-                var testClasses = typeCandidate.GetCustomAttributes(true)
+                object[] attrs;
+                try
+                {
+                    attrs = typeCandidate.GetCustomAttributes(true);
+                }
+                catch (Exception attrEx)
+                {
+                    logger?.SendMessage(
+                        TestMessageLevel.Warning,
+                        $"  GetCustomAttributes failed for {typeCandidate.FullName}: {attrEx.Message}");
+
+                    continue;
+                }
+
+                var testClasses = attrs
                                       .Where(x => x.GetType().FullName == typeof(TestClassAttribute).FullName);
 
                 foreach (var testClassAttrib in testClasses)
@@ -158,6 +266,31 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                 }
             }
+                }
+                finally
+                {
+                    AppDomain.CurrentDomain.AssemblyResolve -= resolveHandler;
+                }
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                logger?.SendMessage(
+                    TestMessageLevel.Warning,
+                    $"  ReflectionTypeLoadException for {sourceFile}: {ex.Message}");
+
+                foreach (var loaderEx in ex.LoaderExceptions ?? Array.Empty<Exception>())
+                {
+                    logger?.SendMessage(
+                        TestMessageLevel.Warning,
+                        $"    Loader exception: {loaderEx?.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger?.SendMessage(
+                    TestMessageLevel.Warning,
+                    $"  Exception discovering tests in {sourceFile}: {ex}");
+            }
 
             return collectionOfTestCases;
         }
@@ -189,57 +322,59 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return false;
         }
 
-        private static Assembly App_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            try
-            {
-                string dllName = args.Name.Split(new[] { ',' })[0] + ".dll";
-                string path = Path.GetDirectoryName(args.RequestingAssembly.Location);
-                return Assembly.LoadFrom(Path.Combine(path, dllName));
-            }
-            catch
-            {
-                // this is called on several occasions, some are not related with our types or assemblies
-                // therefore there are calls that can't be resolved and that's OK
-                return null;
-            }
-        }
-
-        private static string[] GetAllCsFiles(FileInfo[] nfprojFiles)
+        private static string[] GetAllCsFiles(FileInfo[] projectFiles)
         {
             List<string> allCsFiles = new List<string>();
 
-            foreach (var nfproj in nfprojFiles)
+            foreach (var projectFile in projectFiles)
             {
-                // read nfproj file content
-                var nfprojContent = File.ReadAllText(nfproj.FullName);
+                // read project file content
+                var projectContent = File.ReadAllText(projectFile.FullName);
 
                 // get all Compile items from the project file
                 string compilePattern = "<Compile Include=\"(?<source_file>[^\"]+)\"";
-                var compileItems = Regex.Matches(nfprojContent, compilePattern, RegexOptions.IgnoreCase);
+                var compileItems = Regex.Matches(projectContent, compilePattern, RegexOptions.IgnoreCase);
 
-                foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
+                if (compileItems.Count > 0)
                 {
-                    // Depending on the platform Windows/Other, need to transform the path delimiter for compileItem.Groups["source_file"].Value) from / to \ or vice versa
-                    var filePath = compileItem.Groups["source_file"].Value;
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    // Legacy .nfproj style: explicit Compile includes
+                    foreach (System.Text.RegularExpressions.Match compileItem in compileItems)
                     {
-                        // Transfor the / into \ in filePath
-                        filePath = filePath.Replace("/", "\\");
-                    }
-                    else
-                    {
-                        filePath = filePath.Replace("\\", "/");
-                    }
+                        var filePath = compileItem.Groups["source_file"].Value;
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            filePath = filePath.Replace("/", "\\");
+                        }
+                        else
+                        {
+                            filePath = filePath.Replace("\\", "/");
+                        }
 
-                    allCsFiles.Add($"{Path.Combine(Path.GetFullPath(nfproj.DirectoryName), filePath)}");
+                        allCsFiles.Add($"{Path.Combine(Path.GetFullPath(projectFile.DirectoryName), filePath)}");
+                    }
+                }
+                else
+                {
+                    // SDK-style .csproj: source files are implicitly globbed
+                    var projectDir = projectFile.DirectoryName;
+                    foreach (var csFile in Directory.GetFiles(projectDir, "*.cs", SearchOption.AllDirectories))
+                    {
+                        // Skip common output/intermediate directories
+                        if (csFile.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                            || csFile.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+                        {
+                            continue;
+                        }
+
+                        allCsFiles.Add(csFile);
+                    }
                 }
             }
 
             return allCsFiles.ToArray();
         }
 
-        private static FileInfo[] FindNfprojFile(string source)
+        private static FileInfo[] FindProjectFile(string source)
         {
             if (string.IsNullOrEmpty(source))
             {
@@ -248,23 +383,42 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             try
             {
-                if (Path.GetDirectoryName(source) == null)
+                // Start from the directory containing the source file/assembly
+                DirectoryInfo directory;
+
+                if (File.Exists(source))
+                {
+                    directory = new DirectoryInfo(Path.GetDirectoryName(source));
+                }
+                else if (Directory.Exists(source))
+                {
+                    directory = new DirectoryInfo(source);
+                }
+                else
                 {
                     return new FileInfo[0];
                 }
 
-                // iterate through the parent folders until an nfproj file is found
-                var mainDirectory = new DirectoryInfo(Path.GetDirectoryName(source));
-
-                FileInfo[] nfproj = mainDirectory?.GetFiles("*.nfproj");
-
-                if (nfproj.Length == 0
-                    && mainDirectory?.Parent != null)
+                // Walk up the directory tree until a project file is found
+                while (directory != null)
                 {
-                    return FindNfprojFile(mainDirectory?.Parent.FullName);
+                    // Search for .csproj (SDK-style) first, then .nfproj (legacy)
+                    FileInfo[] projectFiles = directory.GetFiles("*.csproj");
+
+                    if (projectFiles.Length == 0)
+                    {
+                        projectFiles = directory.GetFiles("*.nfproj");
+                    }
+
+                    if (projectFiles.Length > 0)
+                    {
+                        return projectFiles;
+                    }
+
+                    directory = directory.Parent;
                 }
 
-                return nfproj;
+                return new FileInfo[0];
             }
             catch (Exception ex)
             {
