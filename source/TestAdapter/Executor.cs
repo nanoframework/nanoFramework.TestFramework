@@ -802,7 +802,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     || (line.Contains(TestFailed))
                     || (line.Contains(TestSkipped))))
                 {
-                    resultDataSet = line.Split(',');
+                    resultDataSet = line.Split(new char[] { ',' }, 3);
 
                     // sanity check for enough data
                     if (resultDataSet.Length != 3)
