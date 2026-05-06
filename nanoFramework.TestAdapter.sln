@@ -30,9 +30,7 @@ Global
 		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B3026CA-1CBB-4F28-AC42-29CD22710877}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A22843DD-F495-40DA-92EB-F8F4CAA13A0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A22843DD-F495-40DA-92EB-F8F4CAA13A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A22843DD-F495-40DA-92EB-F8F4CAA13A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A22843DD-F495-40DA-92EB-F8F4CAA13A0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
