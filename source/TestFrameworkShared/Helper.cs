@@ -26,15 +26,27 @@ namespace nanoFramework.TestFramework
         {
             var attributeFullName = typeof(Attribute).FullName;
 
-            for (var current = type; current != null; current = current.BaseType)
+            Type current = type;
+            while (current != null)
             {
                 if (current.FullName == attributeFullName)
                 {
                     return true;
                 }
+                try
+                {
+                    current = current.BaseType;
+                }
+                catch
+                {
+                    // Base type assembly not resolvable in this reflection context;
+                    // conservatively treat as attribute to avoid calling GetCustomAttributes on it.
+                    return true;
+                }
             }
 
             return false;
+
         }
 
         private static bool Any(this object[] array, AnyDelegateType predicate)
