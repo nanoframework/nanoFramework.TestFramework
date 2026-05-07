@@ -84,15 +84,17 @@ namespace nanoFramework.TestFramework
                         method.Invoke(null, parameters);
                         totalTicks = DateTime.UtcNow.Ticks - dt;
 
-                        // on change this pattern it has to be updated at Executor.CheckAllTests 
-                        Console.WriteLine($"Test passed,{methodName},{totalTicks}");
+                        // Keep result markers at the beginning of a line even if a test used Write() without trailing newline.
+                        // On change this pattern it has to be updated at Executor.CheckAllTests.
+                        Console.WriteLine($"\r\nTest passed,{methodName},{totalTicks}");
                     }
                     catch (Exception ex)
                     {
                         if (ex.GetType() == typeof(SkipTestException))
                         {
-                            // on change this pattern it has to be updated at Executor.CheckAllTests
-                            Console.WriteLine($"Test skipped,{methodName},{ex.Message}");
+                            // Keep result markers at the beginning of a line even if a test used Write() without trailing newline.
+                            // On change this pattern it has to be updated at Executor.CheckAllTests.
+                            Console.WriteLine($"\r\nTest skipped,{methodName},{ex.Message}");
 
                             if (isSetupMethod)
                             {
@@ -103,8 +105,9 @@ namespace nanoFramework.TestFramework
                         }
                         else
                         {
-                            // on change this pattern it has to be updated at Executor.CheckAllTests 
-                            Console.WriteLine($"Test failed,{methodName},{ex.Message}");
+                            // Keep result markers at the beginning of a line even if a test used Write() without trailing newline.
+                            // On change this pattern it has to be updated at Executor.CheckAllTests.
+                            Console.WriteLine($"\r\nTest failed,{methodName},{ex.Message}");
                         }
                     }
                 }
