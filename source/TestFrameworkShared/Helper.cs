@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
+
 namespace nanoFramework.TestFramework
 {
     /// <summary>
@@ -9,6 +11,43 @@ namespace nanoFramework.TestFramework
     public static class Helper
     {
         private delegate bool AnyDelegateType(object source);
+
+        /// <summary>
+        /// Checks whether a type can be considered for test discovery and execution.
+        /// </summary>
+        /// <param name="type">Type to inspect.</param>
+        /// <returns><see langword="true"/> when the type is a class and not an attribute type.</returns>
+        public static bool IsTestClassCandidate(Type type)
+        {
+            return type.IsClass && !IsAttributeType(type);
+        }
+
+        private static bool IsAttributeType(Type type)
+        {
+            var attributeFullName = typeof(Attribute).FullName;
+
+            Type current = type;
+            while (current != null)
+            {
+                if (current.FullName == attributeFullName)
+                {
+                    return true;
+                }
+                try
+                {
+                    current = current.BaseType;
+                }
+                catch
+                {
+                    // Base type assembly not resolvable in this reflection context;
+                    // conservatively treat as attribute to avoid calling GetCustomAttributes on it.
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
 
         private static bool Any(this object[] array, AnyDelegateType predicate)
         {

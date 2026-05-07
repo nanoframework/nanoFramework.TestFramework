@@ -22,7 +22,7 @@ namespace nanoFramework.TestFramework
 
             foreach (var type in allTypes)
             {
-                if (!type.IsClass)
+                if (!Helper.IsTestClassCandidate(type))
                 {
                     continue;
                 }

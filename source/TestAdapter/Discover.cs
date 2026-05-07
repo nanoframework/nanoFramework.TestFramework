@@ -120,7 +120,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             AppDomain.CurrentDomain.Load(test.GetName());
 
             var typeCandidatesForTests = test.GetTypes()
-                                            .Where(x => x.IsClass);
+                                            .Where(Helper.IsTestClassCandidate);
 
             foreach (var typeCandidate in typeCandidatesForTests)
             {
