@@ -794,11 +794,34 @@ namespace nanoFramework.TestPlatform.TestAdapter
             TestResult testResult = new TestResult(new TestCase());
             string[] resultDataSet = default;
 
-            foreach (var line in outputStrings)
+            foreach (var rawLine in outputStrings)
             {
-                if ((line.Contains(TestPassed)
-                    || (line.Contains(TestFailed))
-                    || (line.Contains(TestSkipped))))
+                string line = rawLine;
+
+                // Some tests write output without ending in a newline, so test result markers can be
+                // concatenated at the end of the same output line.
+                int markerIndex = GetResultMarkerIndex(line);
+
+                if (markerIndex > 0)
+                {
+                    if (readyFound)
+                    {
+                        string outputPrefix = line.Substring(0, markerIndex);
+
+                        if (!string.IsNullOrWhiteSpace(outputPrefix))
+                        {
+                            testOutput.AppendLine(outputPrefix);
+                        }
+                    }
+
+                    line = line.Substring(markerIndex);
+                }
+
+                bool isResultLine = line.StartsWith($"{TestPassed},")
+                    || line.StartsWith($"{TestFailed},")
+                    || line.StartsWith($"{TestSkipped},");
+
+                if (isResultLine)
                 {
                     resultDataSet = line.Split(new char[] { ',' }, 3);
 
@@ -825,7 +848,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
                 }
 
-                if (line.Contains(TestPassed))
+                if (line.StartsWith($"{TestPassed},"))
                 {
                     // Format is "Test passed,MethodName,ticks";
 
@@ -841,7 +864,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     // reset test output
                     testOutput = new StringBuilder();
                 }
-                else if (line.Contains(TestFailed))
+                else if (line.StartsWith($"{TestFailed},"))
                 {
                     // Format is "Test failed,MethodName,Exception message";
 
@@ -854,7 +877,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     // reset test output
                     testOutput = new StringBuilder();
                 }
-                else if (line.Contains(TestSkipped))
+                else if (line.StartsWith($"{TestSkipped},"))
                 {
                     // Format is "Test failed,MethodName,Exception message";
 
@@ -906,6 +929,32 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         readyFound = true;
                     }
                 }
+            }
+
+            int GetResultMarkerIndex(string content)
+            {
+                int passedIndex = content.IndexOf($"{TestPassed},", StringComparison.Ordinal);
+                int failedIndex = content.IndexOf($"{TestFailed},", StringComparison.Ordinal);
+                int skippedIndex = content.IndexOf($"{TestSkipped},", StringComparison.Ordinal);
+
+                int markerIndex = -1;
+
+                if (passedIndex >= 0)
+                {
+                    markerIndex = passedIndex;
+                }
+
+                if (failedIndex >= 0 && (markerIndex < 0 || failedIndex < markerIndex))
+                {
+                    markerIndex = failedIndex;
+                }
+
+                if (skippedIndex >= 0 && (markerIndex < 0 || skippedIndex < markerIndex))
+                {
+                    markerIndex = skippedIndex;
+                }
+
+                return markerIndex;
             }
         }
     }
