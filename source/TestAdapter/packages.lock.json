@@ -36,9 +36,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[2.5.10, )",
-        "resolved": "2.5.10",
-        "contentHash": "ETpK8oihKti7iCV6GkJhvExj3FT66wD8djRj/qWglMl8UaWQhJ4g+j2st5bOqmBrMf2llwOu5qk9wnkTbPAAVA==",
+        "requested": "[3.0.0-preview.5, )",
+        "resolved": "3.0.0-preview.5",
+        "contentHash": "mhHaP4NDEfDneiR5lzPpwAmnJbTFUS7bIGNRPNgFkdQ4AaunbPbURACmKxh/4FdupjRnIxOyNNAffq2X7tyFLg==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
@@ -46,9 +46,9 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.7.115, )",
-        "resolved": "3.7.115",
-        "contentHash": "EpXamaAdRfG/BMxGgvZlTM0npRnkmXUjAj8OdNKd17t4oN+2nvjdv/KnFmzOOMDqvlwB49UCwtOHJrAQTfUBtQ=="
+        "requested": "[3.9.50, )",
+        "resolved": "3.9.50",
+        "contentHash": "HtOgGF6jZ+WYbXnCUCYPT8Y2d6mIJo9ozjK/FINTRsXdm4Zgv9GehUMa7EFoGQkqrMcDJNOIDwCmENnvXg4UbA=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
@@ -229,9 +229,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[2.5.10, )",
-        "resolved": "2.5.10",
-        "contentHash": "ETpK8oihKti7iCV6GkJhvExj3FT66wD8djRj/qWglMl8UaWQhJ4g+j2st5bOqmBrMf2llwOu5qk9wnkTbPAAVA==",
+        "requested": "[3.0.0-preview.5, )",
+        "resolved": "3.0.0-preview.5",
+        "contentHash": "mhHaP4NDEfDneiR5lzPpwAmnJbTFUS7bIGNRPNgFkdQ4AaunbPbURACmKxh/4FdupjRnIxOyNNAffq2X7tyFLg==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
@@ -239,9 +239,9 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.7.115, )",
-        "resolved": "3.7.115",
-        "contentHash": "EpXamaAdRfG/BMxGgvZlTM0npRnkmXUjAj8OdNKd17t4oN+2nvjdv/KnFmzOOMDqvlwB49UCwtOHJrAQTfUBtQ=="
+        "requested": "[3.9.50, )",
+        "resolved": "3.9.50",
+        "contentHash": "HtOgGF6jZ+WYbXnCUCYPT8Y2d6mIJo9ozjK/FINTRsXdm4Zgv9GehUMa7EFoGQkqrMcDJNOIDwCmENnvXg4UbA=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
