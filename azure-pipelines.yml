@@ -58,6 +58,10 @@ jobs:
       # default to false
       $update = $false
 
+      # compute authorization header in format "AUTHORIZATION: basic 'encoded token'"
+      # 'encoded token' is the Base64 of the string "nfbot:personal-token"
+      $auth = "basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("nfbot:$(GitHubToken)")))"
+
       if($env:Build_Reason -eq 'PullRequest')
       {
         # PR build, nothing interesting in commit message
@@ -71,7 +75,7 @@ jobs:
         
         # get PR associate with commit
         $prUrl = "https://api.github.com/repos/nanoframework/nanoFramework.TestFramework/commits/$commitId/pulls"
-        $commit = Invoke-RestMethod -Uri $prUrl -ContentType "application/json" -Headers @{"Accept"="application/vnd.github.groot-preview+json"} -Method GET
+        $commit = Invoke-RestMethod -Uri $prUrl -ContentType "application/json" -Header @{"Authorization"="$auth"} -Method GET
 
         if($commit -ne $null)
         {
