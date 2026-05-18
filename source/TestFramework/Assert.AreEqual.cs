@@ -185,7 +185,7 @@ namespace nanoFramework.TestFramework
         /// <exception cref="AssertFailedException">Thrown if <paramref name="expected"/> is not equal to <paramref name="actual"/>.</exception>
         public static void AreEqual(string expected, string actual, [CallerArgumentExpression(nameof(actual))] string message = "")
         {
-            if (string.Compare(expected, actual) == 0)
+            if (EqualsOrdinal(expected, actual))
             {
                 return;
             }

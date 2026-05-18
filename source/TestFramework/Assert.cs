@@ -68,7 +68,7 @@ namespace nanoFramework.TestFramework
             EnsureParameterIsNotNull(expected, "Assert.Contains");
             EnsureParameterIsNotNull(value, "Assert.Contains");
 
-            if (value.Contains(expected))
+            if (ContainsOrdinal(value, expected))
             {
                 return;
             }
@@ -88,7 +88,7 @@ namespace nanoFramework.TestFramework
             EnsureParameterIsNotNull(notExpected, "Assert.DoesNotContains");
             EnsureParameterIsNotNull(value, "Assert.DoesNotContains");
 
-            if (!value.Contains(notExpected))
+            if (!ContainsOrdinal(value, notExpected))
             {
                 return;
             }
@@ -108,7 +108,7 @@ namespace nanoFramework.TestFramework
             EnsureParameterIsNotNull(expected, "Assert.EndsWith");
             EnsureParameterIsNotNull(value, "Assert.EndsWith");
 
-            if (value.EndsWith(expected))
+            if (EndsWithOrdinal(value, expected))
             {
                 return;
             }
@@ -151,7 +151,7 @@ namespace nanoFramework.TestFramework
         {
             EnsureParameterIsNotNull(expected, "Assert.IsInstanceOfType");
 
-            if (value is not null && expected == value.GetType())
+            if (value is not null && IsInstanceOfType(value.GetType(), expected))
             {
                 return;
             }
@@ -175,7 +175,7 @@ namespace nanoFramework.TestFramework
         {
             EnsureParameterIsNotNull(notExpected, "Assert.IsNotInstanceOfType");
 
-            if (value is null || notExpected != value.GetType())
+            if (value is null || !IsInstanceOfType(value.GetType(), notExpected))
             {
                 return;
             }
@@ -252,7 +252,7 @@ namespace nanoFramework.TestFramework
             EnsureParameterIsNotNull(expected, "Assert.StartsWith");
             EnsureParameterIsNotNull(value, "Assert.StartsWith");
 
-            if (value.StartsWith(expected))
+            if (StartsWithOrdinal(value, expected))
             {
                 return;
             }
@@ -290,6 +290,131 @@ namespace nanoFramework.TestFramework
             }
 
             HandleFail("Assert.ThrowsException", $"No exception thrown. {exception.Name} exception was expected. {ReplaceNulls(message)}");
+        }
+
+        private static bool IsInstanceOfType(Type actual, Type expected)
+        {
+            if (actual == expected)
+            {
+                return true;
+            }
+
+            if (actual.IsSubclassOf(expected))
+            {
+                return true;
+            }
+
+            if (!expected.IsInterface)
+            {
+                return false;
+            }
+
+            foreach (Type interfaceType in actual.GetInterfaces())
+            {
+                if (interfaceType == expected)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool ContainsOrdinal(string value, string search)
+        {
+            if (search.Length == 0)
+            {
+                return true;
+            }
+
+            if (search.Length > value.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i <= value.Length - search.Length; i++)
+            {
+                int j = 0;
+                for (; j < search.Length; j++)
+                {
+                    if (value[i + j] != search[j])
+                    {
+                        break;
+                    }
+                }
+
+                if (j == search.Length)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool StartsWithOrdinal(string value, string prefix)
+        {
+            if (prefix.Length > value.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < prefix.Length; i++)
+            {
+                if (value[i] != prefix[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool EndsWithOrdinal(string value, string suffix)
+        {
+            if (suffix.Length > value.Length)
+            {
+                return false;
+            }
+
+            int startIndex = value.Length - suffix.Length;
+            for (int i = 0; i < suffix.Length; i++)
+            {
+                if (value[startIndex + i] != suffix[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool EqualsOrdinal(string left, string right)
+        {
+            if (left == right)
+            {
+                return true;
+            }
+
+            if (left is null || right is null)
+            {
+                return false;
+            }
+
+            if (left.Length != right.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < left.Length; i++)
+            {
+                if (left[i] != right[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [DoesNotReturn]
