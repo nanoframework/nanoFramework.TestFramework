@@ -738,8 +738,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     if (!output.Contains(Done))
                     {
-                        results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
-                        results.First(t => t.Outcome == TestOutcome.None).ErrorMessage = output;
+                        var firstNoneTest = results.FirstOrDefault(t => t.Outcome == TestOutcome.None);
+                        if (firstNoneTest != null)
+                        {
+                            firstNoneTest.Outcome = TestOutcome.Failed;
+                            firstNoneTest.ErrorMessage = output;
+                        }
                     }
 
                     var notPassedOrFailed = results.Where(m => m.Outcome != TestOutcome.Failed
@@ -758,15 +762,23 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         $"Fatal exception when processing test results: >>>{ex.Message}\r\n{output}",
                         Settings.LoggingLevel.Detailed);
 
-                    results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
+                    var firstNoneTest = results.FirstOrDefault(t => t.Outcome == TestOutcome.None);
+                    if (firstNoneTest != null)
+                    {
+                        firstNoneTest.Outcome = TestOutcome.Failed;
+                    }
                 }
 
                 if (exitCode != 0)
                 {
                     _logger.LogPanicMessage($"nanoCLR ended with '{exitCode}' exit code.\r\n>>>>>>>>>>>>>\r\n{output}\r\n>>>>>>>>>>>>>");
 
-                    results.First(t => t.Outcome == TestOutcome.None).Outcome = TestOutcome.Failed;
-                    results.First(t => t.Outcome == TestOutcome.None).ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                    var firstNoneTest = results.FirstOrDefault(t => t.Outcome == TestOutcome.None);
+                    if (firstNoneTest != null)
+                    {
+                        firstNoneTest.Outcome = TestOutcome.Failed;
+                        firstNoneTest.ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                    }
 
                     return results;
                 }
