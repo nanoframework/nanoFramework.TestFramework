@@ -773,11 +773,24 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     _logger.LogPanicMessage($"nanoCLR ended with '{exitCode}' exit code.\r\n>>>>>>>>>>>>>\r\n{output}\r\n>>>>>>>>>>>>>");
 
-                    var firstNoneTest = results.FirstOrDefault(t => t.Outcome == TestOutcome.None);
-                    if (firstNoneTest != null)
+                    // Check if there are any tests without results
+                    var testsWithoutResult = results.Where(t => t.Outcome == TestOutcome.None).ToList();
+
+                    if (testsWithoutResult.Count > 0)
                     {
-                        firstNoneTest.Outcome = TestOutcome.Failed;
-                        firstNoneTest.ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                        foreach (var testWithoutResult in testsWithoutResult)
+                        {
+                            testWithoutResult.Outcome = TestOutcome.Failed;
+                            testWithoutResult.ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                        }
+                    }
+                    else
+                    {
+                        // All tests have results, but nanoCLR crashed after completion
+                        // Log warning but don't fail the test run since tests actually completed
+                        _logger.LogMessage(
+                            $"Warning: nanoCLR process crashed (exit code: {exitCode}) after all tests completed. This may indicate a cleanup/disposal issue.",
+                            Settings.LoggingLevel.Detailed);
                     }
 
                     return results;
