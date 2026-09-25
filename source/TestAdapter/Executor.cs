@@ -197,12 +197,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
             int retryCount = 0;
             NanoDeviceBase device = null;
             GlobalExclusiveDeviceAccess exclusiveAccess = null;
+            PortBase serialDebugClient = null;
+            nanoFramework.Tools.Debugger.MessageEventHandler messageHandler = null;
             try
             {
 
                 bool realHardwarePortSet = !string.IsNullOrEmpty(_settings.RealHardwarePort);
-
-                PortBase serialDebugClient;
 
                 if (realHardwarePortSet)
                 {
@@ -257,9 +257,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     _logger.LogMessage($"Waiting for device enumeration to complete.", Settings.LoggingLevel.Verbose);
                 }
 
-                while (!serialDebugClient.IsDevicesEnumerationComplete)
+                DateTime enumerationTimeout = DateTime.UtcNow.AddSeconds(10);
+
+                while (!serialDebugClient.IsDevicesEnumerationComplete
+                       && DateTime.UtcNow < enumerationTimeout)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(10);
                 }
 
                 _logger.LogMessage($"Found: {serialDebugClient.NanoFrameworkDevices.Count} devices", Settings.LoggingLevel.Verbose);
@@ -280,8 +283,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // add retry counter before trying again
                         retryCount++;
 
-                        // re-scan devices
+                        // give it some time before re-scanning
+                        await Task.Delay(TimeSpan.FromMilliseconds(_timeoutMiliseconds * retryCount));
+
                         serialDebugClient.ReScanDevices();
+
+                        await Task.Delay(200);
 
                         goto retryConnection;
                     }
@@ -581,7 +588,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     ManualResetEvent testExecutionCompleted = new ManualResetEvent(false);
 
                     // attach listener for messages
-                    device.DebugEngine.OnMessage += (message, text) =>
+                    messageHandler = (message, text) =>
                     {
                         _logger.LogMessage(text, Settings.LoggingLevel.Verbose);
                         output.Append(text);
@@ -591,6 +598,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                             testExecutionCompleted.Set();
                         }
                     };
+
+                    device.DebugEngine.OnMessage += messageHandler;
 
                     device.DebugEngine.RebootDevice(RebootOptions.ClrOnly);
 
@@ -616,6 +625,32 @@ namespace nanoFramework.TestPlatform.TestAdapter
             }
             finally
             {
+                try
+                {
+                    if (device?.DebugEngine != null)
+                    {
+                        if (messageHandler != null)
+                        {
+                            device.DebugEngine.OnMessage -= messageHandler;
+                        }
+
+                        device.DebugEngine.Stop(true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogMessage($"Exception stopping debug engine: {ex.Message}", Settings.LoggingLevel.Verbose);
+                }
+
+                try
+                {
+                    serialDebugClient?.StopDeviceWatchers();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogMessage($"Exception stopping device watchers: {ex.Message}", Settings.LoggingLevel.Verbose);
+                }
+
                 exclusiveAccess?.Dispose();
             }
 
