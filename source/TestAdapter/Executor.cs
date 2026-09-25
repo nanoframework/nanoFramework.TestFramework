@@ -774,11 +774,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     _logger.LogPanicMessage($"nanoCLR ended with '{exitCode}' exit code.\r\n>>>>>>>>>>>>>\r\n{output}\r\n>>>>>>>>>>>>>");
 
                     // Check if there are any tests without results
-                    var firstNoneTest = results.FirstOrDefault(t => t.Outcome == TestOutcome.None);
-                    if (firstNoneTest != null)
+foreach (var testWithoutResult in results.Where(t => t.Outcome == TestOutcome.None))
                     {
-                        firstNoneTest.Outcome = TestOutcome.Failed;
-                        firstNoneTest.ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
+                        testWithoutResult.Outcome = TestOutcome.Failed;
+                        testWithoutResult.ErrorMessage = $"nanoCLR execution ended with exit code: {exitCode}. Check log for details.";
                     }
                     else
                     {
