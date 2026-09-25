@@ -36,9 +36,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[3.0.0-preview.5, )",
-        "resolved": "3.0.0-preview.5",
-        "contentHash": "mhHaP4NDEfDneiR5lzPpwAmnJbTFUS7bIGNRPNgFkdQ4AaunbPbURACmKxh/4FdupjRnIxOyNNAffq2X7tyFLg==",
+        "requested": "[3.0.0-preview.19, )",
+        "resolved": "3.0.0-preview.19",
+        "contentHash": "tSv+AmPsQJxia5gtX/Rtn8R0NjeObmNkL1SPRPJIgOdAHiDst7UdCKjI74Pj3a7yAY3dRl9XfFZYVCf/h1bTXw==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
@@ -46,15 +46,15 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.9.50, )",
-        "resolved": "3.9.50",
-        "contentHash": "HtOgGF6jZ+WYbXnCUCYPT8Y2d6mIJo9ozjK/FINTRsXdm4Zgv9GehUMa7EFoGQkqrMcDJNOIDwCmENnvXg4UbA=="
+        "requested": "[3.10.94, )",
+        "resolved": "3.10.94",
+        "contentHash": "sn6gFIx6bwFj3Me0XGmek3gLZi/MZC8C4tRLwslXGeBcXcVxvFpZyDrQA93G8TiYgxTS7J7triKB7hj5wXzSxA=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
-        "requested": "[13.0.3, )",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+        "requested": "[13.0.4, )",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "System.Net.Http": {
         "type": "Direct",
@@ -229,9 +229,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[3.0.0-preview.5, )",
-        "resolved": "3.0.0-preview.5",
-        "contentHash": "mhHaP4NDEfDneiR5lzPpwAmnJbTFUS7bIGNRPNgFkdQ4AaunbPbURACmKxh/4FdupjRnIxOyNNAffq2X7tyFLg==",
+        "requested": "[3.0.0-preview.19, )",
+        "resolved": "3.0.0-preview.19",
+        "contentHash": "tSv+AmPsQJxia5gtX/Rtn8R0NjeObmNkL1SPRPJIgOdAHiDst7UdCKjI74Pj3a7yAY3dRl9XfFZYVCf/h1bTXw==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
@@ -239,15 +239,15 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.9.50, )",
-        "resolved": "3.9.50",
-        "contentHash": "HtOgGF6jZ+WYbXnCUCYPT8Y2d6mIJo9ozjK/FINTRsXdm4Zgv9GehUMa7EFoGQkqrMcDJNOIDwCmENnvXg4UbA=="
+        "requested": "[3.10.94, )",
+        "resolved": "3.10.94",
+        "contentHash": "sn6gFIx6bwFj3Me0XGmek3gLZi/MZC8C4tRLwslXGeBcXcVxvFpZyDrQA93G8TiYgxTS7J7triKB7hj5wXzSxA=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
-        "requested": "[13.0.3, )",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+        "requested": "[13.0.4, )",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "System.Net.Http": {
         "type": "Direct",
