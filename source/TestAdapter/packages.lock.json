@@ -36,9 +36,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[3.0.0-preview.19, )",
-        "resolved": "3.0.0-preview.19",
-        "contentHash": "tSv+AmPsQJxia5gtX/Rtn8R0NjeObmNkL1SPRPJIgOdAHiDst7UdCKjI74Pj3a7yAY3dRl9XfFZYVCf/h1bTXw==",
+        "requested": "[3.0.0-preview.25, )",
+        "resolved": "3.0.0-preview.25",
+        "contentHash": "qPYPdoDIRfwgYyPdj1fd5E/g42YzydMvrAbtRbqJuYsk5jY6mdUfnL2HdaMwZgVukdwPOtSleaSyUjIquf3I4A==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
@@ -229,9 +229,9 @@
       },
       "nanoFramework.Tools.Debugger.Net": {
         "type": "Direct",
-        "requested": "[3.0.0-preview.19, )",
-        "resolved": "3.0.0-preview.19",
-        "contentHash": "tSv+AmPsQJxia5gtX/Rtn8R0NjeObmNkL1SPRPJIgOdAHiDst7UdCKjI74Pj3a7yAY3dRl9XfFZYVCf/h1bTXw==",
+        "requested": "[3.0.0-preview.25, )",
+        "resolved": "3.0.0-preview.25",
+        "contentHash": "qPYPdoDIRfwgYyPdj1fd5E/g42YzydMvrAbtRbqJuYsk5jY6mdUfnL2HdaMwZgVukdwPOtSleaSyUjIquf3I4A==",
         "dependencies": {
           "Polly": "7.2.4",
           "System.IO.Ports": "8.0.0"
