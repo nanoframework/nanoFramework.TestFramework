@@ -199,6 +199,9 @@ namespace nanoFramework.TestPlatform.TestAdapter
             GlobalExclusiveDeviceAccess exclusiveAccess = null;
             PortBase serialDebugClient = null;
             nanoFramework.Tools.Debugger.MessageEventHandler messageHandler = null;
+
+            EventHandler<StringEventArgs> debuggerLogHandler = (sender, e) => _logger.LogMessage(e.EventText, Settings.LoggingLevel.Verbose);
+
             try
             {
 
@@ -207,6 +210,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (realHardwarePortSet)
                 {
                     serialDebugClient = PortBase.CreateInstanceForSerial(false);
+                    serialDebugClient.LogMessageAvailable += debuggerLogHandler;
 
                     _logger.LogMessage($"Checking device on port {_settings.RealHardwarePort}.", Settings.LoggingLevel.Verbose);
 
@@ -248,6 +252,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 {
                     serialDebugClient = PortBase.CreateInstanceForSerial(true,
                                                                          2000);
+                    serialDebugClient.LogMessageAvailable += debuggerLogHandler;
                 }
 
             retryConnection:
@@ -257,12 +262,20 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     _logger.LogMessage($"Waiting for device enumeration to complete.", Settings.LoggingLevel.Verbose);
                 }
 
-                DateTime enumerationTimeout = DateTime.UtcNow.AddSeconds(10);
+                DateTime enumerationTimeout = DateTime.UtcNow.AddSeconds(30);
 
                 while (!serialDebugClient.IsDevicesEnumerationComplete
                        && DateTime.UtcNow < enumerationTimeout)
                 {
                     await Task.Delay(10);
+                }
+
+                DateTime deviceTimeout = DateTime.UtcNow.AddMilliseconds(_timeoutExclusiveAccess);
+
+                while (serialDebugClient.NanoFrameworkDevices.Count == 0
+                       && DateTime.UtcNow < deviceTimeout)
+                {
+                    await Task.Delay(50);
                 }
 
                 _logger.LogMessage($"Found: {serialDebugClient.NanoFrameworkDevices.Count} devices", Settings.LoggingLevel.Verbose);
@@ -644,11 +657,16 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 try
                 {
-                    serialDebugClient?.StopDeviceWatchers();
+                    if (serialDebugClient != null)
+                    {
+                        serialDebugClient.LogMessageAvailable -= debuggerLogHandler;
+
+                        serialDebugClient.Dispose();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogMessage($"Exception stopping device watchers: {ex.Message}", Settings.LoggingLevel.Verbose);
+                    _logger.LogMessage($"Exception disposing device watchers: {ex.Message}", Settings.LoggingLevel.Verbose);
                 }
 
                 exclusiveAccess?.Dispose();
