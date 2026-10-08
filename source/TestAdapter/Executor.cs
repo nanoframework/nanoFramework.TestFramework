@@ -364,6 +364,49 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 retryCount = 0;
 
+                // read and check the PEs to deploy before erasing the device
+                // build a list with the full path for each PE file to deploy
+                List<DeploymentAssembly> assemblyList = new List<DeploymentAssembly>();
+
+                var source = tests.First().Source;
+                var workingDirectory = Path.GetDirectoryName(source);
+                var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
+
+                CompatibilityCheckResult compatibility;
+
+                try
+                {
+                    foreach (string peFile in allPeFiles)
+                    {
+                        PeAssemblyInfo peAssembly = PeFileReader.ReadFile(peFile)[0];
+
+                        assemblyList.Add(new DeploymentAssembly(peFile, peAssembly.Version.ToString(4)));
+                    }
+
+                    compatibility = DeploymentCompatibility.Check(allPeFiles, device);
+                }
+                catch (InvalidDataException ex)
+                {
+                    _logger.LogMessage(ex.Message, Settings.LoggingLevel.Error);
+
+                    results.First().Outcome = TestOutcome.Failed;
+                    results.First().ErrorMessage = $"Invalid PE file in {workingDirectory}. {ex.Message} Please rebuild the test project.";
+                    return results;
+                }
+
+                if (!compatibility.IsCompatible)
+                {
+                    foreach (CompatibilityIssue issue in compatibility.Issues)
+                    {
+                        _logger.LogMessage(issue.Description, Settings.LoggingLevel.Error);
+                    }
+
+                    // can't deploy!!
+                    results.First().Outcome = TestOutcome.Failed;
+                    results.First().ErrorMessage = compatibility.FormatMessage();
+                    return results;
+                }
+
             retryErase:
                 // erase the device
                 _logger.LogMessage($"Erase deployment block storage. Attempt {retryCount}/{_numberOfRetries}.", Settings.LoggingLevel.Verbose);
@@ -468,52 +511,6 @@ namespace nanoFramework.TestPlatform.TestAdapter
                     }
 
                     _logger.LogMessage($"Computing deployment blob.", Settings.LoggingLevel.Verbose);
-
-                    // build a list with the full path for each PE file to deploy
-                    List<DeploymentAssembly> assemblyList = new List<DeploymentAssembly>();
-
-                    var source = tests.First().Source;
-                    var workingDirectory = Path.GetDirectoryName(source);
-                    var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
-
-                    CompatibilityCheckResult compatibility;
-
-                    try
-                    {
-                        foreach (string peFile in allPeFiles)
-                        {
-                            // read the assembly version from the PE header
-                            PeAssemblyInfo peAssembly = PeFileReader.ReadFile(peFile)[0];
-
-                            assemblyList.Add(new DeploymentAssembly(peFile, peAssembly.Version.ToString(4)));
-                        }
-
-                        // check that the device firmware has the native assemblies required by the PEs to deploy
-                        // and that all the assembly references can be resolved with the PEs to deploy
-                        // (the PE format required is the one reported by the device firmware)
-                        compatibility = DeploymentCompatibility.Check(allPeFiles, device);
-                    }
-                    catch (InvalidDataException ex)
-                    {
-                        _logger.LogMessage(ex.Message, Settings.LoggingLevel.Error);
-
-                        results.First().Outcome = TestOutcome.Failed;
-                        results.First().ErrorMessage = $"Invalid PE file in {workingDirectory}. {ex.Message} Please rebuild the test project.";
-                        return results;
-                    }
-
-                    if (!compatibility.IsCompatible)
-                    {
-                        foreach (CompatibilityIssue issue in compatibility.Issues)
-                        {
-                            _logger.LogMessage(issue.Description, Settings.LoggingLevel.Error);
-                        }
-
-                        // can't deploy
-                        results.First().Outcome = TestOutcome.Failed;
-                        results.First().ErrorMessage = compatibility.FormatMessage();
-                        return results;
-                    }
 
                     _logger.LogMessage($"Added {assemblyList.Count} assemblies to deploy.", Settings.LoggingLevel.Verbose);
                     await Task.Yield();
