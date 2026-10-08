@@ -13,12 +13,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using CliWrap;
 using CliWrap.Buffered;
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.CSharp;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using nanoFramework.TestAdapter;
 using nanoFramework.Tools.Debugger;
+using nanoFramework.Tools.Debugger.Compatibility;
 using nanoFramework.Tools.Debugger.Extensions;
 using nanoFramework.Tools.Debugger.NFDevice;
 
@@ -470,49 +469,50 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                     _logger.LogMessage($"Computing deployment blob.", Settings.LoggingLevel.Verbose);
 
-                    // build a list with the full path for each DLL, referenced DLL and EXE
+                    // build a list with the full path for each PE file to deploy
                     List<DeploymentAssembly> assemblyList = new List<DeploymentAssembly>();
 
                     var source = tests.First().Source;
                     var workingDirectory = Path.GetDirectoryName(source);
                     var allPeFiles = Directory.GetFiles(workingDirectory, "*.pe");
 
-                    var decompilerSettings = new DecompilerSettings
-                    {
-                        LoadInMemory = false,
-                        ThrowOnAssemblyResolveErrors = false
-                    };
+                    CompatibilityCheckResult compatibility;
 
-                    foreach (string assemblyPath in allPeFiles)
+                    try
                     {
-                        // load assembly in order to get the versions
-                        var file = Path.Combine(workingDirectory, assemblyPath.Replace(".pe", ".dll"));
-                        if (!File.Exists(file))
+                        foreach (string peFile in allPeFiles)
                         {
-                            // Check with an exe
-                            file = Path.Combine(workingDirectory, assemblyPath.Replace(".pe", ".exe"));
+                            // read the assembly version from the PE header
+                            PeAssemblyInfo peAssembly = PeFileReader.ReadFile(peFile)[0];
+
+                            assemblyList.Add(new DeploymentAssembly(peFile, peAssembly.Version.ToString(4)));
                         }
 
-                        var decompiler = new CSharpDecompiler(file, decompilerSettings); ;
-                        var assemblyProperties = decompiler.DecompileModuleAndAssemblyAttributesToString();
+                        // check that the device firmware has the native assemblies required by the PEs to deploy
+                        // and that all the assembly references can be resolved with the PEs to deploy
+                        // (the PE format required is the one reported by the device firmware)
+                        compatibility = DeploymentCompatibility.Check(allPeFiles, device);
+                    }
+                    catch (InvalidDataException ex)
+                    {
+                        _logger.LogMessage(ex.Message, Settings.LoggingLevel.Error);
 
-                        // AssemblyVersion
-                        string pattern = @"(?<=AssemblyVersion\("")(.*)(?=\""\)])";
-                        var match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
-                        string assemblyVersion = match[0].Value;
+                        results.First().Outcome = TestOutcome.Failed;
+                        results.First().ErrorMessage = $"Invalid PE file in {workingDirectory}. {ex.Message} Please rebuild the test project.";
+                        return results;
+                    }
 
-                        // AssemblyNativeVersion
-                        pattern = @"(?<=AssemblyNativeVersion\("")(.*)(?=\""\)])";
-                        match = Regex.Matches(assemblyProperties, pattern, RegexOptions.IgnoreCase);
-
-                        // only class libs have this attribute, therefore sanity check is required
-                        string nativeVersion = string.Empty;
-                        if (match.Count == 1)
+                    if (!compatibility.IsCompatible)
+                    {
+                        foreach (CompatibilityIssue issue in compatibility.Issues)
                         {
-                            nativeVersion = match[0].Value;
+                            _logger.LogMessage(issue.Description, Settings.LoggingLevel.Error);
                         }
 
-                        assemblyList.Add(new DeploymentAssembly(Path.Combine(workingDirectory, assemblyPath), assemblyVersion, nativeVersion));
+                        // can't deploy
+                        results.First().Outcome = TestOutcome.Failed;
+                        results.First().ErrorMessage = compatibility.FormatMessage();
+                        return results;
                     }
 
                     _logger.LogMessage($"Added {assemblyList.Count} assemblies to deploy.", Settings.LoggingLevel.Verbose);
