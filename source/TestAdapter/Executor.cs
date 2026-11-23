@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,7 +35,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private const string Done = "Done.";
         private Settings _settings;
         private LogMessenger _logger;
-        private Process _nanoClr;
+        private readonly object _cancellationLock = new object();
+        private CancellationTokenSource _runCancellation;
 
         // number of retries when performing a deploy operation
         private const int _numberOfRetries = 5;
@@ -50,56 +50,92 @@ namespace nanoFramework.TestPlatform.TestAdapter
         // timeout to get exclusive access to a device
         private const int _timeoutExclusiveAccess = 5000;
 
-        private IFrameworkHandle _frameworkHandle = null;
-
         /// <inheritdoc/>
         public void Cancel()
         {
             try
             {
-                if (!_nanoClr.HasExited)
+                lock (_cancellationLock)
                 {
-                    _logger.LogMessage(
-                        "Canceling to test process. Attempting to kill nanoCLR process...",
-                        Settings.LoggingLevel.Verbose);
-
-                    _nanoClr.Kill();
-                    // Wait 5 seconds maximum
-                    _nanoClr.WaitForExit(5000);
+                    if (_runCancellation != null && _settings?.IsRealHardware == false)
+                    {
+                        _runCancellation.Cancel();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger?.LogPanicMessage($"Exception thrown while killing the process: {ex}");
+                _logger?.LogPanicMessage($"Exception thrown while canceling the test run: {ex}");
             }
         }
 
         /// <inheritdoc/>
         public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            try
+            ExecuteTestRun(runContext, frameworkHandle, cancellationToken =>
             {
-                InitializeLogger(runContext, frameworkHandle);
-
                 foreach (var source in sources)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var testsCases = TestDiscoverer.ComposeTestCases(source);
 
-                    RunTests(testsCases, runContext, frameworkHandle);
+                    RunTests(testsCases, frameworkHandle, cancellationToken);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
-            }
+            });
         }
 
         /// <inheritdoc/>
         public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
+            ExecuteTestRun(runContext, frameworkHandle, cancellationToken =>
+                RunTests(tests, frameworkHandle, cancellationToken));
+        }
+
+        private void ExecuteTestRun(IRunContext runContext, IFrameworkHandle frameworkHandle, Action<CancellationToken> runTests)
+        {
+            using (var cancellation = new CancellationTokenSource())
+            {
+                try
+                {
+                    InitializeLogger(runContext, frameworkHandle);
+
+                    lock (_cancellationLock)
+                    {
+                        if (_runCancellation != null)
+                        {
+                            throw new InvalidOperationException("A test run is already in progress.");
+                        }
+
+                        _runCancellation = cancellation;
+                    }
+
+                    runTests(cancellation.Token);
+                }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                {
+                    _logger?.LogMessage("Test run canceled.", Settings.LoggingLevel.Detailed);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogPanicMessage($"Exception raised in the process: {ex}");
+                }
+                finally
+                {
+                    lock (_cancellationLock)
+                    {
+                        if (_runCancellation == cancellation)
+                        {
+                            _runCancellation = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RunTests(IEnumerable<TestCase> tests, IFrameworkHandle frameworkHandle, CancellationToken cancellationToken)
+        {
             try
             {
-                InitializeLogger(runContext, frameworkHandle);
                 var uniqueSources = tests.Select(m => m.Source).Distinct();
 
                 _logger.LogMessage(
@@ -108,6 +144,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
                 foreach (var source in uniqueSources)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var groups = tests.Where(m => m.Source == source);
 
                     _logger.LogMessage(
@@ -126,7 +163,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // we are connecting to nanoCLR CLI
                         results = RunTestOnEmulatorAsync(
                             groups.ToList(),
-                            _logger).GetAwaiter().GetResult();
+                            _logger,
+                            cancellationToken).GetAwaiter().GetResult();
                     }
 
                     foreach (var result in results)
@@ -134,6 +172,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         frameworkHandle.RecordResult(result);
                     }
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -233,11 +275,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // all good here, proceed to execute tests
                         goto executeTests;
                     }
-#if DEBUG
-                    catch (Exception ex)
-#else
-                    catch
-#endif
+                    catch (Exception)
                     {
                         results.First().Outcome = TestOutcome.Failed;
                         results.First().ErrorMessage = $"Couldn't find any valid nanoDevice @ {_settings.RealHardwarePort}. Maybe try to disable the device watchers in Visual Studio Extension! If the situation persists reboot the device and/or disconnect and connect it again.";
@@ -524,13 +562,14 @@ namespace nanoFramework.TestPlatform.TestAdapter
                         // append to the deploy blob the assembly
                         using (FileStream fs = File.Open(peItem.Path, FileMode.Open, FileAccess.Read))
                         {
-                            long length = (fs.Length + 3) / 4 * 4;
+                            int payloadLength = checked((int)fs.Length);
+                            long length = ((long)payloadLength + 3) / 4 * 4;
                             _logger.LogMessage($"Adding {Path.GetFileNameWithoutExtension(peItem.Path)} v{peItem.Version} ({length} bytes) to deployment bundle", Settings.LoggingLevel.Verbose);
                             byte[] buffer = new byte[length];
 
                             await Task.Yield();
 
-                            await fs.ReadAsync(buffer, 0, (int)fs.Length);
+                            await ReadExactlyAsync(fs, buffer, payloadLength);
                             assemblies.Add(buffer);
 
                             // Increment totalizer
@@ -672,6 +711,21 @@ namespace nanoFramework.TestPlatform.TestAdapter
             return results;
         }
 
+        private static async Task ReadExactlyAsync(Stream stream, byte[] buffer, int count)
+        {
+            int offset = 0;
+            while (offset < count)
+            {
+                int bytesRead = await stream.ReadAsync(buffer, offset, count - offset);
+                if (bytesRead == 0)
+                {
+                    throw new EndOfStreamException("The deployment assembly ended before it could be read completely.");
+                }
+
+                offset += bytesRead;
+            }
+        }
+
         private List<TestResult> PrepareListResult(List<TestCase> tests)
         {
             List<TestResult> results = new List<TestResult>();
@@ -693,7 +747,8 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
         private async Task<List<TestResult>> RunTestOnEmulatorAsync(
             List<TestCase> tests,
-            LogMessenger _logger)
+            LogMessenger _logger,
+            CancellationToken cancellationToken)
         {
             List<TestResult> results = PrepareListResult(tests);
 
@@ -760,8 +815,10 @@ namespace nanoFramework.TestPlatform.TestAdapter
                  .WithValidation(CommandResultValidation.None);
 
             // setup cancellation token with the timeout from settings
-            using (var cts = new CancellationTokenSource(_testSessionTimeout))
+            cancellationToken.ThrowIfCancellationRequested();
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
+                cts.CancelAfter(_testSessionTimeout);
                 BufferedCommandResult cliResult = await cmd.ExecuteBufferedAsync(cts.Token);
                 int exitCode = cliResult.ExitCode;
 
