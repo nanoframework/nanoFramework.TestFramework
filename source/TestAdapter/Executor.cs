@@ -705,23 +705,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 $"Timeout set to {_testSessionTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
-            // check if nanoCLR needs to be installed/updated
-            if (!NanoCLRHelper.NanoClrIsInstalled
-                && !NanoCLRHelper.InstallNanoClr(_logger))
+            if (!NanoCLRHelper.PrepareNanoClr(_settings, _logger))
             {
                 results.First().Outcome = TestOutcome.Failed;
-                results.First().ErrorMessage = "Failed to install/update nanoCLR CLI. Check log for details.";
+                results.First().ErrorMessage = "Failed to prepare nanoCLR. Check log for details.";
 
                 return results;
-            }
-
-            // update nanoCLR instance, if not running a local one
-            if (string.IsNullOrEmpty(_settings.PathToLocalCLRInstance))
-            {
-                NanoCLRHelper.UpdateNanoCLRInstance(
-                    _settings.CLRVersion,
-                    _settings.UsePreviewClr,
-                    _logger);
             }
 
             _logger.LogMessage(

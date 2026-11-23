@@ -40,6 +40,11 @@ namespace nanoFramework.TestPlatform.TestAdapter
         public bool UsePreviewClr { get; set; } = false;
 
         /// <summary>
+        /// True to install the latest nanoCLR CLI including preview versions.
+        /// </summary>
+        public bool UsePreviewNanoClr { get; set; } = false;
+
+        /// <summary>
         /// Level of logging for Unit Test execution.
         /// </summary>
         public LoggingLevel Logging { get; set; } = LoggingLevel.None;
@@ -103,6 +108,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 if (usePreviewClr != null && usePreviewClr.NodeType == XmlNodeType.Text)
                 {
                     settings.UsePreviewClr = usePreviewClr.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                }
+
+                XmlNode usePreviewNanoClr = node.SelectSingleNode(nameof(UsePreviewNanoClr))?.FirstChild;
+                if (usePreviewNanoClr != null && usePreviewNanoClr.NodeType == XmlNodeType.Text)
+                {
+                    settings.UsePreviewNanoClr = usePreviewNanoClr.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
                 }
             }
 
