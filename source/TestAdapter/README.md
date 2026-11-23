@@ -1,5 +1,9 @@
 ## Debugging Test Adapter
 
+The `nanoFrameworkAdapter` runsettings option `UsePreviewNanoClr` selects the latest
+nanoCLR CLI including preview versions; it defaults to `False` (stable CLI).
+`UsePreviewClr` separately selects the published preview CLR instance.
+
 Test Adapter it's a DLL that is loaded and executed as a child process of `vstestconsole.exe`. This makes it impossible to debug from a regular debug session in Visual Studio.
 To accomplish that one needs the help of a handy VS extension and some configurations. 
 It's OK to leave the debug setup and configuration as this won't affect the release build and anything else related with distributing it.
