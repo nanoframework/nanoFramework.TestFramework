@@ -11,6 +11,7 @@ using CliWrap;
 using CliWrap.Buffered;
 using nanoFramework.TestPlatform.TestAdapter;
 using Newtonsoft.Json;
+using NuGet.Versioning;
 
 namespace nanoFramework.TestAdapter
 {
@@ -61,10 +62,17 @@ namespace nanoFramework.TestAdapter
 
             if (!string.Equals(installedVersion, latestVersion, StringComparison.OrdinalIgnoreCase))
             {
+                string arguments = $"tool update -g nanoclr --version {latestVersion}";
+                if (installedVersion != null
+                    && NuGetVersion.Parse(installedVersion).CompareTo(NuGetVersion.Parse(latestVersion)) > 0)
+                {
+                    arguments += " --allow-downgrade";
+                }
+
                 using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
                     BufferedCommandResult result = Cli.Wrap("dotnet")
-                        .WithArguments($"tool update -g nanoclr --version {latestVersion}")
+                        .WithArguments(arguments)
                         .WithValidation(CommandResultValidation.None)
                         .ExecuteBufferedAsync(cts.Token).Task.GetAwaiter().GetResult();
 
