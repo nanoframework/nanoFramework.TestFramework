@@ -20,3 +20,7 @@ The following adjustments are required:
 To summarize, this will be use to configure a debug session in the exact same way as if you where to launch the VS Test console from a command line.
 
 Make sure to add breakpoints wherever you need to and you're ready to hit F5!
+
+## Canceling emulator tests
+
+Canceling a test run also applies during initialization and emulator setup, stops the active setup or nanoCLR CLI process, and prevents remaining test groups from starting. Setup operations retain their existing timeouts, and the `TestSessionTimeout` runsettings value still limits each emulator execution. Cancellation does not interrupt tests running on real hardware.
