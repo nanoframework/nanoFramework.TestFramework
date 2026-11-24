@@ -23,4 +23,4 @@ Make sure to add breakpoints wherever you need to and you're ready to hit F5!
 
 ## Canceling emulator tests
 
-Canceling a test run stops the active nanoCLR CLI process and prevents remaining test groups from starting. The `TestSessionTimeout` runsettings value still limits each emulator execution. Cancellation does not interrupt tests running on real hardware.
+Canceling a test run also applies during initialization and emulator setup, stops the active setup or nanoCLR CLI process, and prevents remaining test groups from starting. Setup operations retain their existing timeouts, and the `TestSessionTimeout` runsettings value still limits each emulator execution. Cancellation does not interrupt tests running on real hardware.

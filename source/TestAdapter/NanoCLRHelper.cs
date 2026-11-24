@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -19,17 +19,23 @@ namespace nanoFramework.TestAdapter
     {
         public static bool NanoClrIsInstalled { get; private set; } = false;
 
-        public static bool PrepareNanoClr(Settings settings, LogMessenger logger)
+        public static bool PrepareNanoClr(Settings settings, LogMessenger logger, CancellationToken cancellationToken)
         {
             try
             {
-                if (!NanoClrIsInstalled && !InstallNanoClr(settings.UsePreviewNanoClr, logger))
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!NanoClrIsInstalled && !InstallNanoClr(settings.UsePreviewNanoClr, logger, cancellationToken))
                 {
                     return false;
                 }
 
                 return !string.IsNullOrEmpty(settings.PathToLocalCLRInstance)
-                    || UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger);
+                    || UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -38,19 +44,25 @@ namespace nanoFramework.TestAdapter
             }
         }
 
-        public static bool InstallNanoClr(bool usePreview, LogMessenger logger)
+        public static bool InstallNanoClr(bool usePreview, LogMessenger logger, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             logger.LogMessage("Install/update nanoclr tool", Settings.LoggingLevel.Verbose);
 
-            string installedVersion = GetInstalledNanoClrVersion();
+            string installedVersion = GetInstalledNanoClrVersion(cancellationToken);
 
             NuGetPackage package;
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "nanoFramework-TestAdapter");
-                string response = client.GetStringAsync("https://api.nuget.org/v3-flatcontainer/nanoclr/index.json")
-                    .GetAwaiter().GetResult();
-                package = JsonConvert.DeserializeObject<NuGetPackage>(response);
+                using (HttpResponseMessage response = client.GetAsync(
+                    "https://api.nuget.org/v3-flatcontainer/nanoclr/index.json",
+                    cancellationToken).GetAwaiter().GetResult())
+                {
+                    response.EnsureSuccessStatusCode();
+                    package = JsonConvert.DeserializeObject<NuGetPackage>(
+                        response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                }
             }
 
             string latestVersion = package?.Versions?.LastOrDefault(version => usePreview || !version.Contains("-"));
@@ -69,8 +81,9 @@ namespace nanoFramework.TestAdapter
                     arguments += " --allow-downgrade";
                 }
 
-                using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                using (CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                 {
+                    cts.CancelAfter(TimeSpan.FromMinutes(1));
                     BufferedCommandResult result = Cli.Wrap("dotnet")
                         .WithArguments(arguments)
                         .WithValidation(CommandResultValidation.None)
@@ -83,7 +96,7 @@ namespace nanoFramework.TestAdapter
                     }
                 }
 
-                installedVersion = GetInstalledNanoClrVersion();
+                installedVersion = GetInstalledNanoClrVersion(cancellationToken);
                 if (!string.Equals(installedVersion, latestVersion, StringComparison.OrdinalIgnoreCase))
                 {
                     logger.LogPanicMessage($"Expected nanoCLR CLI v{latestVersion}, but PATH resolves to v{installedVersion ?? "(not found)"}.");
@@ -96,12 +109,13 @@ namespace nanoFramework.TestAdapter
             return true;
         }
 
-        private static string GetInstalledNanoClrVersion()
+        private static string GetInstalledNanoClrVersion(CancellationToken cancellationToken)
         {
             try
             {
-                using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+                using (CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                 {
+                    cts.CancelAfter(TimeSpan.FromSeconds(10));
                     BufferedCommandResult result = Cli.Wrap("nanoclr")
                         .WithArguments("--version")
                         .WithValidation(CommandResultValidation.None)
@@ -122,8 +136,13 @@ namespace nanoFramework.TestAdapter
             }
         }
 
-        public static bool UpdateNanoCLRInstance(string clrVersion, bool usePreview, LogMessenger logger)
+        public static bool UpdateNanoCLRInstance(
+            string clrVersion,
+            bool usePreview,
+            LogMessenger logger,
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             logger.LogMessage("Update nanoCLR instance", Settings.LoggingLevel.Verbose);
 
             string arguments = "instance --update";
@@ -136,8 +155,9 @@ namespace nanoFramework.TestAdapter
                 arguments += $" --version {clrVersion}";
             }
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+            using (CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
+                cts.CancelAfter(TimeSpan.FromMinutes(1));
                 BufferedCommandResult result = Cli.Wrap("nanoclr")
                     .WithArguments(arguments)
                     .WithValidation(CommandResultValidation.None)

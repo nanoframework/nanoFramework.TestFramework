@@ -37,6 +37,12 @@ namespace nanoFramework.TestPlatform.TestAdapter
         private LogMessenger _logger;
         private readonly object _cancellationLock = new object();
         private CancellationTokenSource _runCancellation;
+        private volatile CancellationRequest _initializingRun;
+
+        private sealed class CancellationRequest
+        {
+            public volatile bool IsRequested;
+        }
 
         // number of retries when performing a deploy operation
         private const int _numberOfRetries = 5;
@@ -55,6 +61,13 @@ namespace nanoFramework.TestPlatform.TestAdapter
         {
             try
             {
+                // Initialization can hold the lock before the hardware policy is known.
+                var initializingRun = _initializingRun;
+                if (initializingRun != null)
+                {
+                    initializingRun.IsRequested = true;
+                }
+
                 lock (_cancellationLock)
                 {
                     if (_runCancellation != null && _settings?.IsRealHardware == false)
@@ -97,16 +110,29 @@ namespace nanoFramework.TestPlatform.TestAdapter
             {
                 try
                 {
-                    InitializeLogger(runContext, frameworkHandle);
-
                     lock (_cancellationLock)
                     {
-                        if (_runCancellation != null)
+                        var request = new CancellationRequest();
+                        _initializingRun = request;
+                        try
                         {
-                            throw new InvalidOperationException("A test run is already in progress.");
-                        }
+                            InitializeLogger(runContext, frameworkHandle);
 
-                        _runCancellation = cancellation;
+                            if (_runCancellation != null)
+                            {
+                                throw new InvalidOperationException("A test run is already in progress.");
+                            }
+
+                            _runCancellation = cancellation;
+                            if (request.IsRequested && _settings?.IsRealHardware == false)
+                            {
+                                cancellation.Cancel();
+                            }
+                        }
+                        finally
+                        {
+                            _initializingRun = null;
+                        }
                     }
 
                     runTests(cancellation.Token);
@@ -750,6 +776,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
             LogMessenger _logger,
             CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             List<TestResult> results = PrepareListResult(tests);
 
             _logger.LogMessage(
@@ -760,7 +787,7 @@ namespace nanoFramework.TestPlatform.TestAdapter
                 $"Timeout set to {_testSessionTimeout}ms",
                 Settings.LoggingLevel.Verbose);
 
-            if (!NanoCLRHelper.PrepareNanoClr(_settings, _logger))
+            if (!NanoCLRHelper.PrepareNanoClr(_settings, _logger, cancellationToken))
             {
                 results.First().Outcome = TestOutcome.Failed;
                 results.First().ErrorMessage = "Failed to prepare nanoCLR. Check log for details.";
