@@ -38,25 +38,30 @@ namespace nanoFramework.TestFramework
 
                     var methods = type.GetMethods();
 
+                    // one instance per test class, created when the first instance method has to run
+                    object instance = null;
+
                     // First we look at Setup
-                    var continueTests = RunTest(methods, typeof(SetupAttribute));
+                    var continueTests = RunTest(type, methods, typeof(SetupAttribute), ref instance);
 
                     if (continueTests)
                     {
                         // then we run the tests
-                        RunTest(methods, typeof(TestMethodAttribute));
-                        RunTest(methods, typeof(DataRowAttribute));
+                        RunTest(type, methods, typeof(TestMethodAttribute), ref instance);
+                        RunTest(type, methods, typeof(DataRowAttribute), ref instance);
 
                         // last we handle Cleanup
-                        RunTest(methods, typeof(CleanupAttribute));
+                        RunTest(type, methods, typeof(CleanupAttribute), ref instance);
                     }
                 }
             }
         }
 
         private static bool RunTest(
+            Type type,
             MethodInfo[] methods,
-            Type attribToRun)
+            Type attribToRun,
+            ref object instance)
         {
             long dt;
             long totalTicks;
@@ -81,7 +86,20 @@ namespace nanoFramework.TestFramework
                     {
                         dt = DateTime.UtcNow.Ticks;
                         object[] parameters = GetParameters(attrib);
-                        method.Invoke(null, parameters);
+
+                        object target = null;
+
+                        if (!method.IsStatic)
+                        {
+                            if (instance == null)
+                            {
+                                instance = CreateInstance(type);
+                            }
+
+                            target = instance;
+                        }
+
+                        method.Invoke(target, parameters);
                         totalTicks = DateTime.UtcNow.Ticks - dt;
 
                         // Keep result markers at the beginning of a line even if a test used Write() without trailing newline.
@@ -114,6 +132,18 @@ namespace nanoFramework.TestFramework
             }
 
             return true;
+        }
+
+        private static object CreateInstance(Type type)
+        {
+            ConstructorInfo constructor = type.GetConstructor(new Type[0]);
+
+            if (constructor == null)
+            {
+                throw new InvalidOperationException($"{type.FullName} has no parameterless constructor");
+            }
+
+            return constructor.Invoke(null);
         }
 
         private static object[] GetParameters(object attribute)
