@@ -19,19 +19,38 @@ namespace nanoFramework.TestAdapter
     {
         public static bool NanoClrIsInstalled { get; private set; } = false;
 
+        // Test hosts run in parallel (one process per test assembly) and all of them try to install/update the same
+        // nanoCLR CLI tool and CLR instance. Concurrent updates collide on the same files, so the whole setup is
+        // serialized across processes with a named mutex.
+        private const string SetupMutexName = @"Global
+anoFramework.TestAdapter.nanoCLRSetup";
+        private static readonly TimeSpan s_setupLockTimeout = TimeSpan.FromMinutes(5);
+        private const int UpdateAttempts = 3;
+        private static readonly TimeSpan s_updateRetryDelay = TimeSpan.FromSeconds(2);
+
         public static bool PrepareNanoClr(Settings settings, LogMessenger logger, CancellationToken cancellationToken)
         {
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (!NanoClrIsInstalled && !InstallNanoClr(settings.UsePreviewNanoClr, logger, cancellationToken))
+                using (Mutex setupMutex = new Mutex(false, SetupMutexName))
                 {
-                    return false;
-                }
+                    if (!AcquireSetupLock(setupMutex, logger, cancellationToken))
+                    {
+                        logger.LogPanicMessage($"Timed out after {s_setupLockTimeout.TotalMinutes} minutes waiting for another test host to finish the nanoCLR setup.");
+                        return false;
+                    }
 
-                return !string.IsNullOrEmpty(settings.PathToLocalCLRInstance)
-                    || UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger, cancellationToken);
+                    try
+                    {
+                        return PrepareNanoClrCore(settings, logger, cancellationToken);
+                    }
+                    finally
+                    {
+                        setupMutex.ReleaseMutex();
+                    }
+                }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -42,6 +61,74 @@ namespace nanoFramework.TestAdapter
                 logger.LogPanicMessage($"nanoCLR setup failed: {ex}");
                 return false;
             }
+        }
+
+        private static bool AcquireSetupLock(Mutex setupMutex, LogMessenger logger, CancellationToken cancellationToken)
+        {
+            DateTime deadline = DateTime.UtcNow + s_setupLockTimeout;
+            bool logged = false;
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    if (setupMutex.WaitOne(TimeSpan.FromSeconds(1)))
+                    {
+                        return true;
+                    }
+                }
+                catch (AbandonedMutexException)
+                {
+                    // the previous owner died without releasing it; we own the mutex now
+                    return true;
+                }
+
+                if (!logged)
+                {
+                    logger.LogMessage("Waiting for another test host to finish the nanoCLR setup...", Settings.LoggingLevel.Verbose);
+                    logged = true;
+                }
+
+                if (DateTime.UtcNow >= deadline)
+                {
+                    return false;
+                }
+            }
+        }
+
+        private static bool PrepareNanoClrCore(Settings settings, LogMessenger logger, CancellationToken cancellationToken)
+        {
+            if (!NanoClrIsInstalled && !InstallNanoClr(settings.UsePreviewNanoClr, logger, cancellationToken))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(settings.PathToLocalCLRInstance))
+            {
+                return true;
+            }
+
+            for (int attempt = 1; attempt <= UpdateAttempts; attempt++)
+            {
+                if (UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger, cancellationToken))
+                {
+                    return true;
+                }
+
+                if (attempt < UpdateAttempts)
+                {
+                    logger.LogMessage(
+                        $"nanoCLR instance update failed (attempt {attempt} of {UpdateAttempts}). Retrying...",
+                        Settings.LoggingLevel.Verbose);
+
+                    cancellationToken.WaitHandle.WaitOne(s_updateRetryDelay);
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+
+            return false;
         }
 
         public static bool InstallNanoClr(bool usePreview, LogMessenger logger, CancellationToken cancellationToken)
