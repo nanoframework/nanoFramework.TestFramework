@@ -22,8 +22,7 @@ namespace nanoFramework.TestAdapter
         // Test hosts run in parallel (one process per test assembly) and all of them try to install/update the same
         // nanoCLR CLI tool and CLR instance. Concurrent updates collide on the same files, so the whole setup is
         // serialized across processes with a named mutex.
-        private const string SetupMutexName = @"Global
-anoFramework.TestAdapter.nanoCLRSetup";
+        private const string SetupMutexName = @"Global\nanoFramework.TestAdapter.nanoCLRSetup";
         private static readonly TimeSpan s_setupLockTimeout = TimeSpan.FromMinutes(5);
         private const int UpdateAttempts = 3;
         private static readonly TimeSpan s_updateRetryDelay = TimeSpan.FromSeconds(2);
@@ -112,9 +111,17 @@ anoFramework.TestAdapter.nanoCLRSetup";
 
             for (int attempt = 1; attempt <= UpdateAttempts; attempt++)
             {
-                if (UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger, cancellationToken))
+                try
                 {
-                    return true;
+                    if (UpdateNanoCLRInstance(settings.CLRVersion, settings.UsePreviewClr, logger, cancellationToken))
+                    {
+                        return true;
+                    }
+                }
+                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // the update timed out (not cancelled by the caller): treat it as a failed attempt
+                    logger.LogMessage("nanoCLR instance update timed out.", Settings.LoggingLevel.Verbose);
                 }
 
                 if (attempt < UpdateAttempts)
