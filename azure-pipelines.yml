@@ -312,7 +312,7 @@ jobs:
       releaseNotesInline: ''
       assets: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       assetUploadMode: replace
-      isPreRelease: false
+      isPreRelease: true
       addChangeLog: true
 
 ##############################
