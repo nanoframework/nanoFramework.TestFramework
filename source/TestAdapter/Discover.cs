@@ -124,8 +124,18 @@ namespace nanoFramework.TestPlatform.TestAdapter
 
             foreach (var typeCandidate in typeCandidatesForTests)
             {
-                var testClasses = typeCandidate.GetCustomAttributes(true)
-                                      .Where(x => x.GetType().FullName == typeof(TestClassAttribute).FullName);
+                object[] testClasses;
+
+                try
+                {
+                    testClasses = typeCandidate.GetCustomAttributes(true)
+                                      .Where(x => x.GetType().FullName == typeof(TestClassAttribute).FullName)
+                                      .ToArray();
+                }
+                catch (Exception ex) when (ex is TypeLoadException || ex is FileNotFoundException || ex is FileLoadException)
+                {
+                    continue;
+                }
 
                 foreach (var testClassAttrib in testClasses)
                 {
